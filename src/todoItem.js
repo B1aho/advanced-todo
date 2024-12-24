@@ -1,4 +1,4 @@
-class TodoItem {
+export class TodoItem {
     #priorLevel = 0
     #checked = false
     // Сделать чатсично примененную 
@@ -9,6 +9,8 @@ class TodoItem {
         this.title = title
         this.desc = desc
         this.deadLine = null
+        this.tags = null
+        this.location = null
     }
 
     set priorLevel(num) {
@@ -37,5 +39,16 @@ class TodoItem {
     setDeadLine(date) {
         // Validate with regex
         this.deadLine = date
+    }
+
+    setTags(arr) {
+        // Проверить что это массив, Привести к строкам все элементы мб и потом присвоить ссылку на массив
+        if (arr.every) {
+            
+        }
+    }
+
+    setLocation(location) {
+
     }
 }
