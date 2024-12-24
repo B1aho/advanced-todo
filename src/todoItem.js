@@ -2,15 +2,16 @@ export class TodoItem {
     #priorLevel = 0
     #checked = false
     // Сделать чатсично примененную 
-    constructor(dateFormater, title = "", desc = "", location) {
+    constructor(dateFormater, title = "", desc = "", parentId) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
+        this.id = crypto.randomUUID()
         this.date = dateFormater(Date.now(), "PPPp")
         this.title = title
         this.desc = desc
         this.deadLine = null
         this.tags = null
-        this.location = location
+        this.parentId = parentId
     }
 
     set priorLevel(num) {
