@@ -5,7 +5,7 @@
     "main": "./src/index.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "init": "npm init && npm install --save-dev webpack webpack-cli && npm install --save-dev html-webpack-plugin style-loader css-loader html-loader && npm install --save-dev webpack-dev-server",
+      "install-webpack": "npm install --save-dev webpack webpack-cli && npm install --save-dev html-webpack-plugin style-loader css-loader html-loader && npm install --save-dev webpack-dev-server",
       "dev": "webpack serve --open --config webpack.dev.js",
       "build": "webpack --config webpack.prod.js",
       "pre-deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack",
