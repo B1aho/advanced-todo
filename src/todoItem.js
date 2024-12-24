@@ -2,7 +2,7 @@ export class TodoItem {
     #priorLevel = 0
     #checked = false
     // Сделать чатсично примененную 
-    constructor(dateFormater, title = "", desc = "") {
+    constructor(dateFormater, title = "", desc = "", location) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
         this.date = dateFormater(Date.now(), "PPPp")
@@ -10,15 +10,14 @@ export class TodoItem {
         this.desc = desc
         this.deadLine = null
         this.tags = null
-        this.location = null
+        this.location = location
     }
 
     set priorLevel(num) {
         num = Number(num)
-        if (num < 0 || num > 3) {
-            console.warn("Wrong value for priority level")
-            return
-        }
+        if (num < 0 || num > 3) 
+            throw new Error("Not avaliable priority level")
+    
         this.#priorLevel = num
     }
 
@@ -28,7 +27,8 @@ export class TodoItem {
 
     set checked(value) {
         if (typeof value !== "boolean")
-            return
+            throw new Error("Checked must be boolean")
+
         this.#checked = value
     }
 
@@ -43,12 +43,13 @@ export class TodoItem {
 
     setTags(arr) {
         // Проверить что это массив, Привести к строкам все элементы мб и потом присвоить ссылку на массив
+        // если что выбросить исключение
         if (arr.every) {
-            
+
         }
     }
 
-    setLocation(location) {
+    changeLocation(location) {
 
     }
 }
