@@ -1,20 +1,26 @@
 {
-    "name": "x",
+    "name": "todo-app",
     "version": "1.0.0",
-    "description": "",
+    "description": "Advanced todo-app",
+    "keywords": [],
+    "homepage": "https://github.com/B1aho/advanced-todo#readme",
+    "bugs": {
+        "url": "https://github.com/B1aho/advanced-todo/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/B1aho/advanced-todo.git"
+    },
+    "license": "MIT",
+    "author": "Viktor Kolesnik",
     "main": "./src/index.js",
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "install-webpack": "npm install --save-dev webpack webpack-cli && npm install --save-dev html-webpack-plugin style-loader css-loader html-loader && npm install --save-dev webpack-dev-server",
-      "dev": "webpack serve --open --config webpack.dev.js",
-      "build": "webpack --config webpack.prod.js",
-      "pre-deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack",
-      "deploy": "git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "install-webpack": "npm install --save-dev webpack webpack-cli && npm install --save-dev html-webpack-plugin style-loader css-loader html-loader && npm install --save-dev webpack-dev-server",
+        "dev": "webpack serve --open --config webpack.dev.js",
+        "build": "webpack --config webpack.prod.js",
+        "pre-deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack",
+        "deploy": "git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
     },
-    "keywords": [],
-    "author": "",
-    "license": "MIT",
-    "devDependencies": {
-    }
-  }
-  
+    "devDependencies": {}
+}
