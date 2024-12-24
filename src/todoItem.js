@@ -1,33 +1,41 @@
 class TodoItem {
-    title = ""
-    desc = ""
-    priorLevel = 0
-    checked = false
-    #deadLine
+    #priorLevel = 0
+    #checked = false
+    // Сделать чатсично примененную 
+    constructor(dateFormater, title = "", desc = "") {
+        if (typeof dateFormater !== "function")
+            throw new Error("dateFormater must be a function")
+        this.date = dateFormater(Date.now(), "PPPp")
+        this.title = title
+        this.desc = desc
+        this.deadLine = null
+    }
 
-    set priorLevel(priorLevel) {
-        if (priorLevel < 0 || priorLevel > 3) {
+    set priorLevel(num) {
+        num = Number(num)
+        if (num < 0 || num > 3) {
             console.warn("Wrong value for priority level")
             return
         }
-        this.priorLevel = priorLevel
+        this.#priorLevel = num
     }
 
     get priorLevel() {
-        return this.priorLevel
+        return this.#priorLevel
     }
 
     set checked(value) {
-        if (value !== true && value !== false)
+        if (typeof value !== "boolean")
             return
-        this.checked = value
+        this.#checked = value
+    }
+
+    get checked() {
+        return this.#checked
     }
 
     setDeadLine(date) {
-        this.#deadLine = date
-    }
-
-    getDeadLine() {
-        return this.#deadLine
+        // Validate with regex
+        this.deadLine = date
     }
 }
