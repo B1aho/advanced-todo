@@ -1,5 +1,10 @@
 import { Section, Project } from "./todoParent";
 
+const data = {
+    projects: [],
+    sections: [],
+    todos: [],
+}
 /**
  * Модуль в котором происходит оснвоное управление логикой приложения (DOM separately)
  * 
@@ -13,3 +18,25 @@ import { Section, Project } from "./todoParent";
  * 
  * Протестировать базовую реализацию
  */
+
+function createProject() {
+    const title = prompt("Enter project title:")
+    const desc = prompt("Enter project description:")
+    const color = prompt("Enter project color:")
+    const proj = new Project(title, desc, color)
+    data.projects.push(proj)
+    return proj
+}
+
+function createTodo(parent) {
+    const title = prompt("Enter project title:")
+    const desc = prompt("Enter project description:")
+    const todo = parent.createTodo(title, desc)
+    data.todos.push(todo)
+}
+
+function createSection(project) {
+    const title = prompt("Enter project title:")
+    const section = project.createSection(title)
+    data.sections.push(section)
+}
