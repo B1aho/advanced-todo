@@ -1,6 +1,7 @@
 import { TodoItem } from "./todoItem"
 import { format } from "date-fns"
-class Section {
+
+export class Section {
     constructor(title) {
         this.id = crypto.randomUUID()
         this.title = title
@@ -8,8 +9,10 @@ class Section {
         this.parentId = null
     }
 
-    addTodo(title, desc) {
-        this.todos.push(new TodoItem(format, title, desc, this.id))
+    createTodo(title, desc) {
+        const todo = new TodoItem(format, title, desc, this.id)
+        this.todos.push(todo)
+        return todo
     }
 
     removeTodo(id) {
@@ -17,19 +20,19 @@ class Section {
     }
 }
 
-class Project extends Section{
+export class Project extends Section{
     constructor(title, desc, color) {
         super(title)
         this.desc = desc
         this.color = color
-        this.todos = []
         this.sections = []
     }
 
-    addSection(title) {
+    createSection(title) {
         let section = new Section(title)
         section.parentId = this.id
         this.sections.push(section)
+        return section
     }
 
     removeSection(id) {
