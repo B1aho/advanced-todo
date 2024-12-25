@@ -1,5 +1,7 @@
 import "../assets/style.css";
-
+import { serialize, deserialize } from "./serialize";
+import { Project } from "./todoParent";
+import { TodoItem } from "./todoItem";
 // Основная логика
 /**
  * 1. Положить моковые тудушки в localStorage 2-3
@@ -8,3 +10,9 @@ import "../assets/style.css";
  * 4. Функция удаления, удаляет туду из локал сторадж
  * 5. 
  */
+const p = new Project("Title", "Desc", "green")
+const todo = p.createTodo("Title todo", "Desc todo")
+
+console.log(todo)
+
+console.log(deserialize(serialize(todo), TodoItem.prototype))

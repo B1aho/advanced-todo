@@ -40,3 +40,11 @@ function createSection(project) {
     const section = project.createSection(title)
     data.sections.push(section)
 }
+
+function saveApp() {
+    localStorage.setItem("todoApp", JSON.stringify(data))
+}
+
+function getApp() {
+    const lastData = JSON.parse(localStorage.getItem("todoApp"))
+}

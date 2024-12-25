@@ -1,6 +1,6 @@
 export class TodoItem {
-    #priorLevel = 0
-    #checked = false
+    _priorLevel = 0
+    _checked = false
     // Сделать чатсично примененную 
     constructor(dateFormater, title = "", desc = "", parentId) {
         if (typeof dateFormater !== "function")
@@ -19,22 +19,22 @@ export class TodoItem {
         if (num < 0 || num > 3) 
             throw new Error("Not avaliable priority level")
     
-        this.#priorLevel = num
+        this._priorLevel = num
     }
 
     get priorLevel() {
-        return this.#priorLevel
+        return this._priorLevel
     }
 
     set checked(value) {
         if (typeof value !== "boolean")
             throw new Error("Checked must be boolean")
 
-        this.#checked = value
+        this._checked = value
     }
 
     get checked() {
-        return this.#checked
+        return this._checked
     }
 
     setDeadLine(date) {
