@@ -43,14 +43,13 @@ export class TodoItem {
     }
 
     setTags(arr) {
-        // Проверить что это массив, Привести к строкам все элементы мб и потом присвоить ссылку на массив
-        // если что выбросить исключение
-        if (arr.every) {
-
-        }
+        if (!Array.isArray(arr))
+            throw new Error("Tags should be passed as array elements")
+        arr = arr.map(el => toString(el))
+        this.tags = arr
     }
 
-    changeLocation(location) {
-
+    changeLocation(newParentId) {
+        this.parentId = newParentId
     }
 }
