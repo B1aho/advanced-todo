@@ -1,21 +1,18 @@
 import { Section, Project } from "./todoParent";
 import { TodoItem } from "./todoItem";
 import { serialize, deserialize } from "./serialize";
-
-let data = {
-    projects: new Map(),    // Хранит проекты с id как ключом
-    sections: new Map(),    // Хранит секции с id как ключом
-    todos: new Map(),       // Хранит todos с id как ключом
-}
+import { DataStorage } from "./dataStorage";
 
 function createProject() {
     const title = prompt("Enter project title:")
     const desc = prompt("Enter project description:")
     const color = prompt("Enter project color:")
     const proj = new Project(title, desc, color)
-    data.projects.set(proj.id, proj)
-    return proj.id
+    return proj
 }
+
+// Реализовать какую-то функцию выбора, типа которая получает дату и в промпте предлагает выбрать проект по названию
+
 
 function createTodo(parent) {
     if (!parent)
@@ -36,7 +33,7 @@ function createSection(project) {
     return section.id
 }
 
-function saveApp() {
+function saveApp(data) {
     data.projects.forEach((p, key, map) => map.set(key, serialize(p)))
     data.sections.forEach((s, key, map) => map.set(key, serialize(s)))
     data.todos.forEach((t, key, map) => map.set(key, serialize(t)))
@@ -45,15 +42,28 @@ function saveApp() {
 
 function getApp() {
     const lastData = JSON.parse(localStorage.getItem("todoApp"))
-    lastData.projects.forEach((p, key, map) => map.set(key, deserialize(p, Project.prototype)))
-    lastData.sections.forEach((s, key, map) => map.set(key, deserialize(s, Section.prototype)))
-    lastData.todos.forEach((t, key, map) => map.set(key, deserialize(t, TodoItem.prototype)))
-    data = lastData
+    if (lastData === null) {
+        console.warn("Local storage was empty")
+        return null
+    }
+    try {
+        if (!(lastData instanceof DataStorage)) {
+            localStorage.clear()
+            throw new Error("Wrong data type in localStorage")
+        }
+        lastData.projects.forEach((p, key, map) => map.set(key, deserialize(p, Project.prototype)))
+        lastData.sections.forEach((s, key, map) => map.set(key, deserialize(s, Section.prototype)))
+        lastData.todos.forEach((t, key, map) => map.set(key, deserialize(t, TodoItem.prototype)))
+    } catch {
+        console.warn("Local storage was cleared because it had wrong data type")
+        return null
+    }
+    return lastData
 }
 
 // По сути в памяти элементы находятся через data, значит надо удалить их рекурсивно там в первую очередь
 // Но еще есть строки id у родительского элемента - её удалить в конце и всё
-function removeElement(elementId) {
+function removeElement(data, elementId) {
     const type = data.projects.has(elementId) ? "projects" : data.sections.has(elementId) ? "sections" : "todos"
     let elem = data[type].get(elementId)
     if (haveNestedSections(elem)) {
@@ -87,18 +97,6 @@ function haveNestedTodos(elem) {
     return true
 }
 
-function getProject(id) {
-    return data.projects.get(id)   
-}
-
-function getSection(id) {
-    return data.sections.get(id)   
-}
-
-function getTodo(id) {
-    return data.todos.get(id)   
-}
-
 export default {
     createProject,
     createSection,
@@ -106,7 +104,4 @@ export default {
     removeElement,
     saveApp,
     getApp,
-    getProject,
-    getSection,
-    getTodo,
 }
