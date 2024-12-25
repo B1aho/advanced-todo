@@ -49,11 +49,54 @@ function getApp() {
     data = lastData
 }
 
-// Продумать remove, рекурсивный или что-то типо. Логику удаления
-// Он должен получать id, найти этот элемент. Допусти это проект, тогда он должен проверить есть ли todo и
-// удалить их сначала, потом проверить есть ли секции и удалить их (т.е. удалить все объекты с такими id из data
-// и установить свойство в null), 
-// если секции и todo установлены в null или не существуют, тогда удаляем сам объект из data, но по идее если
-// объект не проджект, а секция то мы должны проверить еще свойство parentId, если там что-то есть, то перейти в родителя и удалить id удаляемого элемента
+// По сути в памяти элементы находятся через data, значит надо удалить их рекурсивно там в первую очередь
+// Но еще есть строки id у родительского элемента - её удалить в конце и всё
+function removeElement(elementId) {
+    const type = data.projects.has(elementId) ? "projects" : data.sections.has(elementId) ? "sections" : "todos"
+    let elem = data[type].get(elementId)
+    if (haveNestedSections(elem)) {
+        // Выполнить рекурсивное удаление для каждой секции
+        elem.sections.forEach(secId => removeElement(secId))
+    }
+    if (haveNestedTodos(elem)) {
+        // Выполнить рекурсивное удаление для каждой туду
+        elem.todos.forEach(todoId => removeElement(todoId))
+    }
+    // Delete element's id in parent element if has parent
+    if (elem.parentId) {
+        const parentType = data.projects.has(elem.parentId) ? "projects" : "sections"
+        data[parentType].get(elem.parentId)[type].delete(elementId)
+    }
+    // Delete element
+    data[type].delete(elementId)
+    elem = null
+    return
+}
 
-// добавить тип в генерацию id
+// function isLeaf(elem) {
+//     if ((elem.todos.size === 0 || elem.todos === undefined) &&
+//         (elem.sections.size === 0 || elem.sections === undefined))
+//         return true
+//     return false
+// }
+
+function haveNestedSections(elem) {
+    if ((elem.sections === undefined || elem.sections.size === 0))
+        return false
+    return true
+}
+
+function haveNestedTodos(elem) {
+    if ((elem.todos === undefined || elem.todos.size === 0))
+        return false
+    return true
+}
+
+const p = createProject()
+createTodo(p)
+const s = createSection(p)
+createTodo(s)
+console.log(data)
+
+removeElement(s.id)
+console.log(data)
