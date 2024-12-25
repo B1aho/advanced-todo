@@ -1,5 +1,7 @@
 import "../assets/style.css";
-import "./todoService";
+import todoService from "./todoService";
+
+const p = todoService.createProject()
 // Основная логика
 /**
  * 1. Положить моковые тудушки в localStorage 2-3

@@ -8,30 +8,32 @@ let data = {
     todos: new Map(),       // Хранит todos с id как ключом
 }
 
-// Переделать под map логику
-
 function createProject() {
     const title = prompt("Enter project title:")
     const desc = prompt("Enter project description:")
     const color = prompt("Enter project color:")
     const proj = new Project(title, desc, color)
     data.projects.set(proj.id, proj)
-    return proj
+    return proj.id
 }
 
 function createTodo(parent) {
+    if (!parent)
+        throw new Error("Todo must be created inside section or project")
     const title = prompt("Enter todo title:")
     const desc = prompt("Enter todo description:")
     const todo = parent.createTodo(title, desc)
     data.todos.set(todo.id, todo)
-    return todo
+    return todo.id
 }
 
 function createSection(project) {
+    if (!project)
+        throw new Error("Section must be created inside project")
     const title = prompt("Enter ssection title:")
     const section = project.createSection(title)
     data.sections.set(section.id, section)
-    return section
+    return section.id
 }
 
 function saveApp() {
@@ -73,13 +75,6 @@ function removeElement(elementId) {
     return
 }
 
-// function isLeaf(elem) {
-//     if ((elem.todos.size === 0 || elem.todos === undefined) &&
-//         (elem.sections.size === 0 || elem.sections === undefined))
-//         return true
-//     return false
-// }
-
 function haveNestedSections(elem) {
     if ((elem.sections === undefined || elem.sections.size === 0))
         return false
@@ -92,11 +87,26 @@ function haveNestedTodos(elem) {
     return true
 }
 
-const p = createProject()
-createTodo(p)
-const s = createSection(p)
-createTodo(s)
-console.log(data)
+function getProject(id) {
+    return data.projects.get(id)   
+}
 
-removeElement(s.id)
-console.log(data)
+function getSection(id) {
+    return data.sections.get(id)   
+}
+
+function getTodo(id) {
+    return data.todos.get(id)   
+}
+
+export default {
+    createProject,
+    createSection,
+    createTodo,
+    removeElement,
+    saveApp,
+    getApp,
+    getProject,
+    getSection,
+    getTodo,
+}
