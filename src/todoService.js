@@ -61,47 +61,10 @@ function getApp() {
     return lastData
 }
 
-// По сути в памяти элементы находятся через data, значит надо удалить их рекурсивно там в первую очередь
-// Но еще есть строки id у родительского элемента - её удалить в конце и всё
-function removeElement(data, elementId) {
-    const type = data.projects.has(elementId) ? "projects" : data.sections.has(elementId) ? "sections" : "todos"
-    let elem = data[type].get(elementId)
-    if (haveNestedSections(elem)) {
-        // Выполнить рекурсивное удаление для каждой секции
-        elem.sections.forEach(secId => removeElement(secId))
-    }
-    if (haveNestedTodos(elem)) {
-        // Выполнить рекурсивное удаление для каждой туду
-        elem.todos.forEach(todoId => removeElement(todoId))
-    }
-    // Delete element's id in parent element if has parent
-    if (elem.parentId) {
-        const parentType = data.projects.has(elem.parentId) ? "projects" : "sections"
-        data[parentType].get(elem.parentId)[type].delete(elementId)
-    }
-    // Delete element
-    data[type].delete(elementId)
-    elem = null
-    return
-}
-
-function haveNestedSections(elem) {
-    if ((elem.sections === undefined || elem.sections.size === 0))
-        return false
-    return true
-}
-
-function haveNestedTodos(elem) {
-    if ((elem.todos === undefined || elem.todos.size === 0))
-        return false
-    return true
-}
-
 export default {
     createProject,
     createSection,
     createTodo,
-    removeElement,
     saveApp,
     getApp,
 }
