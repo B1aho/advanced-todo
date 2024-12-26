@@ -1,3 +1,6 @@
+/**
+ * A class that represents a todo, the most basic entity in the system's classification
+ */
 export class TodoItem {
     _priorLevel = 0
     _checked = false

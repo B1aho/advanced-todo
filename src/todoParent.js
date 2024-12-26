@@ -1,6 +1,12 @@
 /**
- * Написать, что храним все объекты в одном месте data, а сами объекты типа project, или sections, хранят
- * Только идентификаторы
+ * Since I wanted to achieve less coupling between objects, projects and sections only store collections 
+ * of IDs of their child elements. To store the actual objects at runtime, I created a dedicated class 
+ * called DataStorage. 
+ * 
+ * This approach has the advantage of improving modularity and scalability by separating concerns: 
+ * the parent elements are not directly responsible for managing the state or lifecycle of their child objects.
+ * Instead, a centralized storage handles object management, making it easier to update, query, or 
+ * manipulate data without tightly coupling different parts of the system
  */
 import { TodoItem } from "./todoItem"
 import { format } from "date-fns"

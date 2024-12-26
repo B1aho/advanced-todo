@@ -1,8 +1,20 @@
-// Сделать синглтон
+/**
+ * Class that implement run-time data-storage with singletone pattern
+ */
 export class DataStorage {
-    projects = new Map()   // Хранит проекты с id как ключом
-    sections = new Map()    // Хранит секции с id как ключом
-    todos = new Map()       // Хранит todos с id как ключом
+    projects = new Map()    // Keep projects with project-id as key
+    sections = new Map()    // Keep sections with section-id as key
+    todos = new Map()       // Keep todos with todo-id as key
+
+    // Singletone implementation
+    constructor() {
+        if (DataStorage.instance) {
+            return DataStorage.instance;
+        }
+
+        // Save current instance as class prop
+        DataStorage.instance = this;
+    }
 
     saveProject(project) {
         this.projects.set(project.id, project)
@@ -28,25 +40,26 @@ export class DataStorage {
         return data.todos.get(id)
     }
 
-    // По сути в памяти элементы находятся через data, значит надо удалить их рекурсивно там в первую очередь
-    // Но еще есть строки id у родительского элемента - её удалить в конце и всё
+    /**
+     * Removes an element and all its children from the runtime storage
+     * Before deleting the element itself, it removes its ID from the parent's collection, if one exists
+     * @param {string} elementId - The ID of the element that was generated during instantiation
+     */
     removeElement(elementId) {
         const type = this.projects.has(elementId) ? "projects" : this.sections.has(elementId) ? "sections" : "todos"
         let elem = this[type].get(elementId)
         if (haveNestedSections(elem)) {
-            // Выполнить рекурсивное удаление для каждой секции
             elem.sections.forEach(secId => removeElement(secId))
         }
         if (haveNestedTodos(elem)) {
-            // Выполнить рекурсивное удаление для каждой туду
             elem.todos.forEach(todoId => removeElement(todoId))
         }
-        // Delete element's id in parent element if has parent
+        // Removes ielement's ID from the parent's collection
         if (elem.parentId) {
             const parentType = this.projects.has(elem.parentId) ? "projects" : "sections"
             this[parentType].get(elem.parentId)[type].delete(elementId)
         }
-        // Delete element
+        // Delete element from the runtime storage
         this[type].delete(elementId)
         elem = null
     }
