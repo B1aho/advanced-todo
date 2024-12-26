@@ -2,6 +2,7 @@ import "../assets/style.css";
 import { Project } from "./todoParent";
 import { DataStorage } from "./dataStorage";
 import { saveApp, getApp } from "./localStore";
+import { renderListOfProjects } from "./todoRender";
 
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
@@ -9,7 +10,14 @@ import { saveApp, getApp } from "./localStore";
  */
 document.addEventListener("DOMContentLoaded", () => {
     let data = initData()
-    
+    const pRefs = []
+    pRefs.push(new Project("Project X", "desc", "green"))
+    pRefs.push(new Project("Project Z", "desc", "green"))
+    pRefs.push(new Project("Project Y", "desc", "green"))
+    pRefs.push(new Project("Project A", "desc", "green"))
+    pRefs.push(new Project("Project B", "desc", "green"))
+    pRefs.forEach(el => data.saveProject(el))
+    renderListOfProjects(data.projects)
 })
 
 /**

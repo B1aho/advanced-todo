@@ -92,3 +92,17 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.sidebar-list-item, .sidebar-project-btn {
+    display: flex;
+    cursor: pointer;
+}
+
+.sidebar-svg-container {
+    width: 24px;
+    height: 24px;
+}
+
+.sidebar-project-title {
+    text-align: left;
+}
