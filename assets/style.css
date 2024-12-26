@@ -115,3 +115,8 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.todo-form {
+    display: flex;
+    flex-direction: column;
+}

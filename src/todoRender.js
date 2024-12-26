@@ -71,9 +71,6 @@ function onSidebarProjectBtnClick(target) {
     console.log("Democtrate extra options...")
 }
 
-// Render project content at main
-// подумать над тем, чтобы сделать это рекурсивно + сделать фабрику, которая создает элемент кнопки:
-// "+ add Todo "
 function onSidebarProjectClick(target) {
     console.log("Render project..")
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
@@ -111,7 +108,7 @@ function createAddTodoBtn() {
     const btn = document.createElement("button")
     btn.classList.add("add-todo-btn")
     btn.type = "button"
-    btn.addEventListener("click", openAddTodoForm)
+    btn.addEventListener("click", createTodoForm)
     btn.textContent = "Add new Todo"
     return btn
 }
@@ -123,10 +120,6 @@ function createAddSectionBtn() {
     btn.addEventListener("click", openAddSectionForm)
     btn.textContent = "Add new section"
     return btn
-}
-
-function openAddTodoForm() {
-    console.log("Add Todo Form was opened")
 }
 
 function openAddSectionForm() {
@@ -185,4 +178,36 @@ function getTodoElement(todo) {
 
     todoContainer.append(checkBtn, todoContent)
     return todoContainer
+}
+
+function createTodoForm(e) {
+    const btn = e.target
+    btn.style.display = "none"
+    const afterBtn = btn.nextElementSibling
+    // Создаём форму, у которой будет ещё две кнопки отправить и закрыть, на кнопку закрыть вешаем слушатель
+    // Который прямо здесь замыкаем на btn, он её возвращает display block
+    const form = document.createElement("form")
+    form.classList.add("todo-form")
+
+    // create title input
+    const titleInput = document.createElement("input")
+    titleInput.classList.add("form-input")
+    titleInput.type = "text"
+    titleInput.maxLength = 100
+    form.append(titleInput)
+
+    // create description input
+    const descInput = document.createElement("input")
+    descInput.classList.add("form-input")
+    descInput.type = "text"
+    descInput.maxLength = 100
+    form.append(descInput)
+
+    // div с кнопками: deadline, приоритет, тэги
+
+    // div с отображением местоположения todo и кнопками отправить или закрыть
+
+    // 
+    
+    afterBtn.before(form)
 }
