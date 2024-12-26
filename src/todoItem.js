@@ -4,12 +4,12 @@
 export class TodoItem {
     _priorLevel = 0
     _checked = false
-    // Сделать чатсично примененную 
+
     constructor(dateFormater, title = "", desc = "", parentId) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
         this.id = crypto.randomUUID()
-        this.date = dateFormater(Date.now(), "PPPp")
+        this.date = dateFormater(Date.now())
         this.title = title
         this.desc = desc
         this.deadLine = null

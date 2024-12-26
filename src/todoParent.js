@@ -20,7 +20,7 @@ export class Section {
     }
 
     createTodo(title, desc) {
-        const todo = new TodoItem(format, title, desc, this.id)
+        const todo = new TodoItem(formatter(), title, desc, this.id)
         this.todos.add(todo.id)
         return todo
     }
@@ -47,5 +47,15 @@ export class Project extends Section{
 
     removeSection(id) {
         this.sections.delete(id)
+    }
+}
+
+/**
+ * Return partially applied function that return formatted date
+ * @returns {Function}
+ */
+function formatter() {
+    return function(date) {
+        return format(date, "PPPp")
     }
 }
