@@ -21,7 +21,7 @@ export class DataStorage {
     }
 
     getProjectById(id) {
-        return data.projects.get(id)
+        return this.projects.get(id)
     }
 
     saveSection(section) {
@@ -29,7 +29,7 @@ export class DataStorage {
     }
 
     getSectionById(id) {
-        return data.sections.get(id)
+        return this.sections.get(id)
     }
 
     saveTodo(todo) {
@@ -37,7 +37,7 @@ export class DataStorage {
     }
 
     getTodoById(id) {
-        return data.todos.get(id)
+        return this.todos.get(id)
     }
 
     /**

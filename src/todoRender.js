@@ -1,9 +1,5 @@
 import { DataStorage } from "./dataStorage";
 
-function renderProject(project) {
-
-}
-
 /**
  * 
  * @param {*} projectMap 
@@ -68,7 +64,7 @@ function handleProjectListClick(e) {
     if (target.classList.contains("sidebar-project-btn"))
         onSidebarProjectBtnClick(target)
     else
-        onSidebarProjectClick(target)
+        onSidebarProjectClick(target.parentElement)
 }
 
 function onSidebarProjectBtnClick(target) {
@@ -87,6 +83,7 @@ function onSidebarProjectClick(target) {
 
     // Render project header
     const contentDiv = document.querySelector("main")
+    contentDiv.innerHTML = ""
     const projectHeader = document.createElement("div")
     projectHeader.classList.add("project-title-container")
     const title = document.createElement("h1")
@@ -94,10 +91,98 @@ function onSidebarProjectClick(target) {
     projectHeader.append(title)
     contentDiv.append(projectHeader)
 
+    // Creater main content container
+    const taskContainer = document.createElement("div")
+    contentDiv.append(taskContainer)
     // Render porject's todos
-    con
-
+    taskContainer.append(handleTodos(project.todos))
     // Render project's sections
+    project.sections.forEach(id => {
+        const section = document.createElement("div")
+        section.classList.add("section-header")
+        const sectionObj = data.getSectionById(id)
+        section.textContent = sectionObj.title
+        section.append(handleTodos(sectionObj.todos))
+        taskContainer.append(section)
+    })
+}
 
-    // Render section's todos
+function createAddTodoBtn() {
+    const btn = document.createElement("button")
+    btn.classList.add("add-todo-btn")
+    btn.type = "button"
+    btn.addEventListener("click", openAddTodoForm)
+    btn.textContent = "Add new Todo"
+    return btn
+}
+
+function createAddSectionBtn() {
+    const btn = document.createElement("button")
+    btn.classList.add("add-section-btn")
+    btn.type = "button"
+    btn.addEventListener("click", openAddSectionForm)
+    btn.textContent = "Add new section"
+    return btn
+}
+
+function openAddTodoForm() {
+    console.log("Add Todo Form was opened")
+}
+
+function openAddSectionForm() {
+    console.log("Add Section Form was opened")
+}
+
+function handleTodos(todoSet) {
+    if (!(todoSet instanceof Set)) {
+        throw new Error("Argument must be instance of Set")
+    }
+    const data = new DataStorage()
+    const todoList = document.createElement("div")
+    todoList.classList.add("todo-list")
+    todoSet.forEach(id => {
+        todoList.append(getTodoElement(data.getTodoById(id)))
+    })
+    todoList.append(createAddTodoBtn())
+    todoList.append(createAddSectionBtn())
+    return todoList;
+}
+
+function getTodoElement(todo) {
+    const todoContainer = document.createElement("div")
+    todoContainer.classList.add("todo-container")
+
+    const checkBtn = document.createElement("button")
+    checkBtn.classList.add("todo-check-btn")
+    let color = "gray"
+    switch (todo.priorLevel) {
+        case 1:
+            color = "blue"
+            break;
+        case 2:
+            color = "yellow"
+            break;
+        case 3:
+            color = "red"
+            break;
+        default:
+            break;
+    }
+    checkBtn.style.backgroundColor = color
+
+    const todoContent = document.createElement("div")
+    todoContent.classList.add("todo-item")
+
+    const todoHeader = document.createElement("div")
+    todoHeader.classList.add("todo-content")
+    todoHeader.textContent = todo.title
+    const todoDesc = document.createElement("div")
+    todoDesc.classList.add("todo-content")
+    todoDesc.textContent = todo.desc
+    const todoOther = document.createElement("div")
+    todoOther.classList.add("todo-content")
+    todoContent.append(todoHeader, todoDesc, todoOther)
+
+    todoContainer.append(checkBtn, todoContent)
+    return todoContainer
 }

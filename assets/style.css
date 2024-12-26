@@ -106,3 +106,12 @@ body {
 .sidebar-project-title {
     text-align: left;
 }
+
+.todo-container {
+    display: flex;
+}
+
+.todo-item, .todo-list {
+    display: flex;
+    flex-direction: column;
+}
