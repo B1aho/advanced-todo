@@ -3,14 +3,13 @@ import { Project } from "./todoParent";
 import { DataStorage } from "./dataStorage";
 import { saveApp, getApp } from "./localStore";
 
-window.addEventListener("load", () => {
+/**
+ * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
+ * Отрисовать список проектов в navbar
+ */
+document.addEventListener("DOMContentLoaded", () => {
     let data = initData()
-    let p = new Project("Project X", "desc", "blue")
-    let s = p.createSection("Section X")
-    let t = s.createTodo("TODO x")
-    console.log(p)
-    console.log(s)
-    console.log(t)
+    
 })
 
 /**

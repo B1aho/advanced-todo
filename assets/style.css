@@ -71,3 +71,24 @@ h6 {
 
 :root {
 }
+
+body {
+    min-width: 100%;
+    min-height: 100%;
+}
+
+#app {
+    display: flex;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+#menu {
+    display: flex;
+    flex-direction: column;
+}
+
+#project-list {
+    display: flex;
+    flex-direction: column;
+}
