@@ -32,6 +32,10 @@ export function renderListOfProjects(projectMap) {
         return aVal.localeCompare(bVal)
     })
 
+    // Add number of projects to the header
+    const header = document.querySelector("#project-list-header")
+    header.textContent += projectList.length
+
     // Render project list
     projectList.forEach(val => {
         const container = document.createElement("div")
