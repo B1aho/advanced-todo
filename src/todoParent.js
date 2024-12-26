@@ -31,9 +31,8 @@ export class Section {
 }
 
 export class Project extends Section{
-    constructor(title, desc, color) {
+    constructor(title, color) {
         super(title)
-        this.desc = desc
         this.color = color
         this.sections = new Set()
     }

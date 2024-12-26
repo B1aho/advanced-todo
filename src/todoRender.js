@@ -1,3 +1,5 @@
+import { DataStorage } from "./dataStorage";
+
 function renderProject(project) {
 
 }
@@ -14,7 +16,7 @@ export function renderListOfProjects(projectMap) {
     // Далее проходим сортируем этот массив по имени в алфавитном порядке и 
     // Рендерим имена проектов (div с именем), добваляя id как data-attr, чтобы потом по нажатию
     // Запускался обработчик, который получал id и отображал нужный проект. Слушатель вешаем в конце на list
-    
+
     // Extract needed projects info 
     const projectList = []
     projectMap.forEach((val, key) => {
@@ -74,6 +76,28 @@ function onSidebarProjectBtnClick(target) {
 }
 
 // Render project content at main
+// подумать над тем, чтобы сделать это рекурсивно + сделать фабрику, которая создает элемент кнопки:
+// "+ add Todo "
 function onSidebarProjectClick(target) {
     console.log("Render project..")
+    // Cause singletone pattern, i can be sure that it will be same storage evvery time
+    const data = new DataStorage()
+    const id = target.getAttribute("data-id")
+    const project = data.getProjectById(id)
+
+    // Render project header
+    const contentDiv = document.querySelector("main")
+    const projectHeader = document.createElement("div")
+    projectHeader.classList.add("project-title-container")
+    const title = document.createElement("h1")
+    title.textContent = project.title
+    projectHeader.append(title)
+    contentDiv.append(projectHeader)
+
+    // Render porject's todos
+    con
+
+    // Render project's sections
+
+    // Render section's todos
 }

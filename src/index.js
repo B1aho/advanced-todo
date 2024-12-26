@@ -11,11 +11,11 @@ import { renderListOfProjects } from "./todoRender";
 document.addEventListener("DOMContentLoaded", () => {
     let data = initData()
     const pRefs = []
-    pRefs.push(new Project("Project X", "desc", "green"))
-    pRefs.push(new Project("Project Z", "desc", "green"))
-    pRefs.push(new Project("Project Y", "desc", "green"))
-    pRefs.push(new Project("Project A", "desc", "green"))
-    pRefs.push(new Project("Project B", "desc", "green"))
+    pRefs.push(new Project("Project X", "green"))
+    pRefs.push(new Project("Project Z", "green"))
+    pRefs.push(new Project("Project Y", "green"))
+    pRefs.push(new Project("Project A", "green"))
+    pRefs.push(new Project("Project B", "green"))
     pRefs.forEach(el => data.saveProject(el))
     renderListOfProjects(data.projects)
 })
