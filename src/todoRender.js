@@ -98,7 +98,7 @@ function createAddTodoBtn() {
     const btn = document.createElement("button")
     btn.classList.add("add-todo-btn")
     btn.type = "button"
-    btn.addEventListener("click", createTodoForm)
+    btn.addEventListener("click", renderTodoForm)
     btn.textContent = "Add new Todo"
     return btn
 }
@@ -124,19 +124,20 @@ function handleTodos(todoSet) {
     const todoList = document.createElement("div")
     todoList.classList.add("todo-list")
     todoSet.forEach(id => {
-        todoList.append(getTodoElement(data.getTodoById(id)))
+        todoList.append(initTodoTemplate(data.getTodoById(id)))
     })
     todoList.append(createAddTodoBtn())
     todoList.append(createAddSectionBtn())
     return todoList;
 }
 
-function getTodoElement(todo) {
-    const todoContainer = document.createElement("div")
-    todoContainer.classList.add("todo-container")
+function initTodoTemplate(todo) {
+    const template = document.querySelector("#todo-item-template")
+    const clone = template.content.cloneNode(true)
+    const todoContainer = clone.querySelector(".todo-container")
+    const checkBtn = clone.querySelector(".todo-check-btn")
 
-    const checkBtn = document.createElement("button")
-    checkBtn.classList.add("todo-check-btn")
+    // В отдельную функцию
     let color = "gray"
     switch (todo.priorLevel) {
         case 1:
@@ -153,24 +154,18 @@ function getTodoElement(todo) {
     }
     checkBtn.style.backgroundColor = color
 
-    const todoContent = document.createElement("div")
-    todoContent.classList.add("todo-item")
+    const todoTitle = clone.querySelector(".todo-title")
+    todoTitle.textContent = todo.title
 
-    const todoHeader = document.createElement("div")
-    todoHeader.classList.add("todo-content")
-    todoHeader.textContent = todo.title
-    const todoDesc = document.createElement("div")
-    todoDesc.classList.add("todo-content")
+    const todoDesc = clone.querySelector(".todo-desc")
     todoDesc.textContent = todo.desc
-    const todoOther = document.createElement("div")
-    todoOther.classList.add("todo-content")
-    todoContent.append(todoHeader, todoDesc, todoOther)
 
-    todoContainer.append(checkBtn, todoContent)
+    const todoOther = clone.querySelector(".todo-other")
+
     return todoContainer
 }
 
-function createTodoForm(e) {
+function renderTodoForm(e) {
     const template = document.querySelector("#form-template")
     const clone = template.content.cloneNode(true)
     const btn = e.target

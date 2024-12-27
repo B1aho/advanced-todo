@@ -20,6 +20,7 @@
 
         </main>
     </div>
+
     <template id="project-list-item">
         <div class="sidebar-list-item">
             <span class="sidebar-svg-container"></span>
@@ -27,6 +28,7 @@
             <button class="sidebar-project-btn"></button>
         </div>
     </template>
+
     <template id="form-template">
         <form class="todo-form">
             <input class="form-input" type="text" maxlength="100" placeholder="Заменить лампочку в холодильнике">
@@ -41,6 +43,17 @@
                 <button class="cancel-btn" type="button">Cancel</button>
             </div>
         </form>
+    </template>
+
+    <template id="todo-item-template">
+        <div class="todo-container">
+            <button class="todo-check-btn"></button>
+            <div class="todo-item">
+                <div class="todo-content todo-title"></div>
+                <div class="todo-content todo-desc"></div>
+                <div class="todo-content todo-other"></div>
+            </div>
+        </div>
     </template>
 </body>
 
