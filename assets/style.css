@@ -116,7 +116,7 @@ body {
     flex-direction: column;
 }
 
-.todo-form {
+.todo-form, .section-form {
     display: flex;
     flex-direction: column;
 }

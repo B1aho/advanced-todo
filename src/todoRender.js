@@ -1,7 +1,8 @@
+import { add } from "date-fns";
 import { DataStorage } from "./dataStorage";
 
 /**
- * @param {*} projectMap 
+ * @param {Map} projectMap 
  */
 export function renderListOfProjects(projectMap) {
     if (!(projectMap instanceof Map))
@@ -94,6 +95,10 @@ function onSidebarProjectClick(target) {
     })
 }
 
+/**
+ * 
+ * @returns {HTMLButtonElement}
+ */
 function createAddTodoBtn() {
     const btn = document.createElement("button")
     btn.classList.add("add-todo-btn")
@@ -103,17 +108,41 @@ function createAddTodoBtn() {
     return btn
 }
 
+/**
+ * 
+ * @returns {HTMLButtonElement}
+ */
 function createAddSectionBtn() {
     const btn = document.createElement("button")
     btn.classList.add("add-section-btn")
     btn.type = "button"
-    btn.addEventListener("click", openAddSectionForm)
+    btn.addEventListener("click", renderSectionForm)
     btn.textContent = "Add new section"
     return btn
 }
 
-function openAddSectionForm() {
-    console.log("Add Section Form was opened")
+function renderSectionForm(e) {
+    const addSectionBtn = e.target
+    const divAfterSectionBtn = document.createElement("div")
+    addSectionBtn.after(divAfterSectionBtn)
+    addSectionBtn.style.display = "none"
+
+    const template = document.querySelector("#section-form-template")
+    const clone = template.content.cloneNode(true)
+    const form = clone.querySelector(".section-form")
+    const submitBtn = clone.querySelector(".submit-btn-section")
+    const cancelBtn = clone.querySelector(".cancel-btn-section")
+
+    cancelBtn.addEventListener("click", () => {
+        divAfterSectionBtn.remove()
+        addSectionBtn.style.display = "block"
+    })
+
+    submitBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+    })
+
+    divAfterSectionBtn.append(form)
 }
 
 function handleTodos(todoSet) {
