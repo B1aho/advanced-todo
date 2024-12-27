@@ -27,6 +27,21 @@
             <button class="sidebar-project-btn"></button>
         </div>
     </template>
+    <template id="form-template">
+        <form class="todo-form">
+            <input class="form-input" type="text" maxlength="100" placeholder="Заменить лампочку в холодильнике">
+            <input class="form-input" type="text" placeholder="Описание.." maxlength="100">
+            <div class="form-options">
+                <button type="button">Приоритет</button>
+                <button type="button">Dead line</button>
+                <button type="button">Set tags</button>
+            </div>
+            <div class="form-confirm">
+                <button class="submit-btn" type="submit">Send</button>
+                <button class="cancel-btn" type="button">Cancel</button>
+            </div>
+        </form>
+    </template>
 </body>
 
 </html>

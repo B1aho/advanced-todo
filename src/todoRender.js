@@ -1,17 +1,12 @@
 import { DataStorage } from "./dataStorage";
 
 /**
- * 
  * @param {*} projectMap 
  */
 export function renderListOfProjects(projectMap) {
     if (!(projectMap instanceof Map))
         throw new Error("projectMap must be an istance of Map()!")
     const list = document.querySelector("#project-list")
-    // Преобразуем Map объектов-проектов в массив пар имя-проекта:id-проекта
-    // Далее проходим сортируем этот массив по имени в алфавитном порядке и 
-    // Рендерим имена проектов (div с именем), добваляя id как data-attr, чтобы потом по нажатию
-    // Запускался обработчик, который получал id и отображал нужный проект. Слушатель вешаем в конце на list
 
     // Extract needed projects info 
     const projectList = []
@@ -47,7 +42,7 @@ export function renderListOfProjects(projectMap) {
         const title = clone.querySelector(".sidebar-project-title")
         title.textContent = val.title
 
-        list.append(clone)
+        list.append(listItem)
     })
     // Вешаем слушатель, который по нажатию определяет, если на сам проект нажали - открывает его
     // если на кнопку в контейнере, то открывает меню с опциям: удалить, добавить в избранное, изменить
@@ -176,44 +171,24 @@ function getTodoElement(todo) {
 }
 
 function createTodoForm(e) {
+    const template = document.querySelector("#form-template")
+    const clone = template.content.cloneNode(true)
     const btn = e.target
     btn.style.display = "none"
     const afterBtn = btn.nextElementSibling
-    // Создаём форму, у которой будет ещё две кнопки отправить и закрыть, на кнопку закрыть вешаем слушатель
-    // Который прямо здесь замыкаем на btn, он её возвращает display block
-    const form = document.createElement("form")
-    form.classList.add("todo-form")
 
-    // Добавить подсказки
-    // create title input
-    const titleInput = document.createElement("input")
-    titleInput.classList.add("form-input")
-    titleInput.type = "text"
-    titleInput.maxLength = 100
-    titleInput.placeholder = "Заменить лампочку в холодильнике"
-    form.append(titleInput)
+    const form = clone.querySelector("form")
+    const cancelBtn = clone.querySelector(".cancel-btn")
+    const submitBtn = clone.querySelector(".submit-btn")
 
-    // create description input
-    const descInput = document.createElement("input")
-    descInput.classList.add("form-input")
-    descInput.type = "text"
-    descInput.placeholder = "Описание.."
-    descInput.maxLength = 100
-    form.append(descInput)
+    cancelBtn.addEventListener("click", () => {
+        form.remove()
+        btn.style.display = "block"
+    })
 
-    // div с кнопками: deadline, приоритет, тэги
-    const otherOptionsContainer = document.createElement("div")
-    otherOptionsContainer.classList.add("form-options") 
-    const priorBtn = document.createElement("button")
-    priorBtn.type = "button"
-    priorBtn.textContent = "Приоритет"
-    priorBtn.addEventListener("click", openPriorSelect)
-    otherOptionsContainer.append(priorBtn)
-    
-    form.append(otherOptionsContainer)
-    // div с отображением местоположения todo и кнопками отправить или закрыть
-
-    // 
+    submitBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+    })
     
     afterBtn.before(form)
 }
