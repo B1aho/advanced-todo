@@ -7,13 +7,17 @@ export class DataStorage {
     todos = new Map()       // Keep todos with todo-id as key
 
     // Singletone implementation
-    constructor() {
+    constructor(lastData = null) {
         if (DataStorage.instance) {
             return DataStorage.instance;
         }
 
         // Save current instance as class prop
-        DataStorage.instance = this;
+        if (lastData) {
+            DataStorage.instance = lastData;
+            return DataStorage.instance;
+        } else
+            DataStorage.instance = this;
     }
 
     saveProject(project) {

@@ -13,17 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let data = initData()
     const pRefs = []
     pRefs.push(new Project("Project X", "green"))
-    let t1 = pRefs[0].createTodo("Todo1", "pddd")
-    t1.priorLevel = 3
-    data.saveTodo(t1)
-    t1 = pRefs[0].createTodo("Todo2", "pddd")
-    data.saveTodo(t1)
-    let s1 = pRefs[0].createSection("Section1")
-    data.saveSection(s1)
-    t1 = s1.createTodo("T3", "tdd")
-    data.saveTodo(t1)
-    t1 = s1.createTodo("T4", "tdd")
-    data.saveTodo(t1)
     pRefs.push(new Project("Project Z", "green"))
     pRefs.push(new Project("Project Y", "green"))
     pRefs.push(new Project("Project A", "green"))
@@ -38,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function initData() {
     const lastData = getApp()
-    if (lastData)
-        return lastData
+    if (lastData) {
+        return new DataStorage(lastData)
+    }
     else
         return new DataStorage()
 }

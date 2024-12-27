@@ -1,5 +1,5 @@
-import { add } from "date-fns";
 import { DataStorage } from "./dataStorage";
+import { saveApp } from "./localStore";
 
 /**
  * @param {Map} projectMap 
@@ -81,16 +81,19 @@ function onSidebarProjectClick(target) {
 
     // Creater main content container
     const taskContainer = document.createElement("div")
+    taskContainer.classList.add("project-container")
+    taskContainer.setAttribute("data-id", project.id)
     contentDiv.append(taskContainer)
     // Render porject's todos
-    taskContainer.append(handleTodos(project.todos))
+    taskContainer.append(handleTodos(project.todos, "project-" + id))
     // Render project's sections
     project.sections.forEach(id => {
         const section = document.createElement("div")
-        section.classList.add("section-header")
+        section.classList.add("section-container")
+        section.setAttribute("data-id", id)
         const sectionObj = data.getSectionById(id)
         section.textContent = sectionObj.title
-        section.append(handleTodos(sectionObj.todos))
+        section.append(handleTodos(sectionObj.todos, "section-" + id))
         taskContainer.append(section)
     })
 }
@@ -99,10 +102,11 @@ function onSidebarProjectClick(target) {
  * 
  * @returns {HTMLButtonElement}
  */
-function createAddTodoBtn() {
+function createAddTodoBtn(parentId) {
     const btn = document.createElement("button")
     btn.classList.add("add-todo-btn")
     btn.type = "button"
+    btn.setAttribute("data-parent-id", parentId)
     btn.addEventListener("click", renderTodoForm)
     btn.textContent = "Add new Todo"
     return btn
@@ -112,10 +116,11 @@ function createAddTodoBtn() {
  * 
  * @returns {HTMLButtonElement}
  */
-function createAddSectionBtn() {
+function createAddSectionBtn(parentId) {
     const btn = document.createElement("button")
     btn.classList.add("add-section-btn")
     btn.type = "button"
+    btn.setAttribute("data-parent-id", parentId)
     btn.addEventListener("click", renderSectionForm)
     btn.textContent = "Add new section"
     return btn
@@ -145,7 +150,7 @@ function renderSectionForm(e) {
     divAfterSectionBtn.append(form)
 }
 
-function handleTodos(todoSet) {
+function handleTodos(todoSet, id) {
     if (!(todoSet instanceof Set)) {
         throw new Error("Argument must be instance of Set")
     }
@@ -155,8 +160,8 @@ function handleTodos(todoSet) {
     todoSet.forEach(id => {
         todoList.append(initTodoTemplate(data.getTodoById(id)))
     })
-    todoList.append(createAddTodoBtn())
-    todoList.append(createAddSectionBtn())
+    todoList.append(createAddTodoBtn(id))
+    todoList.append(createAddSectionBtn(id))
     return todoList;
 }
 
@@ -164,6 +169,7 @@ function initTodoTemplate(todo) {
     const template = document.querySelector("#todo-item-template")
     const clone = template.content.cloneNode(true)
     const todoContainer = clone.querySelector(".todo-container")
+    todoContainer.setAttribute("data-id", todo.id)
     const checkBtn = clone.querySelector(".todo-check-btn")
 
     // В отдельную функцию
@@ -212,11 +218,58 @@ function renderTodoForm(e) {
 
     submitBtn.addEventListener("click", (e) => {
         e.preventDefault()
+        const formValues = handleTodoForm(form.elements)
+        const parentId = btn.getAttribute("data-parent-id")
+        form.remove()
+        btn.style.display = "block"
+        btn.before(addTodoNode(formValues, parentId))
     })
     
     afterBtn.before(form)
 }
 
+function handleTodoForm(formElems) {
+    const formValues = Array.from(formElems)
+    .filter(element => {
+        return element.name
+    })
+    .reduce((acc, curr) => {
+        const {name, value} = curr
+        acc[name] = value
+        return acc
+    }, {})
+    return formValues
+}
+
+function addTodoNode(formValues, parentId) {
+    const data = new DataStorage()
+    const parts = parentId.split("-")
+    const parentType = parts[0]
+    const id = parts.slice(1).join("-")
+    let parent
+    if (parentType === "project") {
+        parent = data.getProjectById(id)
+    }
+    if (parentType === "section") {
+        parent = data.getSectionById(id)
+    }
+    const todo = parent.createTodo(formValues.title, formValues.desc)
+    data.saveTodo(todo)
+    saveData()
+    return initTodoTemplate(todo)
+}
+
 function openPriorSelect() {
 
 }
+
+function saveData() {
+    saveApp(new DataStorage())
+}
+
+function removeTodo() {
+
+}
+
+// Разделить все что не рендер но с дом, в отдельный модуль дом манипулетион
+// И вообще переименовать функции чтобы понимал, что каждая из них делает и на жтом основании разделить модуль

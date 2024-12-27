@@ -1,14 +1,23 @@
 import { DataStorage } from "./dataStorage"
+import { serialize, deserialize } from "./serialize"
+import { TodoItem } from "./todoItem"
+import { Project, Section } from "./todoParent"
 
 /**
  * This function save all projects, sections and todos in localStorage
  * @param {DataStorage} data - Runtime data-storage (instance of DataStorage class)
  */
 export function saveApp(data) {
-    data.projects.forEach((p, key, map) => map.set(key, serialize(p)))
-    data.sections.forEach((s, key, map) => map.set(key, serialize(s)))
-    data.todos.forEach((t, key, map) => map.set(key, serialize(t)))
-    localStorage.setItem("todoApp", JSON.stringify(data))
+    const dataCopy = structuredClone(data)
+    Object.setPrototypeOf(dataCopy, DataStorage.prototype)
+    dataCopy.projects.forEach((p, key, map) => map.set(key, serialize(p)))
+    dataCopy.sections.forEach((s, key, map) => map.set(key, serialize(s)))
+    dataCopy.todos.forEach((t, key, map) => map.set(key, serialize(t)))
+    dataCopy.projects = Array.from(dataCopy.projects.entries())
+    dataCopy.sections = Array.from(dataCopy.sections.entries())
+    dataCopy.todos = Array.from(dataCopy.todos.entries())
+    localStorage.setItem("todoApp", JSON.stringify(dataCopy))
+    console.log(localStorage)
 }
 
 /**
@@ -23,10 +32,11 @@ export function getApp() {
         return null
     }
     try {
-        if (!(lastData instanceof DataStorage)) {
-            localStorage.clear()
-            throw new Error("Data with wrong type was in localStorage")
-        }
+        lastData.projects = new Map(lastData.projects)
+        lastData.sections = new Map(lastData.sections)
+        lastData.todos = new Map(lastData.todos)
+        Object.setPrototypeOf(lastData, DataStorage.prototype)
+
         lastData.projects.forEach((p, key, map) => map.set(key, deserialize(p, Project.prototype)))
         lastData.sections.forEach((s, key, map) => map.set(key, deserialize(s, Section.prototype)))
         lastData.todos.forEach((t, key, map) => map.set(key, deserialize(t, TodoItem.prototype)))
