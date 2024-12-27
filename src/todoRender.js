@@ -34,25 +34,20 @@ export function renderListOfProjects(projectMap) {
     const header = document.querySelector("#project-list-header")
     header.textContent += projectList.length
 
-    // Render project list
+    // Render project list with html template
+    const template = document.querySelector("#project-list-item")
     projectList.forEach(val => {
-        const container = document.createElement("div")
-        container.classList.add("sidebar-list-item")
-        container.setAttribute("data-id", val.id)
+        const clone = template.content.cloneNode(true)
+        const listItem = clone.querySelector(".sidebar-list-item")
+        listItem.setAttribute("data-id", val.id)
 
-        const svgContainer = document.createElement("span")
-        svgContainer.classList.add("sidebar-svg-container")
+        const svgContainer = clone.querySelector("span")
         svgContainer.setAttribute("color", val.color)
 
-        const title = document.createElement("div")
-        title.classList.add("sidebar-project-title")
+        const title = clone.querySelector(".sidebar-project-title")
         title.textContent = val.title
 
-        const extraOptions = document.createElement("button")
-        extraOptions.classList.add("sidebar-project-btn")
-
-        container.append(svgContainer, title, extraOptions)
-        list.append(container)
+        list.append(clone)
     })
     // Вешаем слушатель, который по нажатию определяет, если на сам проект нажали - открывает его
     // если на кнопку в контейнере, то открывает меню с опциям: удалить, добавить в избранное, изменить
@@ -189,25 +184,40 @@ function createTodoForm(e) {
     const form = document.createElement("form")
     form.classList.add("todo-form")
 
+    // Добавить подсказки
     // create title input
     const titleInput = document.createElement("input")
     titleInput.classList.add("form-input")
     titleInput.type = "text"
     titleInput.maxLength = 100
+    titleInput.placeholder = "Заменить лампочку в холодильнике"
     form.append(titleInput)
 
     // create description input
     const descInput = document.createElement("input")
     descInput.classList.add("form-input")
     descInput.type = "text"
+    descInput.placeholder = "Описание.."
     descInput.maxLength = 100
     form.append(descInput)
 
     // div с кнопками: deadline, приоритет, тэги
-
+    const otherOptionsContainer = document.createElement("div")
+    otherOptionsContainer.classList.add("form-options") 
+    const priorBtn = document.createElement("button")
+    priorBtn.type = "button"
+    priorBtn.textContent = "Приоритет"
+    priorBtn.addEventListener("click", openPriorSelect)
+    otherOptionsContainer.append(priorBtn)
+    
+    form.append(otherOptionsContainer)
     // div с отображением местоположения todo и кнопками отправить или закрыть
 
     // 
     
     afterBtn.before(form)
+}
+
+function openPriorSelect() {
+
 }
