@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workflow</title>
+    <script src="../assets/select/itc-custom-select.js"></script>
 </head>
 
 <body>
@@ -35,7 +36,27 @@
                 placeholder="Заменить лампочку в холодильнике">
             <input class="form-input" name="desc" type="text" placeholder="Описание.." maxlength="100">
             <div class="form-options">
-                <button type="button">Приоритет</button>
+                <div class="priority-menu-form">
+                    <!-- Изначально не активна ни одна опция -->
+                    <div class="itc-select" id="priority-menu">
+                        <!-- Кнопка для открытия выпадающего списка -->
+                        <button type="button" class="itc-select__toggle" name="car" value="" data-select="toggle"
+                            data-index="-1">Приоритет</button>
+                        <!-- Выпадающий список -->
+                        <div class="itc-select__dropdown">
+                            <ul class="itc-select__options">
+                                <li class="itc-select__option" data-select="option" data-value="volkswagen"
+                                    data-index="0">Volkswagen</li>
+                                <li class="itc-select__option" data-select="option" data-value="ford" data-index="1">
+                                    Ford</li>
+                                <li class="itc-select__option" data-select="option" data-value="toyota" data-index="2">
+                                    Toyota</li>
+                                <li class="itc-select__option" data-select="option" data-value="nissan" data-index="3">
+                                    Nissan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 <input type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
                 <button type="button">Set tags</button>
             </div>

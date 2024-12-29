@@ -69,8 +69,7 @@ h6 {
     isolation: isolate;
 }
 
-:root {
-}
+:root {}
 
 body {
     min-width: 100%;
@@ -93,7 +92,8 @@ body {
     flex-direction: column;
 }
 
-.sidebar-list-item, .sidebar-project-btn {
+.sidebar-list-item,
+.sidebar-project-btn {
     display: flex;
     cursor: pointer;
 }
@@ -111,16 +111,32 @@ body {
     display: flex;
 }
 
-.todo-item, .todo-list {
+.todo-item,
+.todo-list {
     display: flex;
     flex-direction: column;
 }
 
-.todo-form, .section-form {
+.todo-form,
+.section-form {
     display: flex;
     flex-direction: column;
 }
 
 .form-options {
     display: flex;
+}
+
+.priority-menu {
+    border-radius: 5px;
+    position: relative;
+    width: 100%;
+    top: 46px;
+    display: none;
+    gap: 5px;
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.menu-active {
+    display: grid;
 }

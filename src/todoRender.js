@@ -1,6 +1,7 @@
 import { DataStorage } from "./dataStorage";
 import { Datepicker } from "vanillajs-datepicker";
 import 'vanillajs-datepicker/css/datepicker.css';
+import "../assets/select/itc-custom-select.css"
 import { saveApp } from "./localStore";
 import { format } from "date-fns";
 
@@ -217,9 +218,10 @@ function renderTodoForm(e) {
     const template = document.querySelector("#todo-form-template")
     const clone = template.content.cloneNode(true)
     const btn = e.target
+    const form = clone.querySelector("form")
 
     const dateInput = clone.querySelector(".deadline")
-    const datePicker = new Datepicker(dateInput, {
+    new Datepicker(dateInput, {
         minDate: format(new Date(),"P"),
         autohide: true,
         title: "Set dead line",
@@ -227,7 +229,10 @@ function renderTodoForm(e) {
         todayButton: true,
     })
 
-    const form = clone.querySelector("form")
+    // select-1 – id элемента
+    const select = clone.querySelector("#priority-menu")
+    new ItcCustomSelect(select);
+
     const cancelBtn = clone.querySelector(".cancel-btn")
     const submitBtn = clone.querySelector(".submit-btn")
 
