@@ -4,7 +4,8 @@
 export class TodoItem {
     _priorLevel = 0
     _checked = false
-
+    todos = []
+    
     constructor(dateFormater, title = "", desc = "", parentId, deadline = null) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
@@ -48,7 +49,7 @@ export class TodoItem {
     setTags(arr) {
         if (!Array.isArray(arr))
             throw new Error("Tags should be passed as array elements")
-        arr = arr.map(el => el.toString())
+        arr = arr.map(el => el.toString()).filter(str => str !== "")
         this.tags = arr
     }
 

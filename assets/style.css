@@ -135,3 +135,19 @@ body {
 .tag {
     margin-right: 5px;
 }
+
+.task_list_item[data-item-indent="2"] {
+    margin-left: 28px
+}
+
+.task_list_item[data-item-indent="3"] {
+    margin-left: 56px
+}
+
+.task_list_item[data-item-indent="4"] {
+    margin-left: 84px
+}
+
+.task_list_item[data-item-indent="5"] {
+    margin-left: 112px
+}

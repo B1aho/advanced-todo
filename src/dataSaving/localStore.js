@@ -1,7 +1,7 @@
 import { DataStorage } from "./dataStorage"
 import { serialize, deserialize } from "./serialize"
-import { TodoItem } from "./todoItem"
-import { Project, Section } from "./todoParent"
+import { TodoItem } from "../entities/todoItem"
+import { Project, Section } from "../entities/todoParent"
 
 /**
  * This function save all projects, sections and todos in localStorage
@@ -45,4 +45,8 @@ export function getApp() {
         return null
     }
     return lastData
+}
+
+export function saveData() {
+    saveApp(new DataStorage())
 }

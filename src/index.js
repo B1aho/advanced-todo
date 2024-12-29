@@ -1,8 +1,8 @@
 import "../assets/style.css";
-import { Project } from "./todoParent";
-import { DataStorage } from "./dataStorage";
-import { saveApp, getApp } from "./localStore";
-import { renderListOfProjects } from "./todoRender";
+import { Project } from "./entities/todoParent";
+import { DataStorage } from "./dataSaving/dataStorage";
+import { getApp } from "./dataSaving/localStore";
+import { renderListOfProjects } from "./render/todoRender";
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
  * Отрисовать список проектов в navbar
