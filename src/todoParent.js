@@ -19,8 +19,11 @@ export class Section {
         this.parentId = null
     }
 
-    createTodo(title, desc, deadLine) {
-        const todo = new TodoItem(formatter(), title, desc, this.id, deadLine)
+    createTodo(values) {
+        const {title, desc, deadline, prior} = values
+        const todo = new TodoItem(formatter(), title, desc, this.id, deadline)
+        if (prior)
+            todo.priorLevel = prior
         this.todos.add(todo.id)
         return todo
     }

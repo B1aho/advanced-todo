@@ -294,7 +294,7 @@ function addTodoNode(formValues, parentId) {
         parent = data.getSectionById(id)
     }
     formValues.deadline = formValues.deadline ? formValues.deadline : null
-    const todo = parent.createTodo(formValues.title, formValues.desc, formValues.deadline)
+    const todo = parent.createTodo(formValues)
     data.saveTodo(todo)
     saveData()
     return initTodoTemplate(todo)
