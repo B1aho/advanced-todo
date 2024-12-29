@@ -20,11 +20,12 @@ export class Section {
     }
 
     createTodo(values) {
-        const {title, desc, deadline, prior} = values
+        const {title, desc, deadline, prior, tags} = values
         const todo = new TodoItem(formatter(), title, desc, this.id, deadline)
         if (prior)
             todo.priorLevel = prior
         this.todos.add(todo.id)
+        todo.setTags(tags)
         return todo
     }
 

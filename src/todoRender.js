@@ -211,6 +211,16 @@ function initTodoTemplate(todo) {
     const todoDeadline = clone.querySelector(".deadline-container")
     todoDeadline.textContent = todo.deadline
 
+    if (todo.tags) {
+        const todoTags = clone.querySelector(".tags-container")
+        todo.tags.forEach((tag) => {
+            const tagSpan = document.createElement("span")
+            tagSpan.classList.add("tag")
+            tagSpan.textContent = tag
+            todoTags.append(tagSpan)
+        })
+    }
+
     return todoContainer
 }
 
@@ -222,16 +232,15 @@ function renderTodoForm(e) {
 
     const dateInput = clone.querySelector(".deadline")
     new Datepicker(dateInput, {
-        minDate: format(new Date(),"P"),
+        minDate: format(new Date(), "P"),
         autohide: true,
         title: "Set dead line",
         clearButton: true,
         todayButton: true,
     })
 
-    // select-1 – id элемента
     const select = clone.querySelector("#priority-menu")
-    new ItcCustomSelect(select);
+    new ItcCustomSelect(select)
 
     const cancelBtn = clone.querySelector(".cancel-btn")
     const submitBtn = clone.querySelector(".submit-btn")
@@ -293,6 +302,9 @@ function addTodoNode(formValues, parentId) {
     if (parentType === "section") {
         parent = data.getSectionById(id)
     }
+
+    formValues.tags = formValues.tags.split(" ")
+
     formValues.deadline = formValues.deadline ? formValues.deadline : null
     const todo = parent.createTodo(formValues)
     data.saveTodo(todo)
@@ -324,10 +336,6 @@ function initSectionTemplate(sect) {
     todoList.append(createAddTodoBtn("section-" + sect.id))
     section.append(todoList)
     return section
-}
-
-function openPriorSelect() {
-
 }
 
 function saveData() {

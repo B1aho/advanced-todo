@@ -123,20 +123,15 @@ body {
     flex-direction: column;
 }
 
+.todo-other {
+    display: flex;
+    gap: 6px;
+}
+
 .form-options {
     display: flex;
 }
 
-.priority-menu {
-    border-radius: 5px;
-    position: relative;
-    width: 100%;
-    top: 46px;
-    display: none;
-    gap: 5px;
-    grid-template-rows: repeat(4, 1fr);
-}
-
-.menu-active {
-    display: grid;
+.tag {
+    margin-right: 5px;
 }

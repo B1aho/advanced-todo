@@ -37,12 +37,9 @@
             <input class="form-input" name="desc" type="text" placeholder="Описание.." maxlength="100">
             <div class="form-options">
                 <div class="priority-menu-form">
-                    <!-- Изначально не активна ни одна опция -->
                     <div class="itc-select" id="priority-menu">
-                        <!-- Кнопка для открытия выпадающего списка -->
                         <button type="button" class="itc-select__toggle" name="prior" value="" data-select="toggle"
                             data-index="-1">Приоритет</button>
-                        <!-- Выпадающий список -->
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
                                 <li class="itc-select__option" data-select="option" data-value="0"
@@ -58,7 +55,7 @@
                     </div>
                 </div>
                 <input type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
-                <button type="button">Set tags</button>
+                <input type="text" name="tags" placeholder="Тэги через пробел" class="tags">
             </div>
             <div class="form-confirm">
                 <button class="submit-btn" type="submit">Send</button>
@@ -75,6 +72,9 @@
                 <div class="todo-content todo-desc"></div>
                 <div class="todo-content todo-other">
                     <div class="deadline-container">
+                    </div>
+                    <div class="tags-container">
+                        
                     </div>
                 </div>
             </div>
