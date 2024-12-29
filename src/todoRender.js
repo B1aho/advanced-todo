@@ -315,6 +315,7 @@ function saveData() {
     saveApp(new DataStorage())
 }
 
+// Удалить и будет еще функция 
 function removeTodo() {
 
 }
