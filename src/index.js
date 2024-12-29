@@ -3,8 +3,6 @@ import { Project } from "./todoParent";
 import { DataStorage } from "./dataStorage";
 import { saveApp, getApp } from "./localStore";
 import { renderListOfProjects } from "./todoRender";
-import { da } from "date-fns/locale";
-
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
  * Отрисовать список проектов в navbar
@@ -18,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pRefs.push(new Project("Project A", "green"))
     pRefs.push(new Project("Project B", "green"))
     pRefs.forEach(el => data.saveProject(el))
+    data.saveSection(pRefs[0].createSection("Section-1"))
     renderListOfProjects(data.projects)
 })
 

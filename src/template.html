@@ -29,9 +29,10 @@
         </div>
     </template>
 
-    <template id="form-template">
+    <template id="todo-form-template">
         <form class="todo-form">
-            <input class="form-input" name="title" type="text" maxlength="100" placeholder="Заменить лампочку в холодильнике">
+            <input class="form-input" name="title" required type="text" maxlength="100"
+                placeholder="Заменить лампочку в холодильнике">
             <input class="form-input" name="desc" type="text" placeholder="Описание.." maxlength="100">
             <div class="form-options">
                 <button type="button">Приоритет</button>
@@ -58,12 +59,18 @@
 
     <template id="section-form-template">
         <form class="section-form">
-            <input class="form-input" type="text" maxlength="100" placeholder="Название раздела">
+            <input class="form-input" name="title" type="text" required maxlength="100" placeholder="Название раздела">
             <div class="form-confirm-section">
                 <button class="submit-btn-section" type="submit">Создать раздел</button>
                 <button class="cancel-btn-section" type="button">закрыть</button>
             </div>
         </form>
+    </template>
+
+    <template id="section-container-template">
+        <div class="section-container" data-id="28c9f3d8-7b67-4c0e-8df2-7a33528db5f4">
+            <h2 class="section-title"></h2>
+        </div>
     </template>
 </body>
 

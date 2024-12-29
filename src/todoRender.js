@@ -62,6 +62,7 @@ function onSidebarProjectBtnClick(target) {
     console.log("Democtrate extra options...")
 }
 
+// Проверку сделать, если кликнул на боковую панель, но не на кнопку и не название, пропустить
 function onSidebarProjectClick(target) {
     console.log("Render project..")
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
@@ -82,19 +83,23 @@ function onSidebarProjectClick(target) {
     // Creater main content container
     const taskContainer = document.createElement("div")
     taskContainer.classList.add("project-container")
-    taskContainer.setAttribute("data-id", project.id)
+    taskContainer.setAttribute("data-id", id)
     contentDiv.append(taskContainer)
     // Render porject's todos
     taskContainer.append(handleTodos(project.todos, "project-" + id))
+    taskContainer.append(createAddSectionBtn("project-" + id))
     // Render project's sections
-    project.sections.forEach(id => {
-        const section = document.createElement("div")
-        section.classList.add("section-container")
-        section.setAttribute("data-id", id)
-        const sectionObj = data.getSectionById(id)
-        section.textContent = sectionObj.title
-        section.append(handleTodos(sectionObj.todos, "section-" + id))
+    const sectionTempl = document.querySelector("#section-container-template")
+    project.sections.forEach(secId => {
+        const clone = sectionTempl.content.cloneNode(true)
+        const section = clone.querySelector(".section-container")
+        section.setAttribute("data-id", secId)
+        const sectionObj = data.getSectionById(secId)
+        clone.querySelector(".section-title").textContent = sectionObj.title
+
+        section.append(handleTodos(sectionObj.todos, "section-" + secId))
         taskContainer.append(section)
+        taskContainer.append(createAddSectionBtn("project-" + id))
     })
 }
 
@@ -128,10 +133,6 @@ function createAddSectionBtn(parentId) {
 
 function renderSectionForm(e) {
     const addSectionBtn = e.target
-    const divAfterSectionBtn = document.createElement("div")
-    addSectionBtn.after(divAfterSectionBtn)
-    addSectionBtn.style.display = "none"
-
     const template = document.querySelector("#section-form-template")
     const clone = template.content.cloneNode(true)
     const form = clone.querySelector(".section-form")
@@ -139,15 +140,24 @@ function renderSectionForm(e) {
     const cancelBtn = clone.querySelector(".cancel-btn-section")
 
     cancelBtn.addEventListener("click", () => {
-        divAfterSectionBtn.remove()
+        form.remove()
         addSectionBtn.style.display = "block"
     })
 
     submitBtn.addEventListener("click", (e) => {
+        if (!form.reportValidity())
+            return
         e.preventDefault()
+        const formValues = handleSectionForm(form.elements)
+        const parentId = addSectionBtn.getAttribute("data-parent-id")
+        form.remove()
+        addSectionBtn.style.display = "block"
+        const sectionNode = addSectionNode(formValues, parentId)
+        addSectionBtn.after(sectionNode)
+        sectionNode.after(createAddSectionBtn(parentId))
     })
-
-    divAfterSectionBtn.append(form)
+    addSectionBtn.before(form)
+    addSectionBtn.style.display = "none"
 }
 
 function handleTodos(todoSet, id) {
@@ -161,7 +171,6 @@ function handleTodos(todoSet, id) {
         todoList.append(initTodoTemplate(data.getTodoById(id)))
     })
     todoList.append(createAddTodoBtn(id))
-    todoList.append(createAddSectionBtn(id))
     return todoList;
 }
 
@@ -201,11 +210,9 @@ function initTodoTemplate(todo) {
 }
 
 function renderTodoForm(e) {
-    const template = document.querySelector("#form-template")
+    const template = document.querySelector("#todo-form-template")
     const clone = template.content.cloneNode(true)
     const btn = e.target
-    btn.style.display = "none"
-    const afterBtn = btn.nextElementSibling
 
     const form = clone.querySelector("form")
     const cancelBtn = clone.querySelector(".cancel-btn")
@@ -217,6 +224,8 @@ function renderTodoForm(e) {
     })
 
     submitBtn.addEventListener("click", (e) => {
+        if (!form.reportValidity())
+            return
         e.preventDefault()
         const formValues = handleTodoForm(form.elements)
         const parentId = btn.getAttribute("data-parent-id")
@@ -224,21 +233,34 @@ function renderTodoForm(e) {
         btn.style.display = "block"
         btn.before(addTodoNode(formValues, parentId))
     })
-    
-    afterBtn.before(form)
+
+    btn.before(form)
+    btn.style.display = "none"
 }
 
 function handleTodoForm(formElems) {
+    console.log(formElems)
     const formValues = Array.from(formElems)
-    .filter(element => {
-        return element.name
-    })
-    .reduce((acc, curr) => {
-        const {name, value} = curr
-        acc[name] = value
-        return acc
-    }, {})
+        .filter(element => {
+            return element.name
+        })
+        .reduce((acc, curr) => {
+            const { name, value } = curr
+            acc[name] = value
+            return acc
+        }, {})
     return formValues
+}
+
+function handleSectionForm(formElems) {
+    const input = Array.from(formElems).filter(element => {
+        return (element.name === "title")
+    })[0]
+
+    const obj = {}
+    obj[input.name] = input.value
+    console.log(obj)
+    return obj
 }
 
 function addTodoNode(formValues, parentId) {
@@ -257,6 +279,32 @@ function addTodoNode(formValues, parentId) {
     data.saveTodo(todo)
     saveData()
     return initTodoTemplate(todo)
+}
+
+function addSectionNode(formValues, parentId) {
+    const data = new DataStorage()
+    const parts = parentId.split("-")
+    const id = parts.slice(1).join("-")
+    const project = data.getProjectById(id)
+
+    const secObj = project.createSection(formValues.title)
+    data.saveSection(secObj)
+    saveData()
+    return initSectionTemplate(secObj)
+}
+
+function initSectionTemplate(sect) {
+    const template = document.querySelector("#section-container-template")
+    const clone = template.content.cloneNode(true)
+    const section = clone.querySelector(".section-container")
+    section.setAttribute("data-id", sect.id)
+    clone.querySelector(".section-title").textContent = sect.title
+
+    const todoList = document.createElement("div")
+    todoList.classList.add("todo-list")
+    todoList.append(createAddTodoBtn("section-" + sect.id))
+    section.append(todoList)
+    return section
 }
 
 function openPriorSelect() {
