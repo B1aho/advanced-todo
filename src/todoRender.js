@@ -1,5 +1,8 @@
 import { DataStorage } from "./dataStorage";
+import { Datepicker } from "vanillajs-datepicker";
+import 'vanillajs-datepicker/css/datepicker.css';
 import { saveApp } from "./localStore";
+import { format } from "date-fns";
 
 /**
  * @param {Map} projectMap 
@@ -204,7 +207,8 @@ function initTodoTemplate(todo) {
     const todoDesc = clone.querySelector(".todo-desc")
     todoDesc.textContent = todo.desc
 
-    const todoOther = clone.querySelector(".todo-other")
+    const todoDeadline = clone.querySelector(".deadline-container")
+    todoDeadline.textContent = todo.deadline
 
     return todoContainer
 }
@@ -213,6 +217,15 @@ function renderTodoForm(e) {
     const template = document.querySelector("#todo-form-template")
     const clone = template.content.cloneNode(true)
     const btn = e.target
+
+    const dateInput = clone.querySelector(".deadline")
+    const datePicker = new Datepicker(dateInput, {
+        minDate: format(new Date(),"P"),
+        autohide: true,
+        title: "Set dead line",
+        clearButton: true,
+        todayButton: true,
+    })
 
     const form = clone.querySelector("form")
     const cancelBtn = clone.querySelector(".cancel-btn")
@@ -275,7 +288,8 @@ function addTodoNode(formValues, parentId) {
     if (parentType === "section") {
         parent = data.getSectionById(id)
     }
-    const todo = parent.createTodo(formValues.title, formValues.desc)
+    formValues.deadline = formValues.deadline ? formValues.deadline : null
+    const todo = parent.createTodo(formValues.title, formValues.desc, formValues.deadline)
     data.saveTodo(todo)
     saveData()
     return initTodoTemplate(todo)

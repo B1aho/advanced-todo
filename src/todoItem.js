@@ -5,14 +5,14 @@ export class TodoItem {
     _priorLevel = 0
     _checked = false
 
-    constructor(dateFormater, title = "", desc = "", parentId) {
+    constructor(dateFormater, title = "", desc = "", parentId, deadline = null) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
         this.id = crypto.randomUUID()
         this.date = dateFormater(Date.now())
         this.title = title
         this.desc = desc
-        this.deadLine = null
+        this.deadline = deadline
         this.tags = null
         this.parentId = parentId
     }
@@ -40,9 +40,9 @@ export class TodoItem {
         return this._checked
     }
 
-    setDeadLine(date) {
+    setDeadline(date) {
         // Validate with regex
-        this.deadLine = date
+        this.deadline = date
     }
 
     setTags(arr) {

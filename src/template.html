@@ -36,7 +36,7 @@
             <input class="form-input" name="desc" type="text" placeholder="Описание.." maxlength="100">
             <div class="form-options">
                 <button type="button">Приоритет</button>
-                <button type="button">Dead line</button>
+                <input type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
                 <button type="button">Set tags</button>
             </div>
             <div class="form-confirm">
@@ -52,7 +52,10 @@
             <div class="todo-item">
                 <div class="todo-content todo-title"></div>
                 <div class="todo-content todo-desc"></div>
-                <div class="todo-content todo-other"></div>
+                <div class="todo-content todo-other">
+                    <div class="deadline-container">
+                    </div>
+                </div>
             </div>
         </div>
     </template>
