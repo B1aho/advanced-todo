@@ -1,3 +1,4 @@
+import { formatter } from "./todoParent"
 /**
  * A class that represents a todo, the most basic entity in the system's classification
  */
@@ -11,7 +12,7 @@ export class TodoItem {
      * Теперь у нас есть проект, секции таски и субтаски
      * Сущностно таски от субтасков не отличаются, кроме как тем, что у субтасков всегда родитель типа TodoItem
      * Но если перетащить субтаск в другое место то он будет выглядеть как обычный таск
-     * Логика та же. Каждый таск хранит массив id вложенных тасков. Соответсвенно у вложенных тасков id родителя - id другого таска
+     * Логика та же. Каждый таск хранит массив set из id вложенных тасков. Соответсвенно у вложенных тасков id родителя - id другого таска
      * 
      * Datastorage же не будет хранить отдельную коллекцию, так как вложенные таски это таски
      * 
@@ -23,7 +24,7 @@ export class TodoItem {
      * 
      */
     subtask = new Set()
-    
+
     constructor(dateFormater, title = "", desc = "", parentId, deadline = null) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
@@ -38,9 +39,9 @@ export class TodoItem {
 
     set priorLevel(num) {
         num = Number(num)
-        if (num < 0 || num > 3) 
+        if (num < 0 || num > 3)
             throw new Error("Not avaliable priority level")
-    
+
         this._priorLevel = num
     }
 
@@ -69,6 +70,17 @@ export class TodoItem {
             throw new Error("Tags should be passed as array elements")
         arr = arr.map(el => '#' + el.toString()).filter(str => str !== "")
         this.tags = arr
+    }
+
+    createSubtask(values) {
+        const { title, desc, deadline, prior, tags } = values
+        const todo = new TodoItem(formatter(), title, desc, this.id, deadline)
+        if (prior)
+            todo.priorLevel = prior
+        todo.setTags(tags)
+
+        this.subtask.add(todo.id)
+        return todo
     }
 
     changeLocation(newParentId) {

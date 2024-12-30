@@ -57,7 +57,7 @@ export class Project extends Section{
  * Return partially applied function that return formatted date
  * @returns {Function}
  */
-function formatter() {
+export function formatter() {
     return function(date) {
         return format(date, "PPPp")
     }

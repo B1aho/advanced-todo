@@ -16,6 +16,8 @@ export function serialize(obj) {
     Object.assign(serializeInfo.obj, obj)
 
     // Serialize sets
+    if (serializeInfo.obj.subtask)
+        serializeInfo.obj.subtask = Array.from(serializeInfo.obj.subtask)
     if (serializeInfo.obj.todos)
         serializeInfo.obj.todos = Array.from(serializeInfo.obj.todos)
     if (serializeInfo.obj.sections)
@@ -51,6 +53,8 @@ export function deserialize(json, proto) {
     
 
     // Serialize sets
+    if (obj.subtask)
+        obj.subtask = new Set(obj.subtask)
     if (obj.todos)
         obj.todos = new Set(obj.todos)
     if (obj.sections)
