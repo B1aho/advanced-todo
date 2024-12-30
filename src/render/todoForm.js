@@ -3,7 +3,7 @@ import "../../assets/select/itc-custom-select.css";
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select";
 import { Datepicker } from "vanillajs-datepicker";
 import { format } from "date-fns";
-import { createAddSectionBtn, createSectionFromTempl, createTodoFromTempl } from './createDOM';
+import { createAddSectionBtn, createSectionFromTempl, createTodoFromTempl } from './createDOMutility';
 import { DataStorage } from '../dataSaving/dataStorage';
 import { saveData } from '../dataSaving/localStore';
 
@@ -112,6 +112,9 @@ function createTodoObj(formValues, parentId) {
     }
     if (parentType === "section") {
         parent = data.getSectionById(id)
+    }
+    if (parentType === "todo") {
+        parent = data.getTodoById(id)
     }
 
     formValues.tags = formValues.tags.split(" ")

@@ -41,8 +41,8 @@
                             data-index="-1">Приоритет</button>
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
-                                <li class="itc-select__option" data-select="option" data-value="0"
-                                    data-index="0">None</li>
+                                <li class="itc-select__option" data-select="option" data-value="0" data-index="0">None
+                                </li>
                                 <li class="itc-select__option" data-select="option" data-value="1" data-index="1">
                                     Low</li>
                                 <li class="itc-select__option" data-select="option" data-value="2" data-index="2">
@@ -94,6 +94,41 @@
         <div class="section-container" data-id="28c9f3d8-7b67-4c0e-8df2-7a33528db5f4">
             <h2 class="section-title"></h2>
         </div>
+    </template>
+
+    <template id="dialog-form-templ">
+        <form id="dialog-form">
+            <div class="editable-container">
+                <div role="textbox" contenteditable="true">
+                    <p id="dialog-form-title"></p>
+                </div>
+                <div role="textbox" contenteditable="true">
+                    <p id="dialog-form-desc"></p>
+                </div>
+            </div>
+            <div class="dialog-form-controls">
+                <button id="confirm-dialog-edit">Подтвердить!</button>
+                <button id="cancel-dialog-edit">Отменить</button>
+            </div>
+        </form>
+    </template>
+
+    <template id="diag-templ">
+        <dialog id="todo-dialog">
+            <div id="diag-container">
+                <div class="diag-todo-container">
+                    <button class="todo-check-btn"></button>
+                    <div class="diag-todo-item">
+                        <div class="diag-todo-content diag-todo-title"></div>
+                        <div class="diag-todo-content diag-todo-desc"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="diag-options">
+                    
+                </div>
+            </div>
+        </dialog>
     </template>
 </body>
 

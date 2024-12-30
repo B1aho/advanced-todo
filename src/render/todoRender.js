@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { createAddSectionBtn, createTodoList } from "./createDOM";
+import { closeDiag, createAddSectionBtn, createDiagFromTempl, createTodoList, createTodoTextEditor, createTodoTextForm, getCheckColor } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -102,9 +102,14 @@ function renderProjectContent(projectId) {
     })
 }
 
-// Удалить и будет еще функция 
-function removeTodo() {
-
+export function RenderTodoDiag(e) {
+    let lastDiag = document.querySelector("#todo-dialog")
+    if (lastDiag)
+        lastDiag.remove()
+    const diag = createDiagFromTempl(e)
+    document.body.append(diag)
+    diag.showModal()
+    diag.addEventListener("click", closeDiag)
 }
 
 // Разделить все что не рендер но с дом, в отдельный модуль дом манипулетион

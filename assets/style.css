@@ -93,9 +93,15 @@ body {
 }
 
 .sidebar-list-item,
-.sidebar-project-btn {
+.sidebar-project-btn,
+.todo-container,
+.todo-check-btn {
     display: flex;
     cursor: pointer;
+}
+
+.diag-todo-container {
+    display: flex;
 }
 
 .sidebar-svg-container {
@@ -107,12 +113,9 @@ body {
     text-align: left;
 }
 
-.todo-container {
-    display: flex;
-}
-
 .todo-item,
-.todo-list {
+.todo-list,
+.diag-todo-item {
     display: flex;
     flex-direction: column;
 }
@@ -151,3 +154,10 @@ body {
 .task_list_item[data-item-indent="5"] {
     margin-left: 112px
 }
+
+body:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+
+/*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/

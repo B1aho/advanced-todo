@@ -72,7 +72,7 @@ export class TodoItem {
         this.tags = arr
     }
 
-    createSubtask(values) {
+    createTodo(values) {
         const { title, desc, deadline, prior, tags } = values
         const todo = new TodoItem(formatter(), title, desc, this.id, deadline)
         if (prior)
