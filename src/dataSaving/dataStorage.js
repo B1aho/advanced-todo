@@ -1,3 +1,5 @@
+import { TodoItem } from "../entities/todoItem";
+
 /**
  * Class that implement run-time data-storage with singletone pattern
  */
@@ -40,6 +42,11 @@ export class DataStorage {
         this.todos.set(todo.id, todo)
     }
 
+    /**
+     * 
+     * @param {}  
+     * @returns {TodoItem}
+     */
     getTodoById(id) {
         return this.todos.get(id)
     }

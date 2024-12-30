@@ -37,11 +37,33 @@ export function createTodoList(todoSet, parentId) {
     const data = new DataStorage()
     const todoList = document.createElement("div")
     todoList.classList.add("todo-list")
+    const subtaskArr = []
+    // Здесь надо проверить есть ли вложенные туду и функцию для их генерации, на забывая отступ
     todoSet.forEach(id => {
-        todoList.append(createTodoFromTempl(data.getTodoById(id)))
+        const todo = data.getTodoById(id)
+        todoList.append(createTodoFromTempl(todo))
+        if (todo.subtask.size > 0) {
+            createSubtaskAddToList(subtaskArr, todo)
+        }
+        subtaskArr.forEach(subtask => {
+            todoList.append(subtask)
+        })
     })
     todoList.append(createAddTodoBtn(parentId))
     return todoList;
+}
+
+// Поменяй название
+function createSubtaskAddToList(arr, todo) {
+    const data = new DataStorage()
+    const subtask = todo.subtask
+    subtask.forEach(subtaskId => {
+        const subtask = data.getTodoById(subtaskId)
+        // add todoNode to the array
+        arr.push(createTodoFromTempl(subtask))
+        if (subtask.subtask.size > 0)
+            createSubtaskAddToList(arr, subtask)
+    })
 }
 
 export function createTodoFromTempl(todo) {
@@ -49,6 +71,7 @@ export function createTodoFromTempl(todo) {
     const clone = template.content.cloneNode(true)
     const todoContainer = clone.querySelector(".todo-container")
     todoContainer.setAttribute("data-id", todo.id)
+    todoContainer.setAttribute("data-indent", todo.indent)
     const checkBtn = clone.querySelector(".todo-check-btn")
     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
 

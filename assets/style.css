@@ -139,19 +139,19 @@ body {
     margin-right: 5px;
 }
 
-.task_list_item[data-item-indent="2"] {
+.todo-container[data-indent="2"] {
     margin-left: 28px
 }
 
-.task_list_item[data-item-indent="3"] {
+.todo-container[data-indent="3"] {
     margin-left: 56px
 }
 
-.task_list_item[data-item-indent="4"] {
+.todo-container[data-indent="4"] {
     margin-left: 84px
 }
 
-.task_list_item[data-item-indent="5"] {
+.todo-container[data-indent="5"] {
     margin-left: 112px
 }
 

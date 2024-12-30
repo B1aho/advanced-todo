@@ -5,6 +5,7 @@ import { formatter } from "./todoParent"
 export class TodoItem {
     _priorLevel = 0
     _checked = false
+    indent = 1
     /**
      * Придется добавить отдельно (де)сериализацию для субтасков
      * По мимо этого поменять функции рендеринга
@@ -78,7 +79,7 @@ export class TodoItem {
         if (prior)
             todo.priorLevel = prior
         todo.setTags(tags)
-
+        todo.indent = this.indent + 1
         this.subtask.add(todo.id)
         return todo
     }
