@@ -1,5 +1,6 @@
 import { DataStorage } from "../dataSaving/dataStorage"
 import { saveApp, saveData } from "../dataSaving/localStore"
+import { TodoItem } from "../entities/todoItem"
 import { renderSectionForm, renderTodoForm } from "./todoForm"
 import { RenderTodoDiag } from "./todoRender"
 /**
@@ -205,6 +206,7 @@ export function createDiagFromTempl(e) {
     return diag
 }
 
+// В формы перенести
 export function createTodoTextForm(todo, targetNode) {
     const template = document.querySelector("#dialog-form-templ")
     const clone = template.content.cloneNode(true)
@@ -263,14 +265,23 @@ function updateTodoText(title, desc, id) {
     todoDesc.textContent = desc
 }
 
-
 /**
- * Во-первых я при нажатии на подзадачу в диалоге могу также открыть диалог уже для этой задачи и установить там подзадачи
- * Оказывается так уже можно сделать, единственное, это что отступ в диалоге надо установить как что-то постоянное, так как там всегда один уровень остпупа
  * 
- *  
- * Во-вторых должен обновлятся рендеринг в текущем проекте
+ * @param {TodoItem} todoNode 
+ */
+export function countTodoNodes(todoNode) {
+    const data = new DataStorage()
+    const subtasks = todoNode.subtask
+    let num = subtasks.size
+    subtasks.forEach(taskId => {
+        num += countTodoNodes(data.getTodoById(taskId))
+    }) 
+    return num
+}
+
+
+/** 
+ * Когда выделяешь текст и нажимаешь случайно на список проектов - вылетает ошибка
  * 
- * В-третьих при повторном открытии диалога должны грамотно рендерится все подзадачи
- * 
+ * Ограничить вложенность по css
  */

@@ -159,6 +159,10 @@ body {
     margin-left: 28px;
 }
 
+.todo-item {
+    min-width: 100%;
+}
+
 body:has(dialog[open]) {
     overflow: hidden;
   }

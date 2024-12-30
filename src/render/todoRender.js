@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { createAddSectionBtn, createDiagFromTempl, createTodoList } from "./createDOMutility";
+import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -112,5 +112,17 @@ export function RenderTodoDiag(e) {
     // diag.addEventListener("click", closeDiag)
 }
 
-// Разделить все что не рендер но с дом, в отдельный модуль дом манипулетион
-// И вообще переименовать функции чтобы понимал, что каждая из них делает и на жтом основании разделить модуль
+export function updateProjectRendering(parentId, todoNode) {
+    const selector = `.todo-container[data-id="${CSS.escape(parentId)}"]`;
+    const data = new DataStorage()
+    // Везде в таких местах предусмотреть ошибки, чтобы программа не крашилась
+    let previousSibling = document.querySelector(selector)
+    const clone = todoNode.cloneNode(true)
+    clone.querySelector(".todo-item").addEventListener("click", RenderTodoDiag)
+    clone.classList.remove("diag-indent")
+    const taskNumber = countTodoNodes(data.getTodoById(parentId))
+    for (let i = 1; i < taskNumber; i++) {
+        previousSibling = previousSibling.nextElementSibling
+    }
+    previousSibling.after(clone)
+}

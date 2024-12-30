@@ -69,7 +69,7 @@ export class TodoItem {
     setTags(arr) {
         if (!Array.isArray(arr))
             throw new Error("Tags should be passed as array elements")
-        arr = arr.map(el => '#' + el.toString()).filter(str => str !== "")
+        arr = arr.map(el => el.toString()).filter(str => str !== "").map(el => '#' + el)
         this.tags = arr
     }
 

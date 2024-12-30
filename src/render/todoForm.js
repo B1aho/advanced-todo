@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { createAddSectionBtn, createSectionFromTempl, createTodoFromTempl } from './createDOMutility';
 import { DataStorage } from '../dataSaving/dataStorage';
 import { saveData } from '../dataSaving/localStore';
+import { updateProjectRendering } from './todoRender';
 
 export function renderTodoForm(e) {
     const template = document.querySelector("#todo-form-template")
@@ -43,12 +44,14 @@ export function renderTodoForm(e) {
         // Если 
         form.remove()
         btn.style.display = "block"
-        const todoNode = createTodoFromTempl(createTodoObj(formValues, parentId))
+        const todoObj = createTodoObj(formValues, parentId)
+        const todoNode = createTodoFromTempl(todoObj)
         if (btn.classList.contains("add-todo-btn")) {
             btn.before(todoNode)
         } else {
             todoNode.classList.add("diag-indent")
             document.querySelector(".subtask-diag-list").append(todoNode)
+            updateProjectRendering(todoObj.parentId, todoNode)
         }
     })
 
