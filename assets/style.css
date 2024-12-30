@@ -140,19 +140,23 @@ body {
 }
 
 .todo-container[data-indent="2"] {
-    margin-left: 28px
+    margin-left: 28px;
 }
 
 .todo-container[data-indent="3"] {
-    margin-left: 56px
+    margin-left: 56px;
 }
 
 .todo-container[data-indent="4"] {
-    margin-left: 84px
+    margin-left: 84px;
 }
 
 .todo-container[data-indent="5"] {
-    margin-left: 112px
+    margin-left: 112px;
+}
+
+.todo-container.diag-indent {
+    margin-left: 28px;
 }
 
 body:has(dialog[open]) {

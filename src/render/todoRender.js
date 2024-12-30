@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { closeDiag, createAddSectionBtn, createDiagFromTempl, createTodoList, createTodoTextEditor, createTodoTextForm, getCheckColor } from "./createDOMutility";
+import { createAddSectionBtn, createDiagFromTempl, createTodoList } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -109,7 +109,7 @@ export function RenderTodoDiag(e) {
     const diag = createDiagFromTempl(e)
     document.body.append(diag)
     diag.showModal()
-    diag.addEventListener("click", closeDiag)
+    // diag.addEventListener("click", closeDiag)
 }
 
 // Разделить все что не рендер но с дом, в отдельный модуль дом манипулетион

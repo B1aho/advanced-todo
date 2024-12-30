@@ -23,7 +23,7 @@ export function renderTodoForm(e) {
     })
 
     const select = clone.querySelector("#priority-menu")
-    
+
     new ItcCustomSelect(select)
 
     const cancelBtn = clone.querySelector(".cancel-btn")
@@ -40,9 +40,16 @@ export function renderTodoForm(e) {
         e.preventDefault()
         const formValues = pickTodoFormData(form.elements)
         const parentId = btn.getAttribute("data-parent-id")
+        // Если 
         form.remove()
         btn.style.display = "block"
-        btn.before(createTodoFromTempl(createTodoObj(formValues, parentId)))
+        const todoNode = createTodoFromTempl(createTodoObj(formValues, parentId))
+        if (btn.classList.contains("add-todo-btn")) {
+            btn.before(todoNode)
+        } else {
+            todoNode.classList.add("diag-indent")
+            document.querySelector(".subtask-diag-list").append(todoNode)
+        }
     })
 
     btn.before(form)

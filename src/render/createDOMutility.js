@@ -30,6 +30,16 @@ export function createAddTodoBtn(parentId) {
     return btn
 }
 
+function createAddSubtaskBtn(parentId) {
+    const btn = document.createElement("button")
+    btn.classList.add("add-subtask-btn")
+    btn.type = "button"
+    btn.setAttribute("data-parent-id", parentId)
+    btn.addEventListener("click", renderTodoForm)
+    btn.textContent = "Add new Todo"
+    return btn
+}
+
 export function createTodoList(todoSet, parentId) {
     if (!(todoSet instanceof Set)) {
         throw new Error("Argument must be instance of Set")
@@ -63,6 +73,16 @@ function createSubtaskAddToList(arr, todo) {
         arr.push(createTodoFromTempl(subtask))
         if (subtask.subtask.size > 0)
             createSubtaskAddToList(arr, subtask)
+    })
+}
+
+function createSubtaskNodeListForDiag(arr, todo) {
+    const data = new DataStorage()
+    const subtaskSet = todo.subtask
+    subtaskSet.forEach(subtaskId => {
+        const subtask = data.getTodoById(subtaskId)
+        // add todoNode to the array
+        arr.push(createTodoFromTempl(subtask))
     })
 }
 
@@ -133,18 +153,18 @@ export function getCheckColor(prior) {
     return color
 }
 
-export function closeDiag(e) {
-    const diag = document.querySelector("#todo-dialog")
-    const rect = diag.getBoundingClientRect();
-    const isInDialog = e.clientX >= rect.left && e.clientX <= rect.right &&
-        e.clientY >= rect.top && e.clientY <= rect.bottom;
+// export function closeDiag(e) {
+//     const diag = document.querySelector("#todo-dialog")
+//     const rect = diag.getBoundingClientRect();
+//     const isInDialog = e.clientX >= rect.left && e.clientX <= rect.right &&
+//         e.clientY >= rect.top && e.clientY <= rect.bottom;
 
-    if (!isInDialog) {
-        diag.close();
-        diag.removeEventListener("click", closeDiag)
-        diag.remove()
-    }
-}
+//     if (!isInDialog) {
+//         diag.close();
+//         diag.removeEventListener("click", closeDiag)
+//         diag.remove()
+//     }
+// }
 
 export function createDiagFromTempl(e) {
     const template = document.querySelector("#diag-templ")
@@ -162,11 +182,26 @@ export function createDiagFromTempl(e) {
     const diagDesc = diag.querySelector(".diag-todo-desc")
     diagDesc.textContent = todo.desc === "" ? "Описание" : todo.desc
 
+    const subtaskList = diag.querySelector(".subtask-diag-list")
+    const subtaskArr = []
+    if (todo.subtask.size > 0) {
+        createSubtaskNodeListForDiag(subtaskArr, todo)
+        subtaskArr.forEach(subtask => {
+            subtask.classList.add("diag-indent")
+            subtaskList.append(subtask)
+        })
+    }
+
     const otherOptions = diag.querySelector(".diag-options")
-    otherOptions.prepend(createAddTodoBtn("todo-" + todoId))
+    otherOptions.prepend(createAddSubtaskBtn("todo-" + todoId))
 
     const diagTextContainer = diag.querySelector(".diag-todo-item")
     diagTextContainer.addEventListener("click", () => createTodoTextForm(todo, diagTextContainer))
+
+    const closeBtn = diag.querySelector("#close-diag-btn")
+    closeBtn.addEventListener("click", () => {
+        diag.close()
+    })
     return diag
 }
 
@@ -227,3 +262,15 @@ function updateTodoText(title, desc, id) {
     const todoDesc = todoItem.querySelector(".todo-desc")
     todoDesc.textContent = desc
 }
+
+
+/**
+ * Во-первых я при нажатии на подзадачу в диалоге могу также открыть диалог уже для этой задачи и установить там подзадачи
+ * Оказывается так уже можно сделать, единственное, это что отступ в диалоге надо установить как что-то постоянное, так как там всегда один уровень остпупа
+ * 
+ *  
+ * Во-вторых должен обновлятся рендеринг в текущем проекте
+ * 
+ * В-третьих при повторном открытии диалога должны грамотно рендерится все подзадачи
+ * 
+ */
