@@ -165,7 +165,11 @@ body {
 
 body:has(dialog[open]) {
     overflow: hidden;
-  }
+}
+
+#menu {
+    user-select: none;
+}
 
 
 /*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/

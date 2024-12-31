@@ -52,6 +52,8 @@ export function renderListOfProjects(projectMap) {
 
 function handleProjectListClick(e) {
     const target = e.target
+    if (target.id === "project-list")
+        return
     if (target.classList.contains("sidebar-project-btn"))
         renderExtraOptions(target)
     else

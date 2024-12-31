@@ -157,19 +157,6 @@ export function getCheckColor(prior) {
     return color
 }
 
-// export function closeDiag(e) {
-//     const diag = document.querySelector("#todo-dialog")
-//     const rect = diag.getBoundingClientRect();
-//     const isInDialog = e.clientX >= rect.left && e.clientX <= rect.right &&
-//         e.clientY >= rect.top && e.clientY <= rect.bottom;
-
-//     if (!isInDialog) {
-//         diag.close();
-//         diag.removeEventListener("click", closeDiag)
-//         diag.remove()
-//     }
-// }
-
 export function createDiagFromTempl(e) {
     const template = document.querySelector("#diag-templ")
     const clone = template.content.cloneNode(true)
@@ -283,9 +270,3 @@ export function countTodoNodes(todoNode) {
     return num
 }
 
-
-/** 
- * Когда выделяешь текст и нажимаешь случайно на список проектов - вылетает ошибка
- * 
- * Ограничить вложенность по css
- */
