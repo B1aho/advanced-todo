@@ -129,7 +129,28 @@
                 </div>
                 <hr>
                 <div class="diag-options">
-                    
+                    <div class="change-deadline-container">
+                        <input id="change-deadline" type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
+                    </div>
+                    <div class="change-prior-container">
+                        <div class="itc-select" id="priority-menu-diag">
+                            <button type="button" class="itc-select__toggle" name="prior" value="" data-select="toggle"
+                                data-index="-1">Приоритет</button>
+                            <div class="itc-select__dropdown">
+                                <ul class="itc-select__options">
+                                    <li class="itc-select__option" data-select="option" data-value="0" data-index="0">None
+                                    </li>
+                                    <li class="itc-select__option" data-select="option" data-value="1" data-index="1">
+                                        Low</li>
+                                    <li class="itc-select__option" data-select="option" data-value="2" data-index="2">
+                                        Medium</li>
+                                    <li class="itc-select__option" data-select="option" data-value="3" data-index="3">
+                                        High</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="change-tags-container"></div>
                 </div>
                 <div class="subtask-diag-list"></div>
                 <button id="close-diag-btn">Close</button>

@@ -1,5 +1,4 @@
 import "../assets/style.css";
-import { Project } from "./entities/todoParent";
 import { DataStorage } from "./dataSaving/dataStorage";
 import { getApp } from "./dataSaving/localStore";
 import { renderListOfProjects } from "./render/todoRender";

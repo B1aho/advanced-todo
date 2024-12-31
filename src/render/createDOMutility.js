@@ -1,3 +1,4 @@
+import { Datepicker } from "vanillajs-datepicker"
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select"
 import { DataStorage } from "../dataSaving/dataStorage"
 import { saveApp, saveData } from "../dataSaving/localStore"
@@ -5,6 +6,7 @@ import { TodoItem } from "../entities/todoItem"
 import { Project } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm, submitProjectForm } from "./todoForm"
 import { renderProjectListItem, RenderTodoDiag } from "./todoRender"
+import { format } from "date-fns"
 /**
  * 
  * @returns {HTMLButtonElement}
@@ -159,6 +161,24 @@ export function getCheckColor(prior) {
     return color
 }
 
+function getCheckWord(prior) {
+    let word = "None"
+    switch (prior) {
+        case 1:
+            word = "Low"
+            break;
+        case 2:
+            word = "Medium"
+            break;
+        case 3:
+            word = "High"
+            break;
+        default:
+            break;
+    }
+    return word
+}
+
 export function createDiagFromTempl(e) {
     const template = document.querySelector("#diag-templ")
     const clone = template.content.cloneNode(true)
@@ -167,7 +187,7 @@ export function createDiagFromTempl(e) {
 
     const data = new DataStorage()
     const todo = data.getTodoById(todoId)
-    
+
     const checkBtn = diag.querySelector(".todo-check-btn")
     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
     const diagTitle = diag.querySelector(".diag-todo-title")
@@ -191,6 +211,39 @@ export function createDiagFromTempl(e) {
 
     const diagTextContainer = diag.querySelector(".diag-todo-item")
     diagTextContainer.addEventListener("click", () => createTodoTextForm(todo, diagTextContainer))
+
+    const changeDeadline = diag.querySelector("#change-deadline")
+    changeDeadline.value = todo.deadline
+    new Datepicker(changeDeadline, {
+        minDate: format(new Date(), "P"),
+        autohide: true,
+        title: "Change dead line",
+        clearButton: true,
+        todayButton: true,
+    })
+    changeDeadline.addEventListener("changeDate", () => {
+        todo.deadline = changeDeadline.value
+        updateTodoDeadline(todo.id, changeDeadline.value)
+        saveData()
+    })
+
+    const select = diag.querySelector("#priority-menu-diag")
+    new ItcCustomSelect(select, {
+        onSelected(select, option) {
+            // выбранное значение
+            todo.priorLevel = select.value
+            selectBtn.textContent = getCheckWord(todo.priorLevel)
+            const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+            const todoContainer = document.querySelector(selector)
+            const todoCheckbtn = todoContainer.querySelector(".todo-check-btn")
+            const newColor = getCheckColor(todo.priorLevel)
+            todoCheckbtn.style.backgroundColor = newColor
+            checkBtn.style.backgroundColor = newColor
+            saveData()
+          }
+    })
+    const selectBtn = select.querySelector("button")
+    selectBtn.textContent = getCheckWord(todo.priorLevel)
 
     const closeBtn = diag.querySelector("#close-diag-btn")
     closeBtn.addEventListener("click", () => {
@@ -245,17 +298,20 @@ function updateDiagText(title, desc) {
 }
 
 function updateTodoText(title, desc, id) {
-    const selector = `.todo-item[data-id="${CSS.escape(id)}"]`;
-    console.log(selector)
+    const selector = `.todo-item[data-id="${CSS.escape(id)}"]`
     const todoItem = document.querySelector(selector)
-    console.log(todoItem)
     const todoTitle = todoItem.querySelector(".todo-title")
-    console.log(todoTitle)
-    console.log(title)
     todoTitle.textContent = title
 
     const todoDesc = todoItem.querySelector(".todo-desc")
     todoDesc.textContent = desc
+}
+
+function updateTodoDeadline(todoId, newDeadline) {
+    const selector = `.todo-item[data-id="${CSS.escape(todoId)}"]`
+    const todoItem = document.querySelector(selector)
+    const todoDeadline = todoItem.querySelector(".deadline-container")
+    todoDeadline.textContent = newDeadline
 }
 
 /**
@@ -268,7 +324,7 @@ export function countTodoNodes(todoNode) {
     let num = subtasks.size
     subtasks.forEach(taskId => {
         num += countTodoNodes(data.getTodoById(taskId))
-    }) 
+    })
     return num
 }
 
