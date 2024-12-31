@@ -37,7 +37,10 @@ function createAddSubtaskBtn(parentId) {
     btn.type = "button"
     btn.setAttribute("data-parent-id", parentId)
     btn.addEventListener("click", renderTodoForm)
-    btn.textContent = "Add new Todo"
+    if (parentId.includes("todo"))
+        btn.textContent = "Add new subtask"
+    else
+        btn.textContent = "Add new todo"
     return btn
 }
 
@@ -194,7 +197,8 @@ export function createDiagFromTempl(e) {
     }
 
     const otherOptions = diag.querySelector(".diag-options")
-    otherOptions.prepend(createAddSubtaskBtn("todo-" + todoId))
+    if (todo.indent < 5)
+        otherOptions.prepend(createAddSubtaskBtn("todo-" + todoId))
 
     const diagTextContainer = diag.querySelector(".diag-todo-item")
     diagTextContainer.addEventListener("click", () => createTodoTextForm(todo, diagTextContainer))
