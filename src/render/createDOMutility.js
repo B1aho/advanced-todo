@@ -230,7 +230,6 @@ export function createDiagFromTempl(e) {
     const select = diag.querySelector("#priority-menu-diag")
     new ItcCustomSelect(select, {
         onSelected(select, option) {
-            // выбранное значение
             todo.priorLevel = select.value
             selectBtn.textContent = getCheckWord(todo.priorLevel)
             const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
@@ -245,11 +244,33 @@ export function createDiagFromTempl(e) {
     const selectBtn = select.querySelector("button")
     selectBtn.textContent = getCheckWord(todo.priorLevel)
 
+    const tagList = diag.querySelector(".tag-list")
+    createTagsNodes(tagList, todo.tags)
+    const tagAddInput = diag.querySelector("#add-tag-input")
+    const tagAddBtn = diag.querySelector("#add-tag-btn")
+    // На кнопку повесить слушатель, если не пустой инпут, то получить тэги как раньше делал
+    // И вызвать две функции - обновить отображение в диалоге, плюс в проекте и добавить тэги в сам todo
+    // И на кнопку удаления в функции createTagsNodes тоже добавить функции которые обновляют положение туду и в проекте (и в диалоге и так меняется)
     const closeBtn = diag.querySelector("#close-diag-btn")
     closeBtn.addEventListener("click", () => {
         diag.close()
     })
     return diag
+}
+
+function createTagsNodes(tagList, tags) {
+    const temple = document.querySelector("#diag-tag-templ")
+    tags.forEach(tag => {
+        const clone = temple.content.cloneNode(true)
+        const tagItem = clone.querySelector(".diag-tag")
+        const tagContent = clone.querySelector(".tag-content")
+        tagContent.textContent = tag
+        const deleteBtn = clone.querySelector(".tag-delete")
+        deleteBtn.addEventListener("click", () => {
+            tagItem.remove()
+        })
+        tagList.append(tagItem)
+    })
 }
 
 // В формы перенести

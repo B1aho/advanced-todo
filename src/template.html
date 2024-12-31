@@ -150,7 +150,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="change-tags-container"></div>
+                    <div class="change-tags-container">
+                        <div class="tag-list"></div>
+                        <div>
+                            <input type="text" id="add-tag-input" maxlength="30">
+                            <button id="add-tag-btn">Add tags</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="subtask-diag-list"></div>
                 <button id="close-diag-btn">Close</button>
@@ -190,6 +196,13 @@
                 </div>
             </form>
         </dialog>
+    </template>
+
+    <template id="diag-tag-templ">
+        <div class="diag-tag">
+            <span class="tag-content"></span>
+            <button class="tag-delete">X</button>
+        </div>
     </template>
 </body>
 
