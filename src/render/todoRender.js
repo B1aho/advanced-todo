@@ -50,6 +50,10 @@ export function renderListOfProjects(projectMap) {
     list.addEventListener("click", handleProjectListClick)
 }
 
+/**
+ * 
+ * @param {*} projObj 
+ */
 export function renderProjectListItem(projObj) {
     const list = document.querySelector("#project-list")
     // Render project list with html template
@@ -72,6 +76,11 @@ export function renderProjectListItem(projObj) {
     list.append(listItem)
 }
 
+/**
+ * 
+ * @param {*} e 
+ * @returns 
+ */
 function handleProjectListClick(e) {
     const target = e.target
     if (target.id === "project-list")
@@ -82,11 +91,18 @@ function handleProjectListClick(e) {
         renderProjectContent(target.parentElement.getAttribute("data-id"))
 }
 
+/**
+ * 
+ * @param {*} target 
+ */
 function renderExtraOptions(target) {
     console.log("Demonstrate extra options...")
 }
 
-// Проверку сделать, если кликнул на боковую панель, но не на кнопку и не название, пропустить
+/**
+ * 
+ * @param {*} projectId 
+ */
 function renderProjectContent(projectId) {
     console.log("Render project..")
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
@@ -126,6 +142,10 @@ function renderProjectContent(projectId) {
     })
 }
 
+/**
+ * 
+ * @param {*} e 
+ */
 export function RenderTodoDiag(e) {
     let lastDiag = document.querySelector("#todo-dialog")
     if (lastDiag)
@@ -136,6 +156,11 @@ export function RenderTodoDiag(e) {
     // diag.addEventListener("click", closeDiag)
 }
 
+/**
+ * 
+ * @param {*} parentId 
+ * @param {*} todoNode 
+ */
 export function updateProjectRendering(parentId, todoNode) {
     const selector = `.todo-container[data-id="${CSS.escape(parentId)}"]`;
     const data = new DataStorage()

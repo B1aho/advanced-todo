@@ -8,6 +8,10 @@ import { DataStorage } from '../dataSaving/dataStorage';
 import { saveData } from '../dataSaving/localStore';
 import { updateProjectRendering } from './todoRender';
 
+/**
+ * 
+ * @param {Event} e 
+ */
 export function renderTodoForm(e) {
     const template = document.querySelector("#todo-form-template")
     const clone = template.content.cloneNode(true)
@@ -59,6 +63,11 @@ export function renderTodoForm(e) {
     btn.style.display = "none"
 }
 
+/**
+ * 
+ * @param {*} formElems 
+ * @returns 
+ */
 function pickTodoFormData(formElems) {
     const formValues = Array.from(formElems)
         .filter(element => {
@@ -72,6 +81,10 @@ function pickTodoFormData(formElems) {
     return formValues
 }
 
+/**
+ * 
+ * @param {*} e 
+ */
 export function renderSectionForm(e) {
     const addSectionBtn = e.target
     const template = document.querySelector("#section-form-template")
@@ -101,6 +114,11 @@ export function renderSectionForm(e) {
     addSectionBtn.style.display = "none"
 }
 
+/**
+ * 
+ * @param {*} formElems 
+ * @returns 
+ */
 function pickSectionFormData(formElems) {
     const input = Array.from(formElems).filter(element => {
         return (element.name === "title")
@@ -111,6 +129,12 @@ function pickSectionFormData(formElems) {
     return obj
 }
 
+/**
+ * 
+ * @param {*} formValues 
+ * @param {*} parentId 
+ * @returns 
+ */
 function createTodoObj(formValues, parentId) {
     const data = new DataStorage()
     const parts = parentId.split("-")
@@ -136,6 +160,12 @@ function createTodoObj(formValues, parentId) {
     return todo
 }
 
+/**
+ * 
+ * @param {*} formValues 
+ * @param {*} parentId 
+ * @returns 
+ */
 function createSectionObj(formValues, parentId) {
     const data = new DataStorage()
     const parts = parentId.split("-")
@@ -148,6 +178,9 @@ function createSectionObj(formValues, parentId) {
     return secObj
 }
 
+/**
+ * 
+ */
 export function openProjectFormDiag() {
     const diag = createProjectForm()
     document.body.append(diag)

@@ -26,6 +26,14 @@ export class TodoItem {
      */
     subtask = new Set()
 
+    /**
+     * 
+     * @param {Function} dateFormater - partial applied function that format date in certain way
+     * @param {String} title 
+     * @param {String} desc 
+     * @param {String} parentId 
+     * @param {String} deadline 
+     */
     constructor(dateFormater, title = "", desc = "", parentId, deadline = null) {
         if (typeof dateFormater !== "function")
             throw new Error("dateFormater must be a function")
@@ -61,11 +69,18 @@ export class TodoItem {
         return this._checked
     }
 
+    /**
+     * Set new todo's deadline
+     * @param {string} date 
+     */
     setDeadline(date) {
-        // Validate with regex
         this.deadline = date
     }
 
+    /**
+     * Add new tags to the existing array of tags or set new array of tags
+     * @param {Array} arr 
+     */
     setTags(arr) {
         if (!Array.isArray(arr))
             throw new Error("Tags should be passed as array elements")
@@ -76,6 +91,11 @@ export class TodoItem {
             this.tags = arr
     }
 
+    /**
+     * Take values from todo-form and use this values to create istance of TodoItem
+     * @param {object} values 
+     * @returns {TodoItem}
+     */
     createTodo(values) {
         const { title, desc, deadline, prior, tags } = values
         const todo = new TodoItem(formatter(), title, desc, this.id, deadline)

@@ -1,14 +1,17 @@
 import { Datepicker } from "vanillajs-datepicker"
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select"
 import { DataStorage } from "../dataSaving/dataStorage"
-import { saveApp, saveData } from "../dataSaving/localStore"
+import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
-import { Project } from "../entities/todoParent"
-import { openProjectFormDiag, renderSectionForm, renderTodoForm, submitProjectForm } from "./todoForm"
+import { Project, Section } from "../entities/todoParent"
+import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
 import { renderProjectListItem, RenderTodoDiag } from "./todoRender"
 import { format } from "date-fns"
+
+
 /**
- * 
+ * Fabric that create button that can render new Section
+ * @param {String} parentId - string that represent project's id. This project is parent for future sections
  * @returns {HTMLButtonElement}
  */
 export function createAddSectionBtn(parentId) {
@@ -22,7 +25,8 @@ export function createAddSectionBtn(parentId) {
 }
 
 /**
- * 
+ * Fabric that create button that can render form for creating todo
+ * @param {String} parentId - string that represent parent's id (project or section id)
  * @returns {HTMLButtonElement}
  */
 export function createAddTodoBtn(parentId) {
@@ -35,6 +39,12 @@ export function createAddTodoBtn(parentId) {
     return btn
 }
 
+/**
+ * Fabric that create button that can render form for creating subtask
+ * @param {String} parentId - string that represent parent's id.
+ * Only instances of TodoItem can be parents of subtasks
+ * @returns {HTMLButtonElement}
+ */
 function createAddSubtaskBtn(parentId) {
     const btn = document.createElement("button")
     btn.classList.add("add-subtask-btn")
@@ -48,6 +58,13 @@ function createAddSubtaskBtn(parentId) {
     return btn
 }
 
+/**
+ * An HTML node is created, which is filled with nodes representing todos, along with all the subtask 
+ * nodes of each todo, and this list element is returned
+ * @param {Set} todoSet - set of todo IDs that represent all todos belonging to the parent
+ * @param {String} parentId - id of parent that of current todoSet 
+ * @returns {HTMLDivElement} - Container that represent list of todos
+ */
 export function createTodoList(todoSet, parentId) {
     if (!(todoSet instanceof Set)) {
         throw new Error("Argument must be instance of Set")
@@ -61,7 +78,7 @@ export function createTodoList(todoSet, parentId) {
         const todo = data.getTodoById(id)
         todoList.append(createTodoFromTempl(todo))
         if (todo.subtask.size > 0) {
-            createSubtaskAddToList(subtaskArr, todo)
+            fillArrayWithSubtaskNodes(subtaskArr, todo)
         }
         subtaskArr.forEach(subtask => {
             todoList.append(subtask)
@@ -71,8 +88,13 @@ export function createTodoList(todoSet, parentId) {
     return todoList;
 }
 
-// Поменяй название
-function createSubtaskAddToList(arr, todo) {
+/**
+ * It creates HTML elements from each todo's subtask ans subtask's subtask and places these nodes 
+ * into the passed array without returning anything
+ * @param {Array} arr 
+ * @param {TodoItem} todo 
+ */
+function fillArrayWithSubtaskNodes(arr, todo) {
     const data = new DataStorage()
     const subtask = todo.subtask
     subtask.forEach(subtaskId => {
@@ -80,11 +102,17 @@ function createSubtaskAddToList(arr, todo) {
         // add todoNode to the array
         arr.push(createTodoFromTempl(subtask))
         if (subtask.subtask.size > 0)
-            createSubtaskAddToList(arr, subtask)
+            fillArrayWithSubtaskNodes(arr, subtask)
     })
 }
 
-function createSubtaskNodeListForDiag(arr, todo) {
+/**
+ * It creates HTML elements from each todo's subtask (but not subtask's subtasks) and places these nodes 
+ * into the passed array without returning anything
+ * @param {Array} arr 
+ * @param {TodoItem} todo 
+ */
+function fillArrayWithDirectSubtaskNodes(arr, todo) {
     const data = new DataStorage()
     const subtaskSet = todo.subtask
     subtaskSet.forEach(subtaskId => {
@@ -94,6 +122,12 @@ function createSubtaskNodeListForDiag(arr, todo) {
     })
 }
 
+/**
+ * This function initializes the HTML elements of the todo template based on the provided 
+ * instance of TodoItem
+ * @param {TodoItem} todo 
+ * @returns {HTMLElement}
+ */
 export function createTodoFromTempl(todo) {
     const template = document.querySelector("#todo-item-template")
     const clone = template.content.cloneNode(true)
@@ -129,6 +163,12 @@ export function createTodoFromTempl(todo) {
     return todoContainer
 }
 
+/**
+ * This function initializes the HTML elements of the section template based on the provided
+ * instance of Section
+ * @param {Section} sect 
+ * @returns {HTMLElement}
+ */
 export function createSectionFromTempl(sect) {
     const template = document.querySelector("#section-container-template")
     const clone = template.content.cloneNode(true)
@@ -143,6 +183,12 @@ export function createSectionFromTempl(sect) {
     return section
 }
 
+/**
+ * This function returns a string representing the CSS background color of the button 
+ * (marking the todo as completed) depending on the provided priority level
+ * @param {Number} prior - TodoItem.priorityLevel
+ * @returns {String}
+ */
 export function getCheckColor(prior) {
     let color = "gray"
     switch (prior) {
@@ -161,6 +207,11 @@ export function getCheckColor(prior) {
     return color
 }
 
+/**
+ * This function returns a string representing the word representation of todo priority level
+ * @param {Number} prior - TodoItem.priorityLevel
+ * @returns {String}
+ */
 function getCheckWord(prior) {
     let word = "None"
     switch (prior) {
@@ -178,7 +229,14 @@ function getCheckWord(prior) {
     }
     return word
 }
-
+// Подумай над тем, чтобы разбить её на более мелки раннее использованные utility функции
+/**
+ * This function creates a dialog window based on an HTML template (initializing the template) and returns
+ * the HTML element of this dialog. The dialog window visualizes an extended representation of the todo,
+ * allowing you to edit all todo parameters and add subtasks to the todo
+ * @param {Event} e 
+ * @returns {HTMLElement}
+ */
 export function createDiagFromTempl(e) {
     const template = document.querySelector("#diag-templ")
     const clone = template.content.cloneNode(true)
@@ -198,7 +256,7 @@ export function createDiagFromTempl(e) {
     const subtaskList = diag.querySelector(".subtask-diag-list")
     const subtaskArr = []
     if (todo.subtask.size > 0) {
-        createSubtaskNodeListForDiag(subtaskArr, todo)
+        fillArrayWithDirectSubtaskNodes(subtaskArr, todo)
         subtaskArr.forEach(subtask => {
             subtask.classList.add("diag-indent")
             subtaskList.append(subtask)
@@ -265,6 +323,12 @@ export function createDiagFromTempl(e) {
     return diag
 }
 
+/**
+ * This function creates HTML elements representing all the todo tags by initializing an HTML template. 
+ * As the tag elements are created, they are appended to the provided tagList container element
+ * @param {HTMLElement} tagList - represent container for todo-items
+ * @param {TodoItem} todo 
+ */
 function createTagsNodes(tagList, todo) {
     const tags = todo.tags
     const temple = document.querySelector("#diag-tag-templ")
@@ -288,6 +352,12 @@ function createTagsNodes(tagList, todo) {
 }
 
 // В формы перенести
+/**
+ * This function creates a form by initializing a template. The form provides editable fields for modifying 
+ * the title and description of a todo while being displayed in the extended representation of the todo (dialog window)
+ * @param {TodoItem} todo 
+ * @param {HTMLElement} targetNode - an HTML element before which the form will be inserted in the dialog window
+ */
 export function createTodoTextForm(todo, targetNode) {
     const template = document.querySelector("#dialog-form-templ")
     const clone = template.content.cloneNode(true)
@@ -324,6 +394,11 @@ export function createTodoTextForm(todo, targetNode) {
     targetNode.style.display = "none"
 }
 
+/**
+ * This function updates the rendering of the title and description of the todo in the dialog window
+ * @param {String} title - new title
+ * @param {String} desc - new description
+ */
 function updateDiagText(title, desc) {
     const diagTodoTitle = document.querySelector(".diag-todo-title")
     diagTodoTitle.textContent = title
@@ -332,6 +407,12 @@ function updateDiagText(title, desc) {
     diagTodoDesc.textContent = desc
 }
 
+/**
+ * This function updates the rendering of the title and description of the todo in the main project content view
+ * @param {String} title - new title
+ * @param {String} desc - new description
+ * @param {String} id - todo's id 
+ */
 function updateTodoText(title, desc, id) {
     const selector = `.todo-item[data-id="${CSS.escape(id)}"]`
     const todoItem = document.querySelector(selector)
@@ -342,6 +423,11 @@ function updateTodoText(title, desc, id) {
     todoDesc.textContent = desc
 }
 
+/**
+ * This function updates the rendering of the todo's deadline string in the main project content view
+ * @param {String} todoId - id of todo
+ * @param {String} newDeadline - string represent deadline - "mm/dd/yyyy"
+ */
 function updateTodoDeadline(todoId, newDeadline) {
     const selector = `.todo-item[data-id="${CSS.escape(todoId)}"]`
     const todoItem = document.querySelector(selector)
@@ -349,6 +435,10 @@ function updateTodoDeadline(todoId, newDeadline) {
     todoDeadline.textContent = newDeadline
 }
 
+/**
+ * This function updates the rendering of the todo's tags in the main project content view
+ * @param {TodoItem} todo 
+ */
 function updateTodoTags(todo) {
     const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
     const todoItem = document.querySelector(selector)
@@ -363,8 +453,10 @@ function updateTodoTags(todo) {
 }
 
 /**
- * 
+ * This function counts the total number of all subtasks (including their subtasks) of the provided todo 
+ * and returns the number
  * @param {TodoItem} todoNode 
+ * @returns {Number}
  */
 export function countTodoNodes(todoNode) {
     const data = new DataStorage()
@@ -376,11 +468,19 @@ export function countTodoNodes(todoNode) {
     return num
 }
 
+/**
+ * This function initializes a button element, attaching an event handler to open the form for adding a project
+ */
 export function initAddProjectBtn() {
     const btn = document.querySelector("#add-project-btn")
     btn.addEventListener("click", openProjectFormDiag)
 }
 
+/**
+ * This function creates a form by initializing a template. 
+ * The form provides the option to choose the title and color for the new project
+ * @returns {HTMLElement}
+ */
 export function createProjectForm() {
     const template = document.querySelector("#diag-project-form-templ")
     const clone = template.content.cloneNode(true)
