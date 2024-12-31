@@ -14,6 +14,9 @@
                 <header id="project-list-header">My projects: </header>
                 <!--Dynamicaly rendering project list-->
             </div>
+            <div id="add-project-btn-wrapper">
+                <button id="add-project-btn">Add new project</button>
+            </div>
             <footer></footer>
         </nav>
         <main>
@@ -131,6 +134,40 @@
                 <div class="subtask-diag-list"></div>
                 <button id="close-diag-btn">Close</button>
             </div>
+        </dialog>
+    </template>
+
+    <template id="diag-project-form-templ">
+        <dialog id="project-dialog">
+            <form id="dialog-project-form">
+                <div class="title-container">
+                    <label for="title">Имя</label>
+                    <input type="text" id="project-title-input" required maxlength="100">
+                </div>
+                <div class="color-container">
+                    <div class="itc-select" id="project-color">
+                        <button type="button" id="project-color-btn" class="itc-select__toggle" name="color" value="" data-select="toggle"
+                            data-index="-1">Project color</button>
+                        <div class="itc-select__dropdown">
+                            <ul class="itc-select__options">
+                                <li class="itc-select__option" data-select="option" data-value="red" data-index="0">Red
+                                </li>
+                                <li class="itc-select__option" data-select="option" data-value="green" data-index="1">
+                                    Green</li>
+                                <li class="itc-select__option" data-select="option" data-value="blue" data-index="2">
+                                    Blue</li>
+                                <li class="itc-select__option" data-select="option" data-value="gray" data-index="3">
+                                    Gray</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="form-control-btns">
+                    <button type="submit" id="confirm-project-form">Add</button>
+                    <button id="close-project-form">Close</button>
+                </div>
+            </form>
         </dialog>
     </template>
 </body>

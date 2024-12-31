@@ -1,8 +1,10 @@
+import { ItcCustomSelect } from "../../assets/select/itc-custom-select"
 import { DataStorage } from "../dataSaving/dataStorage"
 import { saveApp, saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
-import { renderSectionForm, renderTodoForm } from "./todoForm"
-import { RenderTodoDiag } from "./todoRender"
+import { Project } from "../entities/todoParent"
+import { openProjectFormDiag, renderSectionForm, renderTodoForm, submitProjectForm } from "./todoForm"
+import { renderProjectListItem, RenderTodoDiag } from "./todoRender"
 /**
  * 
  * @returns {HTMLButtonElement}
@@ -270,3 +272,40 @@ export function countTodoNodes(todoNode) {
     return num
 }
 
+export function initAddProjectBtn() {
+    const btn = document.querySelector("#add-project-btn")
+    btn.addEventListener("click", openProjectFormDiag)
+}
+
+export function createProjectForm() {
+    const template = document.querySelector("#diag-project-form-templ")
+    const clone = template.content.cloneNode(true)
+    const diag = clone.querySelector("#project-dialog")
+    const form = clone.querySelector("#dialog-project-form")
+    const inputTitle = clone.querySelector("#project-title-input")
+    const select = clone.querySelector("#project-color")
+    new ItcCustomSelect(select)
+    const selectBtn = clone.querySelector("#project-color-btn")
+
+    const confirm = clone.querySelector("#confirm-project-form")
+    const cancel = clone.querySelector("#close-project-form")
+
+    confirm.addEventListener("click", (e) => {
+        if (!form.reportValidity())
+            return
+        e.preventDefault()
+        const title = inputTitle.value
+        const color = selectBtn.value
+        const projObj = new Project(title, color)
+        new DataStorage().saveProject(projObj)
+        saveData()
+        renderProjectListItem(projObj)
+        diag.close()
+        diag.remove()
+    })
+    cancel.addEventListener("click", () => {
+        diag.close()
+        diag.remove()
+    })
+    return diag
+}

@@ -171,5 +171,9 @@ body:has(dialog[open]) {
     user-select: none;
 }
 
+.form-control-btns {
+    display: flex;
+}
+
 
 /*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/

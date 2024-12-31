@@ -50,6 +50,28 @@ export function renderListOfProjects(projectMap) {
     list.addEventListener("click", handleProjectListClick)
 }
 
+export function renderProjectListItem(projObj) {
+    const list = document.querySelector("#project-list")
+    // Render project list with html template
+    const template = document.querySelector("#project-list-item")
+    const clone = template.content.cloneNode(true)
+    const listItem = clone.querySelector(".sidebar-list-item")
+    listItem.setAttribute("data-id", projObj.id)
+
+    const svgContainer = clone.querySelector("span")
+    svgContainer.setAttribute("color", projObj.color)
+
+    const title = clone.querySelector(".sidebar-project-title")
+    title.textContent = projObj.title
+
+    const header = document.querySelector("#project-list-header")
+    const headerText = header.textContent.split(" ")
+    headerText[2] = Number(headerText[2]) + 1
+    header.textContent = headerText.join(" ")
+
+    list.append(listItem)
+}
+
 function handleProjectListClick(e) {
     const target = e.target
     if (target.id === "project-list")
