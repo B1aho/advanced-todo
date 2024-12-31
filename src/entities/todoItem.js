@@ -70,7 +70,10 @@ export class TodoItem {
         if (!Array.isArray(arr))
             throw new Error("Tags should be passed as array elements")
         arr = arr.map(el => el.toString()).filter(str => str !== "").map(el => '#' + el)
-        this.tags = arr
+        if (this.tags)
+            this.tags = this.tags.concat(arr)
+        else
+            this.tags = arr
     }
 
     createTodo(values) {

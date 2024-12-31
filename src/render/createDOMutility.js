@@ -245,12 +245,19 @@ export function createDiagFromTempl(e) {
     selectBtn.textContent = getCheckWord(todo.priorLevel)
 
     const tagList = diag.querySelector(".tag-list")
-    createTagsNodes(tagList, todo.tags)
+    createTagsNodes(tagList, todo)
     const tagAddInput = diag.querySelector("#add-tag-input")
     const tagAddBtn = diag.querySelector("#add-tag-btn")
-    // На кнопку повесить слушатель, если не пустой инпут, то получить тэги как раньше делал
-    // И вызвать две функции - обновить отображение в диалоге, плюс в проекте и добавить тэги в сам todo
-    // И на кнопку удаления в функции createTagsNodes тоже добавить функции которые обновляют положение туду и в проекте (и в диалоге и так меняется)
+    tagAddBtn.addEventListener("click", () => {
+        if (tagAddInput.value === "")
+            return
+        todo.setTags(tagAddInput.value.split(" "))
+        updateTodoTags(todo)
+        tagList.innerHTML = ""
+        createTagsNodes(tagList, todo)
+        saveData()
+        tagAddInput.value = ""
+    })
     const closeBtn = diag.querySelector("#close-diag-btn")
     closeBtn.addEventListener("click", () => {
         diag.close()
@@ -258,7 +265,8 @@ export function createDiagFromTempl(e) {
     return diag
 }
 
-function createTagsNodes(tagList, tags) {
+function createTagsNodes(tagList, todo) {
+    const tags = todo.tags
     const temple = document.querySelector("#diag-tag-templ")
     tags.forEach(tag => {
         const clone = temple.content.cloneNode(true)
@@ -267,7 +275,13 @@ function createTagsNodes(tagList, tags) {
         tagContent.textContent = tag
         const deleteBtn = clone.querySelector(".tag-delete")
         deleteBtn.addEventListener("click", () => {
+            // Удаление узла в диалоговом окне
             tagItem.remove()
+            // Удаление тэг в туду
+            todo.tags = todo.tags.filter(todoTag => todoTag !== tag )
+            // Удаление тэга проекте
+            updateTodoTags(todo)
+            saveData()
         })
         tagList.append(tagItem)
     })
@@ -333,6 +347,19 @@ function updateTodoDeadline(todoId, newDeadline) {
     const todoItem = document.querySelector(selector)
     const todoDeadline = todoItem.querySelector(".deadline-container")
     todoDeadline.textContent = newDeadline
+}
+
+function updateTodoTags(todo) {
+    const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const todoItem = document.querySelector(selector)
+    const tagsContainer = todoItem.querySelector(".tags-container")
+    tagsContainer.innerHTML = "" 
+    todo.tags.forEach((tag) => {
+        const tagSpan = document.createElement("span")
+        tagSpan.classList.add("tag")
+        tagSpan.textContent = tag
+        tagsContainer.append(tagSpan)
+    })
 }
 
 /**

@@ -167,7 +167,7 @@ body:has(dialog[open]) {
     overflow: hidden;
 }
 
-#menu {
+#menu, #todo-dialog {
     user-select: none;
 }
 
@@ -175,5 +175,8 @@ body:has(dialog[open]) {
     display: flex;
 }
 
+.tag-list {
+    display: flex;
+}
 
 /*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/
