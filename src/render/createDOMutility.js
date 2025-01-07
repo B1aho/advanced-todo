@@ -5,7 +5,7 @@ import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
 import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
-import { renderProjectListItem, RenderTodoDiag, updateTodoRemoveRender } from "./todoRender"
+import { renderProjectListItem, RenderTodoDiag, updateProjectContentAfterDeletion, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
 
@@ -189,7 +189,7 @@ function createConfirmDiagAndShow(id, type) {
         else if (type === "section")
             updateSectionRemoveRender(data.removeElement(id))
         else 
-            updateProjectRemoveRender(data.removeElement(id))
+            removeProject(id)
         saveData()
         diag.close() 
         diag.remove()
@@ -548,4 +548,34 @@ export function createProjectForm() {
         diag.remove()
     })
     return diag
+}
+
+export function handleProjectExtraOption(target) {
+    const projId = target.parentElement.getAttribute("data-id")
+    const actionType = target.getAttribute("data-action")
+    const data = new DataStorage()
+    const project = data.getProjectById(projId)
+    switch(actionType) {
+        case "remove":
+            createConfirmDiagAndShow(project.id, "project")
+            break
+        case "change":
+            changeProject(project)
+            break
+        default:
+            break
+    }
+
+}
+
+function removeProject(projId) {
+    const data = new DataStorage()
+    data.removeElement(projId)
+    updateProjectListAfterDeletion(projId)
+    updateProjectContentAfterDeletion(projId)
+    saveData()
+}
+
+function changeProject(proj) {
+    
 }

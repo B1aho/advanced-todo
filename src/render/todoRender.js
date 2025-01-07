@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList } from "./createDOMutility";
+import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList, handleProjectExtraOption } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -41,6 +41,8 @@ export function renderListOfProjects(projectMap) {
         svgContainer.setAttribute("color", val.color)
 
         const select = clone.querySelector(".select-project-btn")
+        const options = clone.querySelector(".options")
+        options.setAttribute("data-id", val.id)
         select.setAttribute("data-id", val.id)
 
         const title = clone.querySelector(".sidebar-project-title")
@@ -72,12 +74,11 @@ export function renderProjectListItem(projObj) {
     title.textContent = projObj.title
 
     const select = clone.querySelector(".select-project-btn")
+    const options = clone.querySelector(".options")
+    options.setAttribute("data-id", projObj.id)
     select.setAttribute("data-id", projObj.id)
 
-    const header = document.querySelector("#project-list-header")
-    const headerText = header.textContent.split(" ")
-    headerText[2] = Number(headerText[2]) + 1
-    header.textContent = headerText.join(" ")
+    changeProjectListHeaderNumber(1)
 
     list.append(listItem)
 }
@@ -89,14 +90,23 @@ export function renderProjectListItem(projObj) {
  */
 function handleProjectListClick(e) {
     e.stopPropagation()
-    hideOptions()
+    hideOptions(e)
     const target = e.target
-    if (target.id === "project-list" || target.id === "project-list-header" || target.classList.contains("option"))
+    if (target.id === "project-list" || target.id === "project-list-header")
         return
-    if (target.classList.contains("select-project-btn"))
+    else if (target.classList.contains("option"))
+        handleProjectExtraOption(target)
+    else if (target.classList.contains("select-project-btn"))
         renderExtraOptions(target.getAttribute("data-id"))
     else
         renderProjectContent(target.parentElement.getAttribute("data-id"))
+}
+
+function changeProjectListHeaderNumber(number) {
+    const header = document.querySelector("#project-list-header")
+    const headerText = header.textContent.split(" ")
+    headerText[2] = Number(headerText[2]) + number
+    header.textContent = headerText.join(" ")
 }
 
 /**
@@ -112,7 +122,10 @@ function renderExtraOptions(id) {
     document.addEventListener("click", hideOptions)
 }
 
-function hideOptions() {
+function hideOptions(e) {
+    if (e && e.target.closest('.options')) {
+        return
+    }
     const options = document.querySelectorAll(".options")
     options.forEach(opt => opt.classList.add("hidden"))
     document.removeEventListener("click", hideOptions)
@@ -127,7 +140,10 @@ function renderProjectContent(projectId) {
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
     const data = new DataStorage()
     const project = data.getProjectById(projectId)
-
+    if (project === undefined) {
+        console.warn("Project is undefined in renderProjectContent. Can't load project's content")
+        return
+    }
     // Render project header
     const contentDiv = document.querySelector("main")
     contentDiv.innerHTML = ""
@@ -205,4 +221,20 @@ export function updateTodoRemoveRender(todoId, number) {
         number--
         todoItem = nextTodo
     }
+}
+
+export function updateProjectListAfterDeletion(projId) {
+    // Просто найти проджект лист итем с этим айди и удалить узел
+    const selector = `.sidebar-list-item[data-id="${CSS.escape(projId)}"]`
+    const projListItem = document.querySelector(selector)
+    projListItem.remove()
+    changeProjectListHeaderNumber(-1)
+}
+
+export function updateProjectContentAfterDeletion(projId) {
+    // Проверить есть ли в main такой узлел и если есть, очистить main innerhtml
+    const selector = `.project-container[data-id="${CSS.escape(projId)}"]`
+    const projContainer = document.querySelector(selector)
+    if (projContainer)
+        document.querySelector("main").innerHTML = ""
 }
