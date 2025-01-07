@@ -24,6 +24,20 @@
         </main>
     </div>
 
+    <template id="confirm-diag-templ">
+        <dialog class="confirm-remove">
+            <div>
+                <h2>
+                    Элемент со всеми элементами будет удален безвозвратно!
+                </h2>
+                <div class="dialog-confirm-controls">
+                    <button id="remove-elem-btn">Подтвердить</button>
+                    <button id="close-confirm-diag">Отменить</button>
+                </div>
+            </div>
+        </dialog>
+    </template>
+
     <template id="project-list-item">
         <div class="sidebar-list-item">
             <span class="sidebar-svg-container"></span>
@@ -81,6 +95,7 @@
                 </div>
                 <hr>
             </div>
+            <button class="todo-remove-btn">X</button>
         </div>
     </template>
 

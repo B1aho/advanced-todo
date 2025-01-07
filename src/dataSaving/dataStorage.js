@@ -54,29 +54,43 @@ export class DataStorage {
     /**
      * Removes an element and all its children from the runtime storage
      * Before deleting the element itself, it removes its ID from the parent's collection, if one exists
-     * @param {string} elementId - The ID of the element that was generated during instantiation
+     * @param {String} elementId - The ID of the element that was generated during instantiation
+     * @returns {Number} - 
      */
     removeElement(elementId) {
+        let count = 0
         const type = this.projects.has(elementId) ? "projects" : this.sections.has(elementId) ? "sections" : "todos"
         let elem = this[type].get(elementId)
-        if (haveNestedSections(elem)) {
-            elem.sections.forEach(secId => removeElement(secId))
+        if (this.haveNestedSections(elem)) {
+            elem.sections.forEach(secId => count += this.removeElement(secId))
         }
-        if (haveNestedTodos(elem)) {
-            elem.todos.forEach(todoId => removeElement(todoId))
+        if (this.haveNestedTodos(elem)) {
+            elem.todos.forEach(todoId => count += this.removeElement(todoId))
+        }
+        if (this.haveNestedSubtasks(elem)) {
+            elem.subtask.forEach(todoId => count += this.removeElement(todoId))
         }
         // Removes ielement's ID from the parent's collection
         if (elem.parentId) {
-            const parentType = this.projects.has(elem.parentId) ? "projects" : "sections"
-            this[parentType].get(elem.parentId)[type].delete(elementId)
+            const parentType = this.projects.has(elem.parentId) ? "projects" : this.sections.has(elem.parentId) ? "sections" : "todos"
+            const subtype = parentType === "todos" ? "subtask" : type
+            this[parentType].get(elem.parentId)[subtype].delete(elementId)
         }
         // Delete element from the runtime storage
         this[type].delete(elementId)
+        count++
         elem = null
+        return count
     }
 
     haveNestedSections(elem) {
         if ((elem.sections === undefined || elem.sections.size === 0))
+            return false
+        return true
+    }
+
+    haveNestedSubtasks(elem) {
+        if ((elem.subtask === undefined || elem.subtask.size === 0))
             return false
         return true
     }

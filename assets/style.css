@@ -95,7 +95,8 @@ body {
 .sidebar-list-item,
 .sidebar-project-btn,
 .todo-container,
-.todo-check-btn {
+.todo-check-btn, 
+.todo-remove-btn {
     display: flex;
     cursor: pointer;
 }

@@ -2,7 +2,7 @@ import "../assets/style.css";
 import { DataStorage } from "./dataSaving/dataStorage";
 import { getApp } from "./dataSaving/localStore";
 import { renderListOfProjects } from "./render/todoRender";
-import { initAddProjectBtn } from "./render/createDOMutility";
+import { initAddProjectBtn, initRemoveConfirmDiag } from "./render/createDOMutility";
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
  * Отрисовать список проектов в navbar

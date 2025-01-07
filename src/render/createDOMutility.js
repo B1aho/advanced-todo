@@ -134,8 +134,15 @@ export function createTodoFromTempl(todo) {
     const todoContainer = clone.querySelector(".todo-container")
     todoContainer.setAttribute("data-id", todo.id)
     todoContainer.setAttribute("data-indent", todo.indent)
+
     const checkBtn = clone.querySelector(".todo-check-btn")
     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
+
+    const removeBtn = clone.querySelector(".todo-remove-btn")
+    //removeBtn.setAttribute("data-id", todo.id)
+    removeBtn.addEventListener("click", () => {
+        createConfirmDiagAndShow(todo.id)
+    })
 
     const todoTitle = clone.querySelector(".todo-title")
     todoTitle.textContent = todo.title
@@ -161,6 +168,30 @@ export function createTodoFromTempl(todo) {
     todoBody.addEventListener("click", RenderTodoDiag)
 
     return todoContainer
+}
+
+function createConfirmDiagAndShow(id) {
+    const templ = document.querySelector("#confirm-diag-templ")
+    const clone = templ.content.cloneNode(true)
+    const diag = clone.querySelector(".confirm-remove")
+
+    const closeDiag = clone.querySelector("#close-confirm-diag")
+    closeDiag.addEventListener("click", () => { 
+        diag.close() 
+        diag.remove()
+    })
+
+    const confirmBtn = clone.querySelector("#remove-elem-btn")
+    confirmBtn.addEventListener("click", () => {
+        const data = new DataStorage()
+        console.log(data.removeElement(id))
+        saveData()
+        diag.close() 
+        diag.remove()
+    })
+
+    document.body.append(diag)
+    diag.showModal()
 }
 
 /**
@@ -297,7 +328,7 @@ export function createDiagFromTempl(e) {
             todoCheckbtn.style.backgroundColor = newColor
             checkBtn.style.backgroundColor = newColor
             saveData()
-          }
+        }
     })
     const selectBtn = select.querySelector("button")
     selectBtn.textContent = getCheckWord(todo.priorLevel)
@@ -342,7 +373,7 @@ function createTagsNodes(tagList, todo) {
             // Удаление узла в диалоговом окне
             tagItem.remove()
             // Удаление тэг в туду
-            todo.tags = todo.tags.filter(todoTag => todoTag !== tag )
+            todo.tags = todo.tags.filter(todoTag => todoTag !== tag)
             // Удаление тэга проекте
             updateTodoTags(todo)
             saveData()
@@ -443,7 +474,7 @@ function updateTodoTags(todo) {
     const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
     const todoItem = document.querySelector(selector)
     const tagsContainer = todoItem.querySelector(".tags-container")
-    tagsContainer.innerHTML = "" 
+    tagsContainer.innerHTML = ""
     todo.tags.forEach((tag) => {
         const tagSpan = document.createElement("span")
         tagSpan.classList.add("tag")
