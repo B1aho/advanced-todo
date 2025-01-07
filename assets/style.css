@@ -95,7 +95,7 @@ body {
 .sidebar-list-item,
 .sidebar-project-btn,
 .todo-container,
-.todo-check-btn, 
+.todo-check-btn,
 .todo-remove-btn {
     display: flex;
     cursor: pointer;
@@ -112,6 +112,7 @@ body {
 
 .sidebar-project-title {
     text-align: left;
+    width: 100%;
 }
 
 .todo-item,
@@ -168,7 +169,8 @@ body:has(dialog[open]) {
     overflow: hidden;
 }
 
-#menu, #todo-dialog {
+#menu,
+#todo-dialog {
     user-select: none;
 }
 
@@ -178,6 +180,53 @@ body:has(dialog[open]) {
 
 .tag-list {
     display: flex;
+}
+
+.custom-select-extra-opt {
+    position: relative;
+    display: inline-block;
+}
+
+.select-project-btn {
+    padding: 0px 2px;
+    cursor: pointer;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    border-radius: 10px;
+    transition: all ease-in-out 0.2s;
+}
+
+.select-project-btn:hover {
+    background-color: rgba(82, 98, 99, 0.575);
+}
+
+.options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.options.hidden {
+    display: none;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #f0f0f0;
 }
 
 /*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/

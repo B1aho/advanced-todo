@@ -40,6 +40,9 @@ export function renderListOfProjects(projectMap) {
         const svgContainer = clone.querySelector("span")
         svgContainer.setAttribute("color", val.color)
 
+        const select = clone.querySelector(".select-project-btn")
+        select.setAttribute("data-id", val.id)
+
         const title = clone.querySelector(".sidebar-project-title")
         title.textContent = val.title
 
@@ -68,6 +71,9 @@ export function renderProjectListItem(projObj) {
     const title = clone.querySelector(".sidebar-project-title")
     title.textContent = projObj.title
 
+    const select = clone.querySelector(".select-project-btn")
+    select.setAttribute("data-id", projObj.id)
+
     const header = document.querySelector("#project-list-header")
     const headerText = header.textContent.split(" ")
     headerText[2] = Number(headerText[2]) + 1
@@ -82,11 +88,13 @@ export function renderProjectListItem(projObj) {
  * @returns 
  */
 function handleProjectListClick(e) {
+    e.stopPropagation()
+    hideOptions()
     const target = e.target
-    if (target.id === "project-list" || target.id === "project-list-header")
+    if (target.id === "project-list" || target.id === "project-list-header" || target.classList.contains("option"))
         return
-    if (target.classList.contains("sidebar-project-btn"))
-        renderExtraOptions(target)
+    if (target.classList.contains("select-project-btn"))
+        renderExtraOptions(target.getAttribute("data-id"))
     else
         renderProjectContent(target.parentElement.getAttribute("data-id"))
 }
@@ -95,8 +103,19 @@ function handleProjectListClick(e) {
  * 
  * @param {*} target 
  */
-function renderExtraOptions(target) {
-    console.log("Demonstrate extra options...")
+function renderExtraOptions(id) {
+    console.log(id)
+    hideOptions()
+    const selector = `.select-project-btn[data-id="${CSS.escape(id)}"]`
+    const options = document.querySelector(selector).nextElementSibling
+    options.classList.toggle("hidden")
+    document.addEventListener("click", hideOptions)
+}
+
+function hideOptions() {
+    const options = document.querySelectorAll(".options")
+    options.forEach(opt => opt.classList.add("hidden"))
+    document.removeEventListener("click", hideOptions)
 }
 
 /**
@@ -179,7 +198,7 @@ export function updateProjectRendering(parentId, todoNode) {
 export function updateTodoRemoveRender(todoId, number) {
     const selector = `.todo-container[data-id="${CSS.escape(todoId)}"]`
     let todoItem = document.querySelector(selector)
-    
+
     while (number) {
         const nextTodo = todoItem.nextSibling
         todoItem.remove()
