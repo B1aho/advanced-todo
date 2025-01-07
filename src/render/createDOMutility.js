@@ -5,7 +5,7 @@ import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
 import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
-import { renderProjectListItem, RenderTodoDiag, updateProjectContentAfterDeletion, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateTodoRemoveRender } from "./todoRender"
+import { hideOptions, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterDeletion, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
 
@@ -187,7 +187,7 @@ function createConfirmDiagAndShow(id, type) {
         if (type === "todo")
             updateTodoRemoveRender(id, data.removeElement(id))
         else if (type === "section")
-            updateSectionRemoveRender(data.removeElement(id))
+            removeSection(id)
         else 
             removeProject(id)
         saveData()
@@ -209,8 +209,21 @@ export function createSectionFromTempl(sect) {
     const template = document.querySelector("#section-container-template")
     const clone = template.content.cloneNode(true)
     const section = clone.querySelector(".section-container")
+    section.addEventListener("click", (e) => {
+        const target = e.target
+        e.stopPropagation()
+        hideOptions(e)
+        if (target.classList.contains("option"))
+            handleSectionExtraOption(target)
+    })
     section.setAttribute("data-id", sect.id)
     clone.querySelector(".section-title").textContent = sect.title
+    const select = clone.querySelector(".select-section-btn")
+    const options = clone.querySelector(".options")
+    options.setAttribute("data-id", sect.id)
+    select.setAttribute("data-id", sect.id)
+
+    select.addEventListener("click", renderSectionExtraOptions)
 
     const todoList = document.createElement("div")
     todoList.classList.add("todo-list")
@@ -553,11 +566,11 @@ export function createProjectForm() {
 export function handleProjectExtraOption(target) {
     const projId = target.parentElement.getAttribute("data-id")
     const actionType = target.getAttribute("data-action")
-    const data = new DataStorage()
-    const project = data.getProjectById(projId)
+    //const data = new DataStorage()
+    //const project = data.getProjectById(projId)
     switch(actionType) {
         case "remove":
-            createConfirmDiagAndShow(project.id, "project")
+            createConfirmDiagAndShow(projId, "project")
             break
         case "change":
             changeProject(project)
@@ -578,4 +591,29 @@ function removeProject(projId) {
 
 function changeProject(proj) {
     
+}
+
+export function handleSectionExtraOption(target) {
+    const sectId = target.parentElement.getAttribute("data-id")
+    const actionType = target.getAttribute("data-action")
+    //const data = new DataStorage()
+    //const section = data.getProjectById(sectId)
+    switch(actionType) {
+        case "remove":
+            createConfirmDiagAndShow(sectId, "section")
+            break
+        case "rename":
+            //(project)
+            break
+        default:
+            break
+    }
+
+}
+
+function removeSection(sectId) {
+    const data = new DataStorage()
+    data.removeElement(sectId)
+    updateSectionContentAfterDeletion(sectId)
+    saveData()
 }

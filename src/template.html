@@ -117,7 +117,16 @@
 
     <template id="section-container-template">
         <div class="section-container" data-id="28c9f3d8-7b67-4c0e-8df2-7a33528db5f4">
-            <h2 class="section-title"></h2>
+            <div class="section-header-container">
+                <h2 class="section-title"></h2>
+                <div class="custom-select-extra-opt">
+                    <button class="select-section-btn">...</button>
+                    <div class="options hidden">
+                        <button class="option" data-action="remove">Удалить</button>
+                        <button class="option" data-action="rename">Переименовать</button>
+                      </div>
+                </div>
+            </div>
         </div>
     </template>
 

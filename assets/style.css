@@ -101,8 +101,13 @@ body {
     cursor: pointer;
 }
 
-.diag-todo-container {
+.diag-todo-container, .section-header-container {
     display: flex;
+}
+
+.section-header-container {
+    justify-content: space-between;
+    align-items: center;
 }
 
 .sidebar-svg-container {
@@ -187,7 +192,8 @@ body:has(dialog[open]) {
     display: inline-block;
 }
 
-.select-project-btn {
+.select-project-btn, 
+.select-section-btn {
     padding: 0px 2px;
     cursor: pointer;
     text-align: center;
@@ -197,7 +203,8 @@ body:has(dialog[open]) {
     transition: all ease-in-out 0.2s;
 }
 
-.select-project-btn:hover {
+.select-project-btn:hover, 
+.select-section-btn:hover {
     background-color: rgba(82, 98, 99, 0.575);
 }
 

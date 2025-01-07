@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList, handleProjectExtraOption } from "./createDOMutility";
+import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -111,7 +111,7 @@ function changeProjectListHeaderNumber(number) {
 
 /**
  * 
- * @param {*} target 
+ * @param {*} id 
  */
 function renderExtraOptions(id) {
     console.log(id)
@@ -122,8 +122,17 @@ function renderExtraOptions(id) {
     document.addEventListener("click", hideOptions)
 }
 
-function hideOptions(e) {
-    if (e && e.target.closest('.options')) {
+export function renderSectionExtraOptions(e) {
+    const id = e.target.getAttribute("data-id")
+    hideOptions(e)
+    const selector = `.select-section-btn[data-id="${CSS.escape(id)}"]`
+    const options = document.querySelector(selector).nextElementSibling
+    options.classList.toggle("hidden")
+    document.addEventListener("click", hideOptions)
+}
+
+export function hideOptions(e) {
+    if (e && (e.target.closest('.options') || e.target.classList.contains("select-section-btn"))) {
         return
     }
     const options = document.querySelectorAll(".options")
@@ -171,6 +180,16 @@ function renderProjectContent(projectId) {
         const sectionObj = data.getSectionById(secId)
         clone.querySelector(".section-title").textContent = sectionObj.title
 
+        const select = clone.querySelector(".select-section-btn")
+        const options = clone.querySelector(".options")
+        options.setAttribute("data-id", secId)
+        select.setAttribute("data-id", secId)
+        select.addEventListener("click", renderSectionExtraOptions)
+        options.addEventListener("click", (e) => {
+            const target = e.target
+            if (target.classList.contains("option"))
+                handleSectionExtraOption(target)
+        })
         section.append(createTodoList(sectionObj.todos, "section-" + secId))
         taskContainer.append(section)
         taskContainer.append(createAddSectionBtn("project-" + projectId))
@@ -237,4 +256,14 @@ export function updateProjectContentAfterDeletion(projId) {
     const projContainer = document.querySelector(selector)
     if (projContainer)
         document.querySelector("main").innerHTML = ""
+}
+
+export function updateSectionContentAfterDeletion(sectId) {
+    // Проверить есть ли в main такой узлел и если есть, очистить main innerhtml
+    const selector = `.section-container[data-id="${CSS.escape(sectId)}"]`
+    const sectContainer = document.querySelector(selector)
+    if (sectContainer) {
+        sectContainer.nextElementSibling.remove()
+        sectContainer.remove()
+    }
 }
