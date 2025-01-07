@@ -162,7 +162,7 @@ export function RenderTodoDiag(e) {
  * @param {*} todoNode 
  */
 export function updateProjectRendering(parentId, todoNode) {
-    const selector = `.todo-container[data-id="${CSS.escape(parentId)}"]`;
+    const selector = `.todo-container[data-id="${CSS.escape(parentId)}"]`
     const data = new DataStorage()
     // Везде в таких местах предусмотреть ошибки, чтобы программа не крашилась
     let previousSibling = document.querySelector(selector)
@@ -174,4 +174,16 @@ export function updateProjectRendering(parentId, todoNode) {
         previousSibling = previousSibling.nextElementSibling
     }
     previousSibling.after(clone)
+}
+
+export function updateTodoRemoveRender(todoId, number) {
+    const selector = `.todo-container[data-id="${CSS.escape(todoId)}"]`
+    let todoItem = document.querySelector(selector)
+    
+    while (number) {
+        const nextTodo = todoItem.nextSibling
+        todoItem.remove()
+        number--
+        todoItem = nextTodo
+    }
 }

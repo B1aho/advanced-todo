@@ -5,7 +5,7 @@ import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
 import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
-import { renderProjectListItem, RenderTodoDiag } from "./todoRender"
+import { renderProjectListItem, RenderTodoDiag, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
 
@@ -141,7 +141,7 @@ export function createTodoFromTempl(todo) {
     const removeBtn = clone.querySelector(".todo-remove-btn")
     //removeBtn.setAttribute("data-id", todo.id)
     removeBtn.addEventListener("click", () => {
-        createConfirmDiagAndShow(todo.id)
+        createConfirmDiagAndShow(todo.id, "todo")
     })
 
     const todoTitle = clone.querySelector(".todo-title")
@@ -170,7 +170,7 @@ export function createTodoFromTempl(todo) {
     return todoContainer
 }
 
-function createConfirmDiagAndShow(id) {
+function createConfirmDiagAndShow(id, type) {
     const templ = document.querySelector("#confirm-diag-templ")
     const clone = templ.content.cloneNode(true)
     const diag = clone.querySelector(".confirm-remove")
@@ -184,7 +184,12 @@ function createConfirmDiagAndShow(id) {
     const confirmBtn = clone.querySelector("#remove-elem-btn")
     confirmBtn.addEventListener("click", () => {
         const data = new DataStorage()
-        console.log(data.removeElement(id))
+        if (type === "todo")
+            updateTodoRemoveRender(id, data.removeElement(id))
+        else if (type === "section")
+            updateSectionRemoveRender(data.removeElement(id))
+        else 
+            updateProjectRemoveRender(data.removeElement(id))
         saveData()
         diag.close() 
         diag.remove()
