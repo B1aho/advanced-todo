@@ -78,12 +78,12 @@ export function renderProjectListItem(projObj) {
 
 /**
  * 
- * @param {*} e 
+ * @param {Event} e 
  * @returns 
  */
 function handleProjectListClick(e) {
     const target = e.target
-    if (target.id === "project-list")
+    if (target.id === "project-list" || target.id === "project-list-header")
         return
     if (target.classList.contains("sidebar-project-btn"))
         renderExtraOptions(target)
