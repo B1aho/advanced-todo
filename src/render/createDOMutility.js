@@ -440,6 +440,8 @@ export function createTodoTextForm(todo, targetNode) {
     })
 
     targetNode.before(form)
+    const titleTextBox = document.querySelector("#todo-title-textbox")
+    titleTextBox.focus()
     targetNode.style.display = "none"
 }
 
@@ -603,7 +605,7 @@ export function handleSectionExtraOption(target) {
             createConfirmDiagAndShow(sectId, "section")
             break
         case "rename":
-            //(project)
+            createSectionTextArea(sectId)
             break
         default:
             break
@@ -616,4 +618,41 @@ function removeSection(sectId) {
     data.removeElement(sectId)
     updateSectionContentAfterDeletion(sectId)
     saveData()
+}
+
+function createSectionTextArea(sectId) {
+    const selector = `.section-container[data-id="${CSS.escape(sectId)}"]`
+    const sectContainer = document.querySelector(selector)
+    const targetNode = sectContainer.querySelector(".section-header-container")
+    const section = new DataStorage().getSectionById(sectId)
+
+    const template = document.querySelector("#section-rename-templ")
+    const clone = template.content.cloneNode(true)
+    const form = clone.querySelector("#section-rename-form")
+    const title = clone.querySelector("#section-form-title")
+    title.textContent = section.title
+
+    const confirm = clone.querySelector("#confirm-section-edit")
+    confirm.addEventListener("click", (e) => {
+        e.preventDefault()
+        const newTitle = title.textContent
+        section.title = newTitle
+        const sectionHeader = targetNode.querySelector(".section-title")
+        sectionHeader.textContent = newTitle
+        form.remove()
+        saveData()
+        targetNode.style.display = "flex"
+    })
+
+    const cancel = clone.querySelector("#cancel-section-edit")
+    cancel.addEventListener("click", (e) => {
+        e.preventDefault()
+        form.remove()
+        targetNode.style.display = "flex"
+    })
+
+    targetNode.before(form)
+    const textBox = document.querySelector("#section-textbox")
+    textBox.focus()
+    targetNode.style.display = "none"
 }

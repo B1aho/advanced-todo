@@ -133,7 +133,7 @@
     <template id="dialog-form-templ">
         <form id="dialog-form">
             <div class="editable-container">
-                <div role="textbox" contenteditable="true">
+                <div id="todo-title-textbox" role="textbox" contenteditable="true">
                     <p id="dialog-form-title"></p>
                 </div>
                 <div role="textbox" contenteditable="true">
@@ -233,6 +233,20 @@
             <span class="tag-content"></span>
             <button class="tag-delete">X</button>
         </div>
+    </template>
+
+    <template id="section-rename-templ">
+        <form id="section-rename-form">
+            <div class="editable-container">
+                <div id="section-textbox" role="textbox" contenteditable="true">
+                    <p id="section-form-title"></p>
+                </div>
+            </div>
+            <div class="dialog-form-controls">
+                <button id="confirm-section-edit">Подтвердить!</button>
+                <button id="cancel-section-edit">Отменить</button>
+            </div>
+        </form>
     </template>
 </body>
 
