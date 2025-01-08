@@ -267,3 +267,23 @@ export function updateSectionContentAfterDeletion(sectId) {
         sectContainer.remove()
     }
 }
+
+export function updateProjectListAfterChanging(proj) {
+    const projId = proj.id
+    // Просто найти проджект лист итем с этим айди и изменить узел
+    const selector = `.sidebar-list-item[data-id="${CSS.escape(projId)}"]`
+    const projListItem = document.querySelector(selector)
+    const title = projListItem.querySelector(".sidebar-project-title")
+    title.textContent = proj.title
+}
+
+export function updateProjectContentAfterChanging(proj) {
+    const projId = proj.id
+    // Проверить есть ли в main такой узлел и если есть - зименить хедер
+    const selector = `.project-container[data-id="${CSS.escape(projId)}"]`
+    const projContainer = document.querySelector(selector)
+    if (projContainer) {
+        const header = document.querySelector(".project-title-container")
+        header.textContent = proj.title
+    }
+}

@@ -5,7 +5,7 @@ import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
 import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
-import { hideOptions, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterDeletion, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
+import { hideOptions, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
 
@@ -272,6 +272,32 @@ function getCheckWord(prior) {
             break;
         case 3:
             word = "High"
+            break;
+        default:
+            break;
+    }
+    return word
+}
+
+/**
+ * This function returns a string representing the word representation of todo priority level
+ * @param {}
+ * @return {}
+ */
+function getColorWord(colorVal) {
+    let word = "Project color"
+    switch (colorVal) {
+        case "red":
+            word = "Red"
+            break;
+        case "blue":
+            word = "Blue"
+            break;
+        case "green":
+            word = "Green"
+            break;
+        case "gray":
+            word = "Gray"
             break;
         default:
             break;
@@ -568,14 +594,12 @@ export function createProjectForm() {
 export function handleProjectExtraOption(target) {
     const projId = target.parentElement.getAttribute("data-id")
     const actionType = target.getAttribute("data-action")
-    //const data = new DataStorage()
-    //const project = data.getProjectById(projId)
     switch(actionType) {
         case "remove":
             createConfirmDiagAndShow(projId, "project")
             break
         case "change":
-            changeProject(project)
+            changeProject(projId)
             break
         default:
             break
@@ -591,8 +615,45 @@ function removeProject(projId) {
     saveData()
 }
 
-function changeProject(proj) {
-    
+function changeProject(projId) {
+    // Появляется диалог, с формой, в которой можно изменить название проекта и цвет. и подвтердить, отменить
+    // Далее эти изменения сохраняются в рантайме, проихводится запись памяти и ререндеринг в списке проектов и main
+    // если проект открыт
+    const proj = new DataStorage().getProjectById(projId)
+    const template = document.querySelector("#diag-project-form-templ")
+    const clone = template.content.cloneNode(true)
+    const diag = clone.querySelector("#project-dialog")
+    const form = clone.querySelector("#dialog-project-form")
+    const inputTitle = clone.querySelector("#project-title-input")
+    inputTitle.value = proj.title 
+    const select = clone.querySelector("#project-color")
+    new ItcCustomSelect(select)
+    const selectBtn = clone.querySelector("#project-color-btn")
+    selectBtn.value = proj.color
+    selectBtn.textContent = getColorWord(proj.color)
+    const confirm = clone.querySelector("#confirm-project-form")
+    confirm.textContent = "Изменить"
+    const cancel = clone.querySelector("#close-project-form")
+
+    confirm.addEventListener("click", (e) => {
+        if (!form.reportValidity())
+            return
+        e.preventDefault()
+        proj.title = inputTitle.value
+        proj.color = selectBtn.value
+        saveData()
+        // Update list rendering and main
+        updateProjectListAfterChanging(proj)
+        updateProjectContentAfterChanging(proj)
+        diag.close()
+        diag.remove()
+    })
+    cancel.addEventListener("click", () => {
+        diag.close()
+        diag.remove()
+    })
+    document.body.append(diag)
+    diag.showModal()
 }
 
 export function handleSectionExtraOption(target) {
