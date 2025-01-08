@@ -283,7 +283,7 @@ export function updateProjectContentAfterChanging(proj) {
     const selector = `.project-container[data-id="${CSS.escape(projId)}"]`
     const projContainer = document.querySelector(selector)
     if (projContainer) {
-        const header = document.querySelector(".project-title-container")
+        const header = document.querySelector(".project-title-container").querySelector("h1")
         header.textContent = proj.title
     }
 }
