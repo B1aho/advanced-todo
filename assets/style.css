@@ -101,7 +101,7 @@ body {
     cursor: pointer;
 }
 
-.diag-todo-container, .section-header-container {
+.diag-todo-container, .section-header-container, .project-filters {
     display: flex;
 }
 
@@ -125,6 +125,14 @@ body {
 .diag-todo-item {
     display: flex;
     flex-direction: column;
+}
+
+.todo-item.checked, .diag-todo-item.checked {
+    text-decoration: line-through;
+}
+
+.todo-check-btn.checked::after {
+    content: "✅";
 }
 
 .todo-form,

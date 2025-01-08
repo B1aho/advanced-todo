@@ -47,7 +47,7 @@
                 <div class="options hidden">
                     <button class="option" data-action="remove">Удалить</button>
                     <button class="option" data-action="change">Изменить</button>
-                  </div>
+                </div>
             </div>
         </div>
     </template>
@@ -124,7 +124,7 @@
                     <div class="options hidden">
                         <button class="option" data-action="remove">Удалить</button>
                         <button class="option" data-action="rename">Переименовать</button>
-                      </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -160,7 +160,8 @@
                 <hr>
                 <div class="diag-options">
                     <div class="change-deadline-container">
-                        <input id="change-deadline" type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
+                        <input id="change-deadline" type="text" name="deadline" placeholder="Срок" class="deadline"
+                            readonly>
                     </div>
                     <div class="change-prior-container">
                         <div class="itc-select" id="priority-menu-diag">
@@ -168,7 +169,8 @@
                                 data-index="-1">Приоритет</button>
                             <div class="itc-select__dropdown">
                                 <ul class="itc-select__options">
-                                    <li class="itc-select__option" data-select="option" data-value="0" data-index="0">None
+                                    <li class="itc-select__option" data-select="option" data-value="0" data-index="0">
+                                        None
                                     </li>
                                     <li class="itc-select__option" data-select="option" data-value="1" data-index="1">
                                         Low</li>
@@ -203,8 +205,8 @@
                 </div>
                 <div class="color-container">
                     <div class="itc-select" id="project-color">
-                        <button type="button" id="project-color-btn" class="itc-select__toggle" name="color" value="" data-select="toggle"
-                            data-index="-1">Project color</button>
+                        <button type="button" id="project-color-btn" class="itc-select__toggle" name="color" value=""
+                            data-select="toggle" data-index="-1">Project color</button>
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
                                 <li class="itc-select__option" data-select="option" data-value="red" data-index="0">Red
@@ -247,6 +249,20 @@
                 <button id="cancel-section-edit">Отменить</button>
             </div>
         </form>
+    </template>
+
+    <template id="project-templ">
+        <div class="project-title-container">
+            <h1 class="project-title"></h1>
+        </div>
+        <div class="project-filters">
+            <button class="active">Todos:</button>
+            <button >Completed:</button>
+        </div>
+        <div class="project-container">
+            <div class="todo-list">
+            </div>
+        </div>
     </template>
 </body>
 

@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { countTodoNodes, createAddSectionBtn, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption } from "./createDOMutility";
+import { countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -145,7 +145,6 @@ export function hideOptions(e) {
  * @param {*} projectId 
  */
 function renderProjectContent(projectId) {
-    console.log("Render project..")
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
     const data = new DataStorage()
     const project = data.getProjectById(projectId)
@@ -156,18 +155,14 @@ function renderProjectContent(projectId) {
     // Render project header
     const contentDiv = document.querySelector("main")
     contentDiv.innerHTML = ""
-    const projectHeader = document.createElement("div")
-    projectHeader.classList.add("project-title-container")
-    const title = document.createElement("h1")
+    const templ = document.querySelector("#project-templ")
+    const clone = templ.content.cloneNode(true)
+    const title = clone.querySelector(".project-title")
     title.textContent = project.title
-    projectHeader.append(title)
-    contentDiv.append(projectHeader)
 
     // Creater main content container
-    const taskContainer = document.createElement("div")
-    taskContainer.classList.add("project-container")
+    const taskContainer = clone.querySelector(".project-container")
     taskContainer.setAttribute("data-id", projectId)
-    contentDiv.append(taskContainer)
     // Render porject's todos
     taskContainer.append(createTodoList(project.todos, "project-" + projectId))
     taskContainer.append(createAddSectionBtn("project-" + projectId))
@@ -194,6 +189,7 @@ function renderProjectContent(projectId) {
         taskContainer.append(section)
         taskContainer.append(createAddSectionBtn("project-" + projectId))
     })
+    contentDiv.append(clone)
 }
 
 /**
@@ -207,7 +203,6 @@ export function RenderTodoDiag(e) {
     const diag = createDiagFromTempl(e)
     document.body.append(diag)
     diag.showModal()
-    // diag.addEventListener("click", closeDiag)
 }
 
 /**
@@ -222,6 +217,10 @@ export function updateProjectRendering(parentId, todoNode) {
     let previousSibling = document.querySelector(selector)
     const clone = todoNode.cloneNode(true)
     clone.querySelector(".todo-item").addEventListener("click", RenderTodoDiag)
+    const removeBtn = clone.querySelector(".todo-remove-btn")
+    removeBtn.addEventListener("click", () => {
+        createConfirmDiagAndShow(todoNode.getAttribute("data-id"), "todo")
+    })
     clone.classList.remove("diag-indent")
     const taskNumber = countTodoNodes(data.getTodoById(parentId))
     for (let i = 1; i < taskNumber; i++) {

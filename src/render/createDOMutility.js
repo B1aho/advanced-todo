@@ -136,13 +136,17 @@ export function createTodoFromTempl(todo) {
     todoContainer.setAttribute("data-indent", todo.indent)
 
     const checkBtn = clone.querySelector(".todo-check-btn")
+    checkBtn.setAttribute("data-id", todo.id)
     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
+    checkBtn.addEventListener("click", (e) => {
+        checkTodo(e, todo)
+    })
 
     const removeBtn = clone.querySelector(".todo-remove-btn")
-    //removeBtn.setAttribute("data-id", todo.id)
     removeBtn.addEventListener("click", () => {
         createConfirmDiagAndShow(todo.id, "todo")
     })
+    
 
     const todoTitle = clone.querySelector(".todo-title")
     todoTitle.textContent = todo.title
@@ -167,17 +171,84 @@ export function createTodoFromTempl(todo) {
     todoBody.setAttribute("data-id", todo.id)
     todoBody.addEventListener("click", RenderTodoDiag)
 
+    if (todo.checked) {
+        checkBtn.classList.add("checked")
+        todoBody.classList.add("checked")
+    }
+
     return todoContainer
 }
 
-function createConfirmDiagAndShow(id, type) {
+// Проверь, что то todo передается всегда
+// Добавить эту же функциональность в кнопку в детально форме туду 
+// Возможно лучше использовать подход, который скрывает выполненные todo также через таймаут, а на completed показывает все скрытые с зачеркиваниями
+/**
+ * 
+ * @param {Event} event 
+ * @param {TodoItem} todo 
+ * @returns 
+ */
+function checkTodo(event, todo) {
+    // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
+    toggleCheckedTodoContent(todo)
+
+    // Затогглить данные в хранилище и сохранить
+    toggleCheckedTodoData(todo)
+    saveData()
+    // если диалог есть, то он автоматически должен закрываться, если за отведенное время никто не удалил todo
+
+    // Запустить timeout, который через секунду выполнит функцию 
+    // todo.checked = true и saveData(), а также удаления этой задачи и её подзадач и проекта - вроде такая уже есть функуция
+
+    // Одновременно с этим возникает попап, который через тоже время будет удален как возможно из предыдущего таймаута
+    // Если нажать кнопку отменить в этом попапе, то он отменить тот таймаут, уберет checked с кнопки и зачеркнутый css и удалиться сам
+}
+
+/**
+ * 
+ * @param {TodoItem} todo 
+ */
+function toggleCheckedTodoContent(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => toggleCheckedTodoContent(new DataStorage().getTodoById(subId)))
+    const checkBtnSelector = `.todo-check-btn[data-id="${CSS.escape(todo.id)}"]`
+    const checkBtns = document.querySelectorAll(checkBtnSelector)
+    checkBtns.forEach(btn => {
+        btn.classList.toggle("checked")
+    })
+
+    const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const todoItem = document.querySelector(selector)
+    todoItem.classList.toggle("checked")
+
+    const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const diagTextContainer = document.querySelector(dialiogSelector)
+    if (diagTextContainer) {
+        diagTextContainer.classList.toggle("checked")
+    }
+}
+
+/**
+ * 
+ * @param {TodoItem} todo 
+ */
+function toggleCheckedTodoData(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => toggleCheckedTodoData(new DataStorage().getTodoById(subId)))
+    if (todo.checked)
+        todo.checked = false
+    else
+        todo.checked = true
+}
+
+export function createConfirmDiagAndShow(id, type) {
     const templ = document.querySelector("#confirm-diag-templ")
     const clone = templ.content.cloneNode(true)
     const diag = clone.querySelector(".confirm-remove")
 
     const closeDiag = clone.querySelector("#close-confirm-diag")
-    closeDiag.addEventListener("click", () => { 
-        diag.close() 
+    closeDiag.addEventListener("click", () => {
+        diag.close()
         diag.remove()
     })
 
@@ -188,10 +259,10 @@ function createConfirmDiagAndShow(id, type) {
             updateTodoRemoveRender(id, data.removeElement(id))
         else if (type === "section")
             removeSection(id)
-        else 
+        else
             removeProject(id)
         saveData()
-        diag.close() 
+        diag.close()
         diag.remove()
     })
 
@@ -322,6 +393,11 @@ export function createDiagFromTempl(e) {
     const todo = data.getTodoById(todoId)
 
     const checkBtn = diag.querySelector(".todo-check-btn")
+
+    checkBtn.setAttribute("data-id", todoId)
+    checkBtn.addEventListener("click", (e) => {
+        checkTodo(e, todo)
+    })
     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
     const diagTitle = diag.querySelector(".diag-todo-title")
     diagTitle.textContent = todo.title
@@ -343,6 +419,7 @@ export function createDiagFromTempl(e) {
         otherOptions.prepend(createAddSubtaskBtn("todo-" + todoId))
 
     const diagTextContainer = diag.querySelector(".diag-todo-item")
+    diagTextContainer.setAttribute("data-id", todoId)
     diagTextContainer.addEventListener("click", () => createTodoTextForm(todo, diagTextContainer))
 
     const changeDeadline = diag.querySelector("#change-deadline")
@@ -395,6 +472,12 @@ export function createDiagFromTempl(e) {
     closeBtn.addEventListener("click", () => {
         diag.close()
     })
+
+    if (todo.checked) {
+        checkBtn.classList.add("checked")
+        diagTextContainer.classList.add("checked")
+    }
+
     return diag
 }
 
@@ -594,7 +677,7 @@ export function createProjectForm() {
 export function handleProjectExtraOption(target) {
     const projId = target.parentElement.getAttribute("data-id")
     const actionType = target.getAttribute("data-action")
-    switch(actionType) {
+    switch (actionType) {
         case "remove":
             createConfirmDiagAndShow(projId, "project")
             break
@@ -625,7 +708,7 @@ function changeProject(projId) {
     const diag = clone.querySelector("#project-dialog")
     const form = clone.querySelector("#dialog-project-form")
     const inputTitle = clone.querySelector("#project-title-input")
-    inputTitle.value = proj.title 
+    inputTitle.value = proj.title
     const select = clone.querySelector("#project-color")
     new ItcCustomSelect(select)
     const selectBtn = clone.querySelector("#project-color-btn")
@@ -661,7 +744,7 @@ export function handleSectionExtraOption(target) {
     const actionType = target.getAttribute("data-action")
     //const data = new DataStorage()
     //const section = data.getProjectById(sectId)
-    switch(actionType) {
+    switch (actionType) {
         case "remove":
             createConfirmDiagAndShow(sectId, "section")
             break
@@ -724,4 +807,10 @@ function createSectionTextArea(sectId) {
 // Далее необходимо поставить timeout на 1 секунду в течении которой, можно будет отменить это действие через попап(по сути снять программно timeout)
 // Если оно не отменяется, то задача со всеми под задачами(эти узлы копируются куда-то) 
 // Для каждого проекта можно будет нажать на вкладку выполненные и все выполненные задачи применительно к данному проекту
-// будут отрисованы
+// будут отрисованы - они будут получены через filter всех todos, проекта с полем checked = true
+// 
+// Нужно обдумать как-то ограничение этого кол-ва выполненных задач, так local-storage не может хранить это всё бесконечно
+// Думаю пока сделать максимум последние 20 задач хранятся - поле у проекта, которое геттер, выдает количество всех выполненных
+// Если следующая выполненная превышает, то удаляется первая по дате, и надо обязательно инфу указать о таком подходе во вкладке выполненные
+// Но есть проблема, если следующая на уадление - задача с подзадачами, то какова должна быть стратегия удаления? Видимо удалятся все подзадачи
+//
