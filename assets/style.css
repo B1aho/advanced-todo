@@ -138,6 +138,14 @@ body {
     content: "✅";
 }
 
+.todo-container.checked {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
 .todo-form,
 .section-form {
     display: flex;
@@ -165,6 +173,13 @@ body {
 .undo-popup p {
     margin: 0 0 10px 0;
 }
+
+.active {
+    background-color: #00ff88; /* Цвет выбранного фильтра */
+    border-color: #00b36b;    /* Цвет рамки */
+    color: white;             /* Цвет текста */
+    box-shadow: 0 0 10px rgba(0, 255, 179, 0.5); /* Подсветка */
+  }
 
 .loader-container {
     height: 4px;

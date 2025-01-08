@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption } from "./createDOMutility";
+import { countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -159,6 +159,12 @@ function renderProjectContent(projectId) {
     const clone = templ.content.cloneNode(true)
     const title = clone.querySelector(".project-title")
     title.textContent = project.title
+
+    // Init filters behaviour
+    const allTodosBtn = clone.querySelector("#all-todos-btn")
+    allTodosBtn.addEventListener("click", showActualTodos)
+    const completedBtn = clone.querySelector("#comleted-todos-btn")
+    completedBtn.addEventListener("click", showCompletedTodos)
 
     // Creater main content container
     const taskContainer = clone.querySelector(".project-container")

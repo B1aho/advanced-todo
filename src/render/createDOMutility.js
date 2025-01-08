@@ -78,6 +78,7 @@ export function createTodoList(todoSet, parentId) {
     todoSet.forEach(id => {
         const subtaskArr = []
         const todo = data.getTodoById(id)
+
         todoList.append(createTodoFromTempl(todo))
         if (todo.subtask.size > 0) {
             fillArrayWithSubtaskNodes(subtaskArr, todo)
@@ -85,6 +86,7 @@ export function createTodoList(todoSet, parentId) {
         subtaskArr.forEach(subtask => {
             todoList.append(subtask)
         })
+
     })
     todoList.append(createAddTodoBtn(parentId))
     return todoList;
@@ -134,6 +136,8 @@ export function createTodoFromTempl(todo) {
     const template = document.querySelector("#todo-item-template")
     const clone = template.content.cloneNode(true)
     const todoContainer = clone.querySelector(".todo-container")
+    if (todo.checked)
+        todoContainer.classList.add("checked")
     todoContainer.setAttribute("data-id", todo.id)
     todoContainer.setAttribute("data-indent", todo.indent)
 
@@ -215,69 +219,66 @@ function checkTodo(event, todo) {
         if (undoPopup)
             undoPopup.remove()
     }
-
-    // Одновременно с этим возникает попап, который через тоже время будет удален как возможно из предыдущего таймаута
-    // Если нажать кнопку отменить в этом попапе, то он отменить тот таймаут, уберет checked с кнопки и зачеркнутый css и удалиться сам
 }
 
 function showUndoPopup(todo) {
     const popup = document.createElement('div')
     popup.classList.add("undo-popup")
-  
+
     const text = document.createElement('p')
     text.textContent = 'Задача выполнена'
-  
+
     const loaderContainer = document.createElement('div')
     loaderContainer.classList.add("loader-container")
     const loader = document.createElement('div')
     loader.classList.add("loader")
     loaderContainer.append(loader)
-  
+
     const buttonContainer = document.createElement('div')
     buttonContainer.style.display = 'flex'
     buttonContainer.style.justifyContent = 'space-between'
-  
+
     const undoButton = document.createElement('button')
     undoButton.textContent = 'Отменить'
     undoButton.classList.add("undo")
-  
+
     const closeButton = document.createElement('button')
     closeButton.textContent = '✖';
     closeButton.classList.add("close-undo-popup")
-  
+
     buttonContainer.append(undoButton, closeButton)
-  
+
     // Добавляем элементы в попап
     popup.append(text, loaderContainer, buttonContainer)
-  
+
     // Добавляем попап в DOM
     document.body.append(popup);
-  
+
     // Начинаем анимацию лоадера
     setTimeout(() => {
-      loader.style.transform = 'scaleX(0)';
+        loader.style.transform = 'scaleX(0)';
     }, 0);
-  
+
     // Таймаут для автоматического закрытия попапа через 2 секунды
     const autoCloseTimeout = setTimeout(() => {
-      popup.remove();
+        popup.remove();
     }, 3000);
-  
+
     // Обработчик кнопки "Отменить"
     undoButton.addEventListener('click', () => {
-      clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
-      clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-      popup.remove();
-      toggleCheckedTodoContent(todo)
-      toggleCheckedTodoData(todo) 
+        clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+        clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+        popup.remove();
+        toggleCheckedTodoContent(todo)
+        toggleCheckedTodoData(todo)
     });
-  
+
     // Обработчик кнопки "Закрыть"
     closeButton.addEventListener('click', () => {
-      clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-      document.body.removeChild(popup); // Удаляем попап
+        clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+        document.body.removeChild(popup); // Удаляем попап
     });
-  }
+}
 
 /**
  * 
@@ -288,7 +289,7 @@ function hideCheckedTodo(todo) {
         todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
     const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
     const todoContainer = document.querySelector(selector)
-    todoContainer.style.display = "none"
+    todoContainer.classList.add("checked")
 }
 
 function unhideCheckedTodo(todo) {
@@ -296,9 +297,74 @@ function unhideCheckedTodo(todo) {
         todo.subtask.forEach(subId => unhideCheckedTodo(new DataStorage().getTodoById(subId)))
     const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
     const todoContainer = document.querySelector(selector)
-    todoContainer.style.display = "flex"
+    todoContainer.classList.remove("checked")
 }
 
+function handleFilterClick(e) {
+    const filterBtn = e.currentTarget
+    // Если нажал на уже активный фильтр
+    if (filterBtn.classList.contains("active"))
+        return true
+    const filters = document.querySelectorAll(".project-filter")
+    filters.forEach(filter => filter.classList.remove("active"))
+    filterBtn.classList.add("active")
+    return false
+}
+
+function checkTodoContainers(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => checkTodoContainers(new DataStorage().getTodoById(subId)))
+    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+    const todoContainer = document.querySelector(selector)
+    if (todo.checked)
+        todoContainer.classList.add("checked")
+} 
+
+
+// поменяй название, а то оно не отображает смысл
+/**
+ * 
+ * @param {Event} e 
+ */
+export function showActualTodos(e) {
+    if (handleFilterClick(e))
+        return
+    const projId = document.querySelector(".project-container").getAttribute("data-id")
+    const proj = new DataStorage().getProjectById(projId)
+    proj.todos.forEach(todoId => {
+        const todo = new DataStorage().getTodoById(todoId)
+        checkTodoContainers(todo)
+    })
+    // Для секций тоже самое 
+    proj.sections.forEach(secId => {
+        const section = new DataStorage().getSectionById(secId)
+        section.todos.forEach(todoId => {
+            const todo = new DataStorage().getTodoById(todoId)
+            checkTodoContainers(todo)
+        })
+    }) 
+}
+
+export function showCompletedTodos(e) {
+    if (handleFilterClick(e))
+        return
+    // Показать спрятанные
+    const projId = document.querySelector(".project-container").getAttribute("data-id")
+    const proj = new DataStorage().getProjectById(projId)
+    proj.todos.forEach(todoId => {
+        const todo = new DataStorage().getTodoById(todoId)
+        unhideCheckedTodo(todo)
+    })
+
+    // Для секций тоже самое 
+    proj.sections.forEach(secId => {
+        const section = new DataStorage().getSectionById(secId)
+        section.todos.forEach(todoId => {
+            const todo = new DataStorage().getTodoById(todoId)
+            unhideCheckedTodo(todo)
+        })
+    }) 
+}
 /**
  * 
  * @param {TodoItem} todo 
