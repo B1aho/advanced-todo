@@ -7,7 +7,7 @@ export class DataStorage {
     projects = new Map()    // Keep projects with project-id as key
     sections = new Map()    // Keep sections with section-id as key
     todos = new Map()       // Keep todos with todo-id as key
-
+    lastTimeRef = null
     // Singletone implementation
     constructor(lastData = null) {
         if (DataStorage.instance) {

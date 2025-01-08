@@ -1,3 +1,5 @@
+// Fabric на factory поменяй
+
 import { Datepicker } from "vanillajs-datepicker"
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select"
 import { DataStorage } from "../dataSaving/dataStorage"
@@ -146,7 +148,7 @@ export function createTodoFromTempl(todo) {
     removeBtn.addEventListener("click", () => {
         createConfirmDiagAndShow(todo.id, "todo")
     })
-    
+
 
     const todoTitle = clone.querySelector(".todo-title")
     todoTitle.textContent = todo.title
@@ -189,6 +191,7 @@ export function createTodoFromTempl(todo) {
  * @returns 
  */
 function checkTodo(event, todo) {
+    const data = new DataStorage()
     // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
     toggleCheckedTodoContent(todo)
 
@@ -196,17 +199,85 @@ function checkTodo(event, todo) {
     toggleCheckedTodoData(todo)
     saveData()
     // если диалог есть, то он автоматически должен закрываться, если за отведенное время никто не удалил todo
-    const timeRef = setTimeout(() => {
-        hideCheckedTodo(todo)
-    }, 1000)
-
-    //showUndoPopup(timeRef)
-    // Запустить timeout, который через секунду выполнит функцию 
-    // todo.checked = true и saveData(), а также удаления этой задачи и её подзадач и проекта - вроде такая уже есть функуция
+    if (todo.checked) {
+        const todoDiag = document.querySelector("#todo-dialog")
+        //blockDialogAction(todoDiag)
+        data.lastTimeRef = setTimeout(() => {
+            hideCheckedTodo(todo)
+        }, 3000)
+        if (!todoDiag || !todoDiag.open)
+            showUndoPopup(todo)
+    } else {
+        if (data.lastTimeRef)
+            clearTimeout(data.lastTimeRef)
+        unhideCheckedTodo(todo)
+        const undoPopup = document.querySelector(".undo-popup")
+        if (undoPopup)
+            undoPopup.remove()
+    }
 
     // Одновременно с этим возникает попап, который через тоже время будет удален как возможно из предыдущего таймаута
     // Если нажать кнопку отменить в этом попапе, то он отменить тот таймаут, уберет checked с кнопки и зачеркнутый css и удалиться сам
 }
+
+function showUndoPopup(todo) {
+    const popup = document.createElement('div')
+    popup.classList.add("undo-popup")
+  
+    const text = document.createElement('p')
+    text.textContent = 'Задача выполнена'
+  
+    const loaderContainer = document.createElement('div')
+    loaderContainer.classList.add("loader-container")
+    const loader = document.createElement('div')
+    loader.classList.add("loader")
+    loaderContainer.append(loader)
+  
+    const buttonContainer = document.createElement('div')
+    buttonContainer.style.display = 'flex'
+    buttonContainer.style.justifyContent = 'space-between'
+  
+    const undoButton = document.createElement('button')
+    undoButton.textContent = 'Отменить'
+    undoButton.classList.add("undo")
+  
+    const closeButton = document.createElement('button')
+    closeButton.textContent = '✖';
+    closeButton.classList.add("close-undo-popup")
+  
+    buttonContainer.append(undoButton, closeButton)
+  
+    // Добавляем элементы в попап
+    popup.append(text, loaderContainer, buttonContainer)
+  
+    // Добавляем попап в DOM
+    document.body.append(popup);
+  
+    // Начинаем анимацию лоадера
+    setTimeout(() => {
+      loader.style.transform = 'scaleX(0)';
+    }, 0);
+  
+    // Таймаут для автоматического закрытия попапа через 2 секунды
+    const autoCloseTimeout = setTimeout(() => {
+      popup.remove();
+    }, 3000);
+  
+    // Обработчик кнопки "Отменить"
+    undoButton.addEventListener('click', () => {
+      clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+      clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+      popup.remove();
+      toggleCheckedTodoContent(todo)
+      toggleCheckedTodoData(todo) 
+    });
+  
+    // Обработчик кнопки "Закрыть"
+    closeButton.addEventListener('click', () => {
+      clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+      document.body.removeChild(popup); // Удаляем попап
+    });
+  }
 
 /**
  * 
@@ -215,12 +286,17 @@ function checkTodo(event, todo) {
 function hideCheckedTodo(todo) {
     if (todo.subtask.size > 0)
         todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
-    const todoDiag = document.querySelector("#todo-dialog")
-    if (todoDiag)
-        todoDiag.close()
     const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
     const todoContainer = document.querySelector(selector)
     todoContainer.style.display = "none"
+}
+
+function unhideCheckedTodo(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => unhideCheckedTodo(new DataStorage().getTodoById(subId)))
+    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+    const todoContainer = document.querySelector(selector)
+    todoContainer.style.display = "flex"
 }
 
 /**
