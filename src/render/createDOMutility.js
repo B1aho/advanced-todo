@@ -72,9 +72,9 @@ export function createTodoList(todoSet, parentId) {
     const data = new DataStorage()
     const todoList = document.createElement("div")
     todoList.classList.add("todo-list")
-    const subtaskArr = []
     // Здесь надо проверить есть ли вложенные туду и функцию для их генерации, на забывая отступ
     todoSet.forEach(id => {
+        const subtaskArr = []
         const todo = data.getTodoById(id)
         todoList.append(createTodoFromTempl(todo))
         if (todo.subtask.size > 0) {
@@ -196,12 +196,31 @@ function checkTodo(event, todo) {
     toggleCheckedTodoData(todo)
     saveData()
     // если диалог есть, то он автоматически должен закрываться, если за отведенное время никто не удалил todo
+    const timeRef = setTimeout(() => {
+        hideCheckedTodo(todo)
+    }, 1000)
 
+    //showUndoPopup(timeRef)
     // Запустить timeout, который через секунду выполнит функцию 
     // todo.checked = true и saveData(), а также удаления этой задачи и её подзадач и проекта - вроде такая уже есть функуция
 
     // Одновременно с этим возникает попап, который через тоже время будет удален как возможно из предыдущего таймаута
     // Если нажать кнопку отменить в этом попапе, то он отменить тот таймаут, уберет checked с кнопки и зачеркнутый css и удалиться сам
+}
+
+/**
+ * 
+ * @param {TodoItem} todo 
+ */
+function hideCheckedTodo(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
+    const todoDiag = document.querySelector("#todo-dialog")
+    if (todoDiag)
+        todoDiag.close()
+    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+    const todoContainer = document.querySelector(selector)
+    todoContainer.style.display = "none"
 }
 
 /**
