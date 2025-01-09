@@ -92,6 +92,10 @@ body {
     flex-direction: column;
 }
 
+.project-container {
+    user-select: none;
+}
+
 .sidebar-list-item,
 .sidebar-project-btn,
 .todo-container,
@@ -104,6 +108,17 @@ body {
 .dragging {
     opacity: 0.5;
     border: 2px dashed #000;
+    cursor: grabbing;
+}
+
+.sect-dragging {
+    opacity: 0.5;
+    border: 2px dashed #000;
+    cursor: grabbing;
+}
+
+.sidebar-list-item {
+    cursor: pointer;
 }
 
 .diag-todo-container,

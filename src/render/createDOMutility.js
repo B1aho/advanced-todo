@@ -468,6 +468,7 @@ export function createSectionFromTempl(sect) {
     todoList.classList.add("todo-list")
     todoList.append(createAddTodoBtn("section-" + sect.id))
     section.append(todoList)
+
     return section
 }
 
@@ -982,19 +983,23 @@ function createSectionTextArea(sectId) {
 // Надо как-то сохранять этот порядок при следующем открытии
 // Пройтись по элементам списка, и разместить id памяти соответсующим образом
 export function handleDragoverProjectList(evt) {
-    // Разрешаем сбрасывать элементы в эту область
-    evt.preventDefault()
     const list = document.querySelector("#project-list")
-
     const activeElement = list.querySelector(".dragging")
-    const currentElement = evt.target.parentNode
 
+    if (activeElement) {
+        evt.preventDefault()
+        evt.dataTransfer.dropEffect = 'move'
+    } else
+        return
+
+    const currentElement = evt.target.parentNode
     const isMoveable = activeElement !== currentElement &&
         currentElement.classList.contains("sidebar-list-item")
 
     if (!isMoveable) {
         return
     }
+
 
     // Находим элемент, перед которым будем вставлять
     //const nextElement = currentElement
@@ -1036,4 +1041,52 @@ function saveNewListOrder() {
     idOrder.forEach(id => newProjectMap.set(id, projectMap.get(id)))
     new DataStorage().projects = newProjectMap
     saveData()
+}
+
+export function handleDragoverSection(evt) {
+    const projectContainer = document.querySelector(".project-container")
+    const activeElement = projectContainer.querySelector(".sect-dragging")
+    const activeElementAddSectionBtn = activeElement.nextElementSibling
+
+    if (activeElement) {
+        evt.preventDefault()
+        evt.dataTransfer.dropEffect = 'move'
+    } else
+        return
+
+    const currentElement = evt.target.parentNode
+    const isMoveable = activeElement !== currentElement &&
+        currentElement.classList.contains("section-container")
+
+    if (!isMoveable) {
+        return
+    }
+
+
+    const nextElement = getNextSectionElement(activeElement, currentElement)
+
+    nextElement.after(activeElement)
+    activeElement.after(activeElementAddSectionBtn)
+
+    saveNewSectionOrder()
+}
+
+function getNextSectionElement(activeElement, currentElement) {
+    // Получаем объект с размерами и координатами
+    const currentElementCoord = currentElement.getBoundingClientRect()
+    const activeElementCoord = activeElement.getBoundingClientRect()
+
+    // Находим вертикальную координату центра текущего элемента
+    const coordDelta = currentElementCoord.y - activeElementCoord.y
+
+    // Если курсор выше центра элемента, возвращаем текущий элемент
+    // В ином случае — следующий DOM-элемент
+    if (coordDelta < 0)
+        return currentElement.previousElementSibling
+    else
+        return currentElement.nextElementSibling
+}
+
+function saveNewSectionOrder() {
+
 }

@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleDragoverProjectList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -48,8 +48,8 @@ export function renderListOfProjects(projectMap) {
     list.addEventListener("click", handleProjectListClick)
 
     list.addEventListener('dragstart', (e) => {
-        //e.dataTransfer.setData('text/plain', e.target.dataset.id); // Запоминаем ID
         e.target.classList.add('dragging')
+        e.dataTransfer.effectAllowed = 'move'
     });
 
     list.addEventListener('dragend', (e) => {
@@ -177,28 +177,28 @@ function renderProjectContent(projectId) {
     taskContainer.append(createTodoList(project.todos, "project-" + projectId))
     taskContainer.append(createAddSectionBtn("project-" + projectId))
     // Render project's sections
-    const sectionTempl = document.querySelector("#section-container-template")
     project.sections.forEach(secId => {
-        const clone = sectionTempl.content.cloneNode(true)
-        const section = clone.querySelector(".section-container")
-        section.setAttribute("data-id", secId)
-        const sectionObj = data.getSectionById(secId)
-        clone.querySelector(".section-title").textContent = sectionObj.title
+        const sectObj = data.getSectionById(secId)
+        const section = createSectionFromTempl(sectObj)
+        const templTodoList = section.querySelector(".todo-list")
+        templTodoList.remove()
 
-        const select = clone.querySelector(".select-section-btn")
-        const options = clone.querySelector(".options")
-        options.setAttribute("data-id", secId)
-        select.setAttribute("data-id", secId)
-        select.addEventListener("click", renderSectionExtraOptions)
-        options.addEventListener("click", (e) => {
-            const target = e.target
-            if (target.classList.contains("option"))
-                handleSectionExtraOption(target)
-        })
-        section.append(createTodoList(sectionObj.todos, "section-" + secId))
+        section.append(createTodoList(sectObj.todos, "section-" + secId))
         taskContainer.append(section)
         taskContainer.append(createAddSectionBtn("project-" + projectId))
     })
+
+    taskContainer.addEventListener('dragstart', (e) => {
+        e.target.classList.add('sect-dragging')
+        e.dataTransfer.effectAllowed = 'move'
+    });
+
+    taskContainer.addEventListener('dragend', (e) => {
+        e.target.classList.remove('sect-dragging')
+    });
+
+    taskContainer.addEventListener("dragover", handleDragoverSection)
+
     contentDiv.append(clone)
 }
 
