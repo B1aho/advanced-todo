@@ -3,7 +3,7 @@ import "../../assets/select/itc-custom-select.css";
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select";
 import { Datepicker } from "vanillajs-datepicker";
 import { format } from "date-fns";
-import { createAddSectionBtn, createProjectForm, createProjectFormFromTempl, createProjectFromTempl, createSectionFromTempl, createTodoFromTempl } from './createDOMutility';
+import { createAddSectionBtn, createProjectForm, createProjectFormFromTempl, createProjectFromTempl, createSectionFromTempl, createTodoFromTempl, saveNewSectionOrder } from './createDOMutility';
 import { DataStorage } from '../dataSaving/dataStorage';
 import { saveData } from '../dataSaving/localStore';
 import { updateProjectRendering } from './todoRender';
@@ -109,6 +109,7 @@ export function renderSectionForm(e) {
         const sectionNode = createSectionFromTempl(createSectionObj(formValues, parentId))
         addSectionBtn.after(sectionNode)
         sectionNode.after(createAddSectionBtn(parentId))
+        saveNewSectionOrder()
     })
     addSectionBtn.before(form)
     addSectionBtn.style.display = "none"

@@ -1087,6 +1087,16 @@ function getNextSectionElement(activeElement, currentElement) {
         return currentElement.nextElementSibling
 }
 
-function saveNewSectionOrder() {
+export function saveNewSectionOrder() {
+    const projContainer = document.querySelector(".project-container")
+    const sections = projContainer.querySelectorAll(".section-container")
+    const idOrder = []
+    sections.forEach(sec => idOrder.push(sec.getAttribute("data-id")))
 
+    const project = new DataStorage().getProjectById(projContainer.getAttribute("data-id"))
+    const newOrder = new Set()
+    idOrder.forEach(id => newOrder.add(id))
+    project.sections = newOrder
+
+    saveData()
 }
