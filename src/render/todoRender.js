@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { addCollapseBtnOnTodo, checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -182,8 +182,12 @@ export function renderProjectContent(projectId) {
         const section = createSectionFromTempl(sectObj)
         const templTodoList = section.querySelector(".todo-list")
         templTodoList.remove()
-
-        section.append(createTodoList(sectObj.todos, "section-" + secId))
+        const collapseBtn = section.querySelector(".collapse-btn-section")
+        const todoList = createTodoList(sectObj.todos, "section-" + secId)
+        section.append(todoList)
+        collapseBtn.remove()
+        addCollapseBtnOnSection(section)
+        
         taskContainer.append(section)
         taskContainer.append(createAddSectionBtn("project-" + projectId))
     })

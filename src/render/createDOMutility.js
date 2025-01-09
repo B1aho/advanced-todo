@@ -484,6 +484,8 @@ export function createSectionFromTempl(sect) {
     todoList.append(createAddTodoBtn("section-" + sect.id))
     section.append(todoList)
 
+    addCollapseBtnOnSection(section)
+
     return section
 }
 
@@ -1158,5 +1160,27 @@ function unCollapseAllSubtasks(todo) {
         const selector = `.todo-container[data-id="${CSS.escape(id)}"]`
         const todoContainer = document.querySelector(selector)
         todoContainer.classList.remove("collapsed")
+    }
+}
+
+export function addCollapseBtnOnSection(sectionContainer) {
+    const collapseBtn = document.createElement("button")
+    collapseBtn.classList.add("collapse-btn-section")
+    collapseBtn.textContent = "▶"
+    const sectionTodoList = sectionContainer.querySelector(".todo-list")
+    collapseBtn.addEventListener("click", (e) => {
+        collapseSectionTodoList(e.currentTarget, sectionTodoList)
+    })
+    const sectionHeaderContainer = sectionContainer.querySelector(".section-header-container")
+    sectionHeaderContainer.prepend(collapseBtn)
+}
+
+export function collapseSectionTodoList(collapseBtn, sectionTodoList) {
+    collapseBtn.classList.toggle("active-collapse")
+    const isNeedToCollapse = collapseBtn.classList.contains("active-collapse")
+    if (isNeedToCollapse) {
+        sectionTodoList.classList.add("collapsed")
+    } else {
+        sectionTodoList.classList.remove("collapsed")
     }
 }

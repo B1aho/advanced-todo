@@ -285,10 +285,10 @@ main {
     margin-left: 5%;
 }
 
-.todo-container {
+.todo-container, .section-header-container {
     position: relative;
 }
-.collapse-btn {
+.collapse-btn, .collapse-btn-section {
     position: absolute;
     right: 100%;
     background: none;
@@ -300,7 +300,8 @@ main {
     transition: transform 0.2s ease;
 }
 
-.collapse-btn.active-collapse {
+.collapse-btn.active-collapse
+,.collapse-btn-section.active-collapse {
     transform: rotate(0deg);
 }
 

@@ -3,7 +3,7 @@ import "../../assets/select/itc-custom-select.css";
 import { ItcCustomSelect } from "../../assets/select/itc-custom-select";
 import { Datepicker } from "vanillajs-datepicker";
 import { format } from "date-fns";
-import { createAddSectionBtn, createProjectForm, createProjectFormFromTempl, createProjectFromTempl, createSectionFromTempl, createTodoFromTempl, saveNewSectionOrder } from './createDOMutility';
+import { addCollapseBtnOnSection, createAddSectionBtn, createProjectForm, createProjectFormFromTempl, createProjectFromTempl, createSectionFromTempl, createTodoFromTempl, saveNewSectionOrder } from './createDOMutility';
 import { DataStorage } from '../dataSaving/dataStorage';
 import { saveData } from '../dataSaving/localStore';
 import { updateProjectRendering } from './todoRender';
