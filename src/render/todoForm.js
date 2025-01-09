@@ -50,6 +50,10 @@ export function renderTodoForm(e) {
         btn.style.display = "block"
         const todoObj = createTodoObj(formValues, parentId)
         const todoNode = createTodoFromTempl(todoObj)
+        // В форме нет смысла что-то свертывать
+        const collapseBtn = todoNode.querySelector(".collapse-btn")
+        if (collapseBtn)
+            collapseBtn.remove()
         if (btn.classList.contains("add-todo-btn")) {
             btn.before(todoNode)
         } else {

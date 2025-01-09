@@ -7,7 +7,7 @@ import { saveData } from "../dataSaving/localStore"
 import { TodoItem } from "../entities/todoItem"
 import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
-import { hideOptions, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
+import { hideOptions, renderProjectContent, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
 
@@ -153,6 +153,9 @@ export function createTodoFromTempl(todo) {
         createConfirmDiagAndShow(todo.id, "todo")
     })
 
+    if (haveUncheckedSubtask(todo)) {
+        addCollapseBtnOnTodo(todoContainer)
+    }
 
     const todoTitle = clone.querySelector(".todo-title")
     todoTitle.textContent = todo.title
@@ -183,6 +186,17 @@ export function createTodoFromTempl(todo) {
     }
 
     return todoContainer
+}
+
+function haveUncheckedSubtask(todo) {
+    const subtaskIdSet = todo.subtask
+    if (subtaskIdSet.size <= 0)
+        return false
+    for (const id of subtaskIdSet) {
+        if (!new DataStorage().getTodoById(id).checked)
+            return true
+    }
+    return false
 }
 
 // Проверь, что то todo передается всегда
@@ -336,20 +350,21 @@ function uncheckTodoContainers(todo) {
 export function showActualTodos(e) {
     if (handleFilterClick(e))
         return
-    const projId = document.querySelector(".project-container").getAttribute("data-id")
-    const proj = new DataStorage().getProjectById(projId)
-    proj.todos.forEach(todoId => {
-        const todo = new DataStorage().getTodoById(todoId)
-        checkTodoContainers(todo)
-    })
-    // Для секций тоже самое 
-    proj.sections.forEach(secId => {
-        const section = new DataStorage().getSectionById(secId)
-        section.todos.forEach(todoId => {
-            const todo = new DataStorage().getTodoById(todoId)
-            checkTodoContainers(todo)
-        })
-    })
+    renderProjectContent(document.querySelector(".project-container").getAttribute("data-id"))
+    // const projId = document.querySelector(".project-container").getAttribute("data-id")
+    // const proj = new DataStorage().getProjectById(projId)
+    // proj.todos.forEach(todoId => {
+    //     const todo = new DataStorage().getTodoById(todoId)
+    //     checkTodoContainers(todo)
+    // })
+    // // Для секций тоже самое 
+    // proj.sections.forEach(secId => {
+    //     const section = new DataStorage().getSectionById(secId)
+    //     section.todos.forEach(todoId => {
+    //         const todo = new DataStorage().getTodoById(todoId)
+    //         checkTodoContainers(todo)
+    //     })
+    // })
 }
 
 export function showCompletedTodos(e) {
@@ -1099,4 +1114,49 @@ export function saveNewSectionOrder() {
     project.sections = newOrder
 
     saveData()
+}
+
+export function addCollapseBtnOnTodo(todoItem) {
+    const collapseBtn = document.createElement("button")
+    collapseBtn.classList.add("collapse-btn")
+    collapseBtn.textContent = "▶"
+    collapseBtn.addEventListener("click", () => {
+        collapseBtn.classList.toggle("active-collapse")
+        const data = new DataStorage()
+        const isNeedToCollapse = collapseBtn.classList.contains("active-collapse")
+        const todo = data.getTodoById(todoItem.getAttribute("data-id"))
+
+        if (isNeedToCollapse) {
+            collapseAllSubtasks(todo)
+        } else {
+            unCollapseAllSubtasks(todo)
+        }
+    })
+    todoItem.prepend(collapseBtn)
+}
+
+function collapseAllSubtasks(todo) {
+    const subtasks = todo.subtask
+    for (const id of subtasks) {
+        const subtask = new DataStorage().getTodoById(id)
+        if (subtask.subtask.size > 0)
+            collapseAllSubtasks(subtask)
+        // Вынести в отдельную функцию getTodoContainerById
+        const selector = `.todo-container[data-id="${CSS.escape(id)}"]`
+        const todoContainer = document.querySelector(selector)
+        todoContainer.classList.add("collapsed")
+    }
+}
+
+function unCollapseAllSubtasks(todo) {
+    const subtasks = todo.subtask
+    for (const id of subtasks) {
+        const subtask = new DataStorage().getTodoById(id)
+        if (subtask.subtask.size > 0)
+            unCollapseAllSubtasks(subtask)
+        // Вынести в отдельную функцию getTodoContainerById
+        const selector = `.todo-container[data-id="${CSS.escape(id)}"]`
+        const todoContainer = document.querySelector(selector)
+        todoContainer.classList.remove("collapsed")
+    }
 }

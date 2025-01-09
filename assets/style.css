@@ -205,11 +205,15 @@ button {
 }
 
 .active {
-    background-color: #00ff88; /* Цвет выбранного фильтра */
-    border-color: #00b36b;    /* Цвет рамки */
-    color: white;             /* Цвет текста */
-    box-shadow: 0 0 10px rgba(0, 255, 179, 0.5); /* Подсветка */
-  }
+    background-color: #00ff88;
+    /* Цвет выбранного фильтра */
+    border-color: #00b36b;
+    /* Цвет рамки */
+    color: white;
+    /* Цвет текста */
+    box-shadow: 0 0 10px rgba(0, 255, 179, 0.5);
+    /* Подсветка */
+}
 
 .loader-container {
     height: 4px;
@@ -271,6 +275,33 @@ button {
 
 .todo-container.diag-indent {
     margin-left: 28px;
+}
+
+.collapsed {
+    display: none;
+}
+
+main {
+    margin-left: 5%;
+}
+
+.todo-container {
+    position: relative;
+}
+.collapse-btn {
+    position: absolute;
+    right: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 5px;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+}
+
+.collapse-btn.active-collapse {
+    transform: rotate(0deg);
 }
 
 .todo-item {

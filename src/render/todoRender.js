@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { addCollapseBtnOnTodo, checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -148,7 +148,7 @@ export function hideOptions(e) {
  * 
  * @param {*} projectId 
  */
-function renderProjectContent(projectId) {
+export function renderProjectContent(projectId) {
     // Cause singletone pattern, i can be sure that it will be same storage evvery time
     const data = new DataStorage()
     const project = data.getProjectById(projectId)
@@ -243,6 +243,7 @@ export function updateProjectRendering(parentId, todoNode) {
     for (let i = 1; i < taskNumber; i++) {
         previousSibling = previousSibling.nextElementSibling
     }
+    addCollapseBtnOnTodo(previousSibling)
     previousSibling.after(clone)
 }
 
