@@ -80,11 +80,38 @@ body {
     display: flex;
     min-width: 100%;
     min-height: 100%;
+    padding: 1%;
 }
 
 #menu {
     display: flex;
     flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.607);
+    border-radius: 5px;
+    width: 200px; /* Начальная ширина панели */
+  min-width: 100px; /* Минимальная ширина */
+  max-width: 400px; /* Максимальная ширина */
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+main {
+    /* overflow-x: visible; - с ними пропадает из видимости toggle-btn
+    overflow-y: auto; */
+    max-height: 100vh;
+    min-width: 50%;
+}
+
+.project-title-container, #dashboard-header {
+    display: flex;
+}
+
+#resizer {
+    margin-left: 3px;
+    width: 5px;
+    cursor: ew-resize;
+    background-color: #ccc;
 }
 
 #project-list {
@@ -350,7 +377,7 @@ body:has(dialog[open]) {
 .options {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     background: #fff;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);

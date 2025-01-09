@@ -12,15 +12,21 @@
         <nav id="menu">
             <div id="project-list">
                 <header id="project-list-header">My projects: </header>
-                <!--Dynamicaly rendering project list-->
             </div>
             <div id="add-project-btn-wrapper">
                 <button id="add-project-btn">Add new project</button>
             </div>
             <footer></footer>
         </nav>
+        <div id="resizer"></div>
         <main>
-
+            <!--Переделать dashboard через template-->
+            <div id="dashboard">
+                <header id="dashboard-header">
+                    <button class="toggle-navbar"><</button>
+                    <h1>Dashboard</h1>
+                </header>
+            </div>
         </main>
     </div>
 
@@ -257,6 +263,7 @@
 
     <template id="project-templ">
         <div class="project-title-container">
+            <button class="toggle-navbar"><</button>
             <h1 class="project-title"></h1>
         </div>
         <div class="project-filters">

@@ -2,7 +2,7 @@ import "../assets/style.css";
 import { DataStorage } from "./dataSaving/dataStorage";
 import { getApp } from "./dataSaving/localStore";
 import { renderListOfProjects } from "./render/todoRender";
-import { initAddProjectBtn, initRemoveConfirmDiag } from "./render/createDOMutility";
+import { initAddProjectBtn, initRemoveConfirmDiag, openNavbar, toggleNavbar } from "./render/createDOMutility";
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
  * Отрисовать список проектов в navbar
@@ -11,19 +11,58 @@ document.addEventListener("DOMContentLoaded", () => {
     let data = initData()
     initAddProjectBtn()
     renderListOfProjects(data.projects)
+
+    const resizer = document.querySelector("#resizer")
+    const navbar = document.querySelector("nav")
+    let isResizing = false
+
+    resizer.addEventListener("mousedown", () => {
+        isResizing = true;
+        document.body.style.cursor = 'ew-resize'
+        document.body.style.userSelect = 'none'
+        navbar.style.pointerEvents = "none"
+    })
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isResizing) return
+
+        const newWidth = e.clientX
+        const minWidth = parseInt(getComputedStyle(navbar).minWidth, 10)
+        const maxWidth = parseInt(getComputedStyle(navbar).maxWidth, 10)
+
+        if (newWidth >= minWidth && newWidth <= maxWidth) {
+            navbar.style.width = `${newWidth - 20}px`
+        }
+
+        if (newWidth < minWidth) {
+            toggleNavbar()
+            isResizing = false
+            document.body.style.cursor = 'default'
+            document.body.style.userSelect = 'auto'
+        }
+
+        if (newWidth >= 70 && minWidth === 0) {
+            openNavbar()
+            isResizing = false
+            document.body.style.cursor = 'default'
+            document.body.style.userSelect = 'auto'
+        }
+    })
+
+    document.addEventListener('mouseup', () => {
+        isResizing = false
+        document.body.style.cursor = 'default'
+        document.body.style.userSelect = 'auto'
+        navbar.style.pointerEvents = "auto"
+    })
+
+    // // Предотвращаем конфликт с dragndrop
+    // document.addEventListener('dragstart', (e) => {
+    //     if (isResizing) e.preventDefault();
+    // })
+
+
 })
-
-
-
-// document.addEventListener('drop', (e) => {
-//     e.preventDefault();
-//     const draggedId = e.dataTransfer.getData('text/plain'); // Получаем ID
-//     const draggedElement = document.querySelector(`[data-id="${draggedId}"]`);
-
-//     if (e.target.classList.contains('project') || e.target.classList.contains('section')) {
-//         e.target.appendChild(draggedElement); // Перенос элемента
-//     }
-// });
 
 /**
  * Check if localStorage have valid data then return it. Else create new instance and return

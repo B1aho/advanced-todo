@@ -1063,7 +1063,6 @@ function saveNewListOrder() {
 export function handleDragoverSection(evt) {
     const projectContainer = document.querySelector(".project-container")
     const activeElement = projectContainer.querySelector(".sect-dragging")
-    const activeElementAddSectionBtn = activeElement.nextElementSibling
 
     if (activeElement) {
         evt.preventDefault()
@@ -1071,6 +1070,7 @@ export function handleDragoverSection(evt) {
     } else
         return
 
+    const activeElementAddSectionBtn = activeElement.nextElementSibling
     const currentElement = evt.target.parentNode
     const isMoveable = activeElement !== currentElement &&
         currentElement.classList.contains("section-container")
@@ -1183,4 +1183,23 @@ export function collapseSectionTodoList(collapseBtn, sectionTodoList) {
     } else {
         sectionTodoList.classList.remove("collapsed")
     }
+}
+
+export function toggleNavbar() {
+    const navbar = document.querySelector("nav")
+    if (navbar.style.width !== '0px') {
+        navbar.style.width = '0px'
+        navbar.style.minWidth = '0'
+    } else {
+        navbar.style.width = '250px'
+        navbar.style.minWidth = '100px'
+    }
+}
+
+export function openNavbar() {
+    const navbar = document.querySelector("nav")
+
+    navbar.style.width = '250px'
+    navbar.style.minWidth = '100px'
+
 }

@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos, toggleNavbar } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -158,11 +158,15 @@ export function renderProjectContent(projectId) {
     }
     // Render project header
     const contentDiv = document.querySelector("main")
+    //const dashboard = document.querySelector("#dashboard-header")
     contentDiv.innerHTML = ""
     const templ = document.querySelector("#project-templ")
     const clone = templ.content.cloneNode(true)
     const title = clone.querySelector(".project-title")
     title.textContent = project.title
+
+    const toggleNavbarBtn = clone.querySelector(".toggle-navbar")
+    toggleNavbarBtn.addEventListener("click", toggleNavbar)
 
     // Init filters behaviour
     const allTodosBtn = clone.querySelector("#all-todos-btn")
@@ -187,7 +191,7 @@ export function renderProjectContent(projectId) {
         section.append(todoList)
         collapseBtn.remove()
         addCollapseBtnOnSection(section)
-        
+
         taskContainer.append(section)
         taskContainer.append(createAddSectionBtn("project-" + projectId))
     })
