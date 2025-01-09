@@ -13,6 +13,18 @@ document.addEventListener("DOMContentLoaded", () => {
     renderListOfProjects(data.projects)
 })
 
+
+
+// document.addEventListener('drop', (e) => {
+//     e.preventDefault();
+//     const draggedId = e.dataTransfer.getData('text/plain'); // Получаем ID
+//     const draggedElement = document.querySelector(`[data-id="${draggedId}"]`);
+
+//     if (e.target.classList.contains('project') || e.target.classList.contains('section')) {
+//         e.target.appendChild(draggedElement); // Перенос элемента
+//     }
+// });
+
 /**
  * Check if localStorage have valid data then return it. Else create new instance and return
  * @returns {DataStorage} - Instance of DataStorage class

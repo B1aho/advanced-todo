@@ -101,6 +101,11 @@ body {
     cursor: pointer;
 }
 
+.dragging {
+    opacity: 0.5;
+    border: 2px dashed #000;
+}
+
 .diag-todo-container,
 .section-header-container,
 .project-filters {

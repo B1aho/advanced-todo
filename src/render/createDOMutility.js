@@ -316,7 +316,7 @@ function checkTodoContainers(todo) {
     const todoContainer = document.querySelector(selector)
     if (todo.checked)
         todoContainer.classList.add("checked")
-} 
+}
 
 function uncheckTodoContainers(todo) {
     if (todo.subtask.size > 0)
@@ -325,7 +325,7 @@ function uncheckTodoContainers(todo) {
     const todoContainer = document.querySelector(selector)
     if (todo.checked)
         todoContainer.classList.remove("checked")
-} 
+}
 
 
 // поменяй название, а то оно не отображает смысл
@@ -349,7 +349,7 @@ export function showActualTodos(e) {
             const todo = new DataStorage().getTodoById(todoId)
             checkTodoContainers(todo)
         })
-    }) 
+    })
 }
 
 export function showCompletedTodos(e) {
@@ -370,7 +370,7 @@ export function showCompletedTodos(e) {
             const todo = new DataStorage().getTodoById(todoId)
             uncheckTodoContainers(todo)
         })
-    }) 
+    })
 }
 /**
  * 
@@ -978,16 +978,62 @@ function createSectionTextArea(sectId) {
     targetNode.style.display = "none"
 }
 
-// Перевод задачи в разряд выполненных - в плане хранилища, это просто у сущности задачи устанавливаем поле 
-// checked в true, - сохраняем изменения. 
-// В плане ui - необходимо по нажатию на конпку отрисовать галочку в кнопке, зачеркнуть весь текст в задаче(css)
-// Далее необходимо поставить timeout на 1 секунду в течении которой, можно будет отменить это действие через попап(по сути снять программно timeout)
-// Если оно не отменяется, то задача со всеми под задачами(эти узлы копируются куда-то) 
-// Для каждого проекта можно будет нажать на вкладку выполненные и все выполненные задачи применительно к данному проекту
-// будут отрисованы - они будут получены через filter всех todos, проекта с полем checked = true
-// 
-// Нужно обдумать как-то ограничение этого кол-ва выполненных задач, так local-storage не может хранить это всё бесконечно
-// Думаю пока сделать максимум последние 20 задач хранятся - поле у проекта, которое геттер, выдает количество всех выполненных
-// Если следующая выполненная превышает, то удаляется первая по дате, и надо обязательно инфу указать о таком подходе во вкладке выполненные
-// Но есть проблема, если следующая на уадление - задача с подзадачами, то какова должна быть стратегия удаления? Видимо удалятся все подзадачи
-//
+
+// Надо как-то сохранять этот порядок при следующем открытии
+// Пройтись по элементам списка, и разместить id памяти соответсующим образом
+export function handleDragoverProjectList(evt) {
+    // Разрешаем сбрасывать элементы в эту область
+    evt.preventDefault()
+    const list = document.querySelector("#project-list")
+
+    const activeElement = list.querySelector(".dragging")
+    const currentElement = evt.target.parentNode
+
+    const isMoveable = activeElement !== currentElement &&
+        currentElement.classList.contains("sidebar-list-item")
+
+    if (!isMoveable) {
+        return
+    }
+
+    // Находим элемент, перед которым будем вставлять
+    //const nextElement = currentElement
+    const nextElement = getNextElement(evt.clientY, currentElement)
+
+    // Вставляем activeElement перед nextElement
+    if (currentElement.nextElementSibling === null)
+        nextElement.after(activeElement)
+    else
+        list.insertBefore(activeElement, nextElement)
+
+    saveNewListOrder()
+}
+
+function getNextElement(cursorPosition, currentElement) {
+    // Получаем объект с размерами и координатами
+    const currentElementCoord = currentElement.getBoundingClientRect()
+    // Находим вертикальную координату центра текущего элемента
+    const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2
+
+    // Если курсор выше центра элемента, возвращаем текущий элемент
+    // В ином случае — следующий DOM-элемент
+    const nextElement = (cursorPosition < currentElementCenter) ?
+        currentElement :
+        currentElement.nextElementSibling
+
+    return nextElement
+}
+
+function saveNewListOrder() {
+    const list = document.querySelector("#project-list")
+    const listItems = list.querySelectorAll(".sidebar-list-item")
+    const idOrder = []
+    listItems.forEach(item => idOrder.push(item.getAttribute("data-id")))
+
+    let projectMap = new DataStorage().projects
+    const newProjectMap = new Map()
+
+    idOrder.forEach(id => newProjectMap.set(id, projectMap.get(id)))
+    new DataStorage().projects = newProjectMap
+    saveData()
+}

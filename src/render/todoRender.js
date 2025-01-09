@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleDragoverProjectList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -18,13 +18,6 @@ export function renderListOfProjects(projectMap) {
             id: key,
         })
     });
-
-    // Sort projects alphabetical by title
-    projectList.sort((a, b) => {
-        const aVal = a.title.toLowerCase()
-        const bVal = b.title.toLowerCase()
-        return aVal.localeCompare(bVal)
-    })
 
     // Add number of projects to the header
     const header = document.querySelector("#project-list-header")
@@ -53,6 +46,17 @@ export function renderListOfProjects(projectMap) {
     // Вешаем слушатель, который по нажатию определяет, если на сам проект нажали - открывает его
     // если на кнопку в контейнере, то открывает меню с опциям: удалить, добавить в избранное, изменить
     list.addEventListener("click", handleProjectListClick)
+
+    list.addEventListener('dragstart', (e) => {
+        //e.dataTransfer.setData('text/plain', e.target.dataset.id); // Запоминаем ID
+        e.target.classList.add('dragging')
+    });
+
+    list.addEventListener('dragend', (e) => {
+        e.target.classList.remove('dragging')
+    });
+
+    list.addEventListener(`dragover`, handleDragoverProjectList)
 }
 
 /**
