@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
+import { checkTodo, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createTodoList, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos } from "./createDOMutility";
 
 /**
  * @param {Map} projectMap 
@@ -227,6 +227,13 @@ export function updateProjectRendering(parentId, todoNode) {
     removeBtn.addEventListener("click", () => {
         createConfirmDiagAndShow(todoNode.getAttribute("data-id"), "todo")
     })
+
+    // Возвращаем слушаетли для клона - продумать более оптимальную стратегию
+    const checkBtn = clone.querySelector(".todo-check-btn")
+    checkBtn.addEventListener("click", (e) => {
+        checkTodo(e, new DataStorage().getTodoById(todoNode.getAttribute("data-id")))
+    })
+
     clone.classList.remove("diag-indent")
     const taskNumber = countTodoNodes(data.getTodoById(parentId))
     for (let i = 1; i < taskNumber; i++) {

@@ -194,7 +194,7 @@ export function createTodoFromTempl(todo) {
  * @param {TodoItem} todo 
  * @returns 
  */
-function checkTodo(event, todo) {
+export function checkTodo(event, todo) {
     const data = new DataStorage()
     // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
     toggleCheckedTodoContent(todo)
@@ -293,8 +293,6 @@ function hideCheckedTodo(todo) {
 }
 
 function unhideCheckedTodo(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => unhideCheckedTodo(new DataStorage().getTodoById(subId)))
     const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
     const todoContainer = document.querySelector(selector)
     todoContainer.classList.remove("checked")
@@ -318,6 +316,15 @@ function checkTodoContainers(todo) {
     const todoContainer = document.querySelector(selector)
     if (todo.checked)
         todoContainer.classList.add("checked")
+} 
+
+function uncheckTodoContainers(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => uncheckTodoContainers(new DataStorage().getTodoById(subId)))
+    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+    const todoContainer = document.querySelector(selector)
+    if (todo.checked)
+        todoContainer.classList.remove("checked")
 } 
 
 
@@ -353,7 +360,7 @@ export function showCompletedTodos(e) {
     const proj = new DataStorage().getProjectById(projId)
     proj.todos.forEach(todoId => {
         const todo = new DataStorage().getTodoById(todoId)
-        unhideCheckedTodo(todo)
+        uncheckTodoContainers(todo)
     })
 
     // Для секций тоже самое 
@@ -361,7 +368,7 @@ export function showCompletedTodos(e) {
         const section = new DataStorage().getSectionById(secId)
         section.todos.forEach(todoId => {
             const todo = new DataStorage().getTodoById(todoId)
-            unhideCheckedTodo(todo)
+            uncheckTodoContainers(todo)
         })
     }) 
 }
@@ -576,6 +583,15 @@ export function createDiagFromTempl(e) {
     }
 
     const otherOptions = diag.querySelector(".diag-options")
+
+    if (todo.checked) {
+        const todoWrapper = clone.querySelector(".cursor-wrapper-todo")
+        const optionWrapper = clone.querySelector(".cursor-wrapper-options")
+        otherOptions.classList.add("checked")
+        optionWrapper.classList.add("checked")
+        todoWrapper.classList.add("checked")
+    }
+
     if (todo.indent < 5)
         otherOptions.prepend(createAddSubtaskBtn("todo-" + todoId))
 

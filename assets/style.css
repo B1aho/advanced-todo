@@ -122,6 +122,16 @@ body {
     width: 100%;
 }
 
+.diag-todo-item.checked,
+.diag-options.checked {
+    pointer-events: none;
+}
+
+.cursor-wrapper-options.checked,
+.cursor-wrapper-todo.checked {
+    cursor: not-allowed;
+}
+
 .todo-item,
 .todo-list,
 .diag-todo-item {
