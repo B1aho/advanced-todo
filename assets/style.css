@@ -402,12 +402,12 @@ body:has(dialog[open]) {
     background: #f0f0f0;
 }
 
-#todo-dialog {
+/* #todo-dialog {
     z-index: 998;
-}
+} */
 
-#todo-dialog::backdrop {
+/* #todo-dialog::backdrop {
     z-index: 995;
-}
+} */
 
 /*style="transform: translate(0px, 0px); opacity: 1;" - dialog*/
