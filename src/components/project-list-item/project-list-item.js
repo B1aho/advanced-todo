@@ -1,4 +1,3 @@
-import { isThisSecond } from "date-fns";
 import styles from "./project-list-item.css?raw";  // Подключаем стили
 
 export class ProjectListItem extends HTMLElement {
@@ -14,6 +13,7 @@ export class ProjectListItem extends HTMLElement {
 
         this.listItem = this.shadowRoot.querySelector(".sidebar-list-item")
         this.svgContainer = this.shadowRoot.querySelector(".sidebar-svg-container")
+        this.listItemTitle = this.shadowRoot.querySelector(".sidebar-project-title")
         this.shadow = this.shadowRoot
         this.dispatchOpenProjectEvent = this.dispatchOpenProjectEvent.bind(this)
         this.setData = this.setData.bind(this)
@@ -56,8 +56,7 @@ export class ProjectListItem extends HTMLElement {
         select.setAttribute("data-id", project.id)
         this.listItem.append(select)
 
-        const title = this.shadow.querySelector(".sidebar-project-title")
-        title.textContent = project.title
+        this.listItemTitle.textContent = project.title
     }
 
     dispatchOpenProjectEvent(e) { 
@@ -69,6 +68,13 @@ export class ProjectListItem extends HTMLElement {
             });
             this.listItem.dispatchEvent(customEvent);
         }
+    }
+
+    confirmChanges(title, color) {
+        if (title)
+            this.listItemTitle.textContent = title
+        if (color)
+            this.svgContainer.setAttribute("color", color)
     }
 
 }

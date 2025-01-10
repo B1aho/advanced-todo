@@ -235,7 +235,7 @@ export function updateTodoRemoveRender(todoId, number) {
 
 export function updateProjectListAfterDeletion(projId) {
     // Просто найти проджект лист итем с этим айди и удалить узел
-    const selector = `.sidebar-list-item[data-id="${CSS.escape(projId)}"]`
+    const selector = `.project-list-item[data-id="${CSS.escape(projId)}"]`
     const projListItem = document.querySelector(selector)
     projListItem.remove()
     changeProjectListHeaderNumber(-1)
@@ -262,10 +262,11 @@ export function updateSectionContentAfterDeletion(sectId) {
 export function updateProjectListAfterChanging(proj) {
     const projId = proj.id
     // Просто найти проджект лист итем с этим айди и изменить узел
-    const selector = `.sidebar-list-item[data-id="${CSS.escape(projId)}"]`
+    const selector = `.project-list-item[data-id="${CSS.escape(projId)}"]`
     const projListItem = document.querySelector(selector)
-    const title = projListItem.querySelector(".sidebar-project-title")
-    title.textContent = proj.title
+    projListItem.confirmChanges(proj.title)
+    // const title = projListItem.querySelector(".sidebar-project-title")
+    // title.textContent = proj.title
 }
 
 export function updateProjectContentAfterChanging(proj) {
