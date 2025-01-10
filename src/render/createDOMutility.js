@@ -10,7 +10,6 @@ import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoFo
 import { hideOptions, renderProjectContent, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
 
-
 /**
  * Fabric that create button that can render new Section
  * @param {String} parentId - string that represent project's id. This project is parent for future sections
@@ -1009,9 +1008,9 @@ export function handleDragoverProjectList(evt) {
     } else
         return
 
-    const currentElement = evt.target.parentNode
+    const currentElement = evt.target
     const isMoveable = activeElement !== currentElement &&
-        currentElement.classList.contains("sidebar-list-item")
+        currentElement.classList.contains("project-list-item")
 
     if (!isMoveable) {
         return
@@ -1048,7 +1047,7 @@ function getNextElement(cursorPosition, currentElement) {
 
 function saveNewListOrder() {
     const list = document.querySelector("#project-list")
-    const listItems = list.querySelectorAll(".sidebar-list-item")
+    const listItems = list.querySelectorAll(".project-list-item")
     const idOrder = []
     listItems.forEach(item => idOrder.push(item.getAttribute("data-id")))
 

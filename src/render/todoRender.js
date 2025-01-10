@@ -1,50 +1,54 @@
 import { DataStorage } from "../dataSaving/dataStorage";
 import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos, toggleNavbar } from "./createDOMutility";
-
 /**
  * @param {Map} projectMap 
  */
 export function renderListOfProjects(projectMap) {
     if (!(projectMap instanceof Map))
         throw new Error("projectMap must be an istance of Map()!")
-    const list = document.querySelector("#project-list")
-
-    // Extract needed projects info 
-    const projectList = []
-    projectMap.forEach((val, key) => {
-        projectList.push({
-            title: val.title,
-            color: val.color,
-            id: key,
-        })
-    });
 
     // Add number of projects to the header
     const header = document.querySelector("#project-list-header")
-    header.textContent += projectList.length
+    header.textContent += projectMap.size
 
+    const list = document.querySelector("#project-list")
+    const fragment = document.createDocumentFragment()
+    // Extract needed projects info 
+    //const projectList = []
+    projectMap.forEach((val, key) => {
+        const listItem = document.createElement("project-list-item")
+        listItem.setData(val)
+        fragment.append(listItem)
+        // projectList.push({
+        //     title: val.title,
+        //     color: val.color,
+        //     id: key,
+        // })
+    });
+    console.log(fragment)
     // Render project list with html template
-    const template = document.querySelector("#project-list-item")
-    projectList.forEach(val => {
-        const clone = template.content.cloneNode(true)
-        const listItem = clone.querySelector(".sidebar-list-item")
-        listItem.setAttribute("data-id", val.id)
+    // const template = document.querySelector("#project-list-item")
+    // projectList.forEach(val => {
+    //     const clone = template.content.cloneNode(true)
+    //     const listItem = clone.querySelector(".sidebar-list-item")
+    //     listItem.setAttribute("data-id", val.id)
 
-        const svgContainer = clone.querySelector("span")
-        svgContainer.setAttribute("color", val.color)
+    //     const svgContainer = clone.querySelector("span")
+    //     svgContainer.setAttribute("color", val.color)
 
-        const select = clone.querySelector(".select-project-btn")
-        const options = clone.querySelector(".options")
-        options.setAttribute("data-id", val.id)
-        select.setAttribute("data-id", val.id)
+    //     const select = clone.querySelector(".select-project-btn")
+    //     const options = clone.querySelector(".options")
+    //     options.setAttribute("data-id", val.id)
+    //     select.setAttribute("data-id", val.id)
 
-        const title = clone.querySelector(".sidebar-project-title")
-        title.textContent = val.title
+    //     const title = clone.querySelector(".sidebar-project-title")
+    //     title.textContent = val.title
 
-        list.append(listItem)
-    })
+    //     list.append(listItem)
+    // })
     // Вешаем слушатель, который по нажатию определяет, если на сам проект нажали - открывает его
     // если на кнопку в контейнере, то открывает меню с опциям: удалить, добавить в избранное, изменить
+    list.append(fragment)
     list.addEventListener("click", handleProjectListClick)
 
     list.addEventListener('dragstart', (e) => {

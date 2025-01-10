@@ -144,10 +144,6 @@ main {
     cursor: grabbing;
 }
 
-.sidebar-list-item {
-    cursor: pointer;
-}
-
 .diag-todo-container,
 .section-header-container,
 .project-filters {
