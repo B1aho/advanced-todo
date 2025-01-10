@@ -13,43 +13,22 @@ export function renderListOfProjects(projectMap) {
 
     const list = document.querySelector("#project-list")
     const fragment = document.createDocumentFragment()
+
     // Extract needed projects info 
-    //const projectList = []
-    projectMap.forEach((val, key) => {
+    projectMap.forEach((val) => {
         const listItem = document.createElement("project-list-item")
         listItem.setData(val)
         fragment.append(listItem)
-        // projectList.push({
-        //     title: val.title,
-        //     color: val.color,
-        //     id: key,
-        // })
     });
-    console.log(fragment)
-    // Render project list with html template
-    // const template = document.querySelector("#project-list-item")
-    // projectList.forEach(val => {
-    //     const clone = template.content.cloneNode(true)
-    //     const listItem = clone.querySelector(".sidebar-list-item")
-    //     listItem.setAttribute("data-id", val.id)
-
-    //     const svgContainer = clone.querySelector("span")
-    //     svgContainer.setAttribute("color", val.color)
-
-    //     const select = clone.querySelector(".select-project-btn")
-    //     const options = clone.querySelector(".options")
-    //     options.setAttribute("data-id", val.id)
-    //     select.setAttribute("data-id", val.id)
-
-    //     const title = clone.querySelector(".sidebar-project-title")
-    //     title.textContent = val.title
-
-    //     list.append(listItem)
-    // })
-    // Вешаем слушатель, который по нажатию определяет, если на сам проект нажали - открывает его
-    // если на кнопку в контейнере, то открывает меню с опциям: удалить, добавить в избранное, изменить
     list.append(fragment)
-    list.addEventListener("click", handleProjectListClick)
+
+    list.addEventListener("openProject",  (e) => {
+        renderProjectContent(e.detail.id)
+    })
+
+    list.addEventListener("openOptions", hideOtherOptions)
+
+    list.addEventListener("handleExtraOption", handleProjectExtraOption)
 
     list.addEventListener('dragstart', (e) => {
         e.target.classList.add('dragging')
@@ -60,7 +39,18 @@ export function renderListOfProjects(projectMap) {
         e.target.classList.remove('dragging')
     });
 
-    list.addEventListener(`dragover`, handleDragoverProjectList)
+    list.addEventListener("dragover", handleDragoverProjectList)
+}
+
+function hideOtherOptions(e) {
+    const id = e.detail.id
+    const listItems = document.querySelectorAll(".project-list-item")
+    listItems.forEach(item => {
+        if (item.dataset.id !== id) {
+            item.closeOption()
+        }
+    })
+    // Пройтись по всем, исключая открытый и выбрать метода закрыть окно + на документ повесить клик, который закрывает открытй
 }
 
 /**
@@ -69,26 +59,12 @@ export function renderListOfProjects(projectMap) {
  */
 export function renderProjectListItem(projObj) {
     const list = document.querySelector("#project-list")
-    // Render project list with html template
-    const template = document.querySelector("#project-list-item")
-    const clone = template.content.cloneNode(true)
-    const listItem = clone.querySelector(".sidebar-list-item")
-    listItem.setAttribute("data-id", projObj.id)
 
-    const svgContainer = clone.querySelector("span")
-    svgContainer.setAttribute("color", projObj.color)
-
-    const title = clone.querySelector(".sidebar-project-title")
-    title.textContent = projObj.title
-
-    const select = clone.querySelector(".select-project-btn")
-    const options = clone.querySelector(".options")
-    options.setAttribute("data-id", projObj.id)
-    select.setAttribute("data-id", projObj.id)
+    const listItem = document.createElement("project-list-item")
+    listItem.setData(projObj)
+    list.append(listItem)
 
     changeProjectListHeaderNumber(1)
-
-    list.append(listItem)
 }
 
 /**
@@ -106,8 +82,6 @@ function handleProjectListClick(e) {
         handleProjectExtraOption(target)
     else if (target.classList.contains("select-project-btn"))
         renderExtraOptions(target.getAttribute("data-id"))
-    else
-        renderProjectContent(target.parentElement.getAttribute("data-id"))
 }
 
 function changeProjectListHeaderNumber(number) {
@@ -119,15 +93,16 @@ function changeProjectListHeaderNumber(number) {
 
 /**
  * 
- * @param {*} id 
+ * @param {Event} e 
  */
-function renderExtraOptions(id) {
-    console.log(id)
-    hideOptions()
-    const selector = `.select-project-btn[data-id="${CSS.escape(id)}"]`
-    const options = document.querySelector(selector).nextElementSibling
-    options.classList.toggle("hidden")
-    document.addEventListener("click", hideOptions)
+function renderExtraOptions(e) {
+    const options = e.detail.options
+    console.log(options)
+    //hideOptions()
+    // const selector = `.project-list-item[data-id="${CSS.escape(id)}"]`
+    // const options = document.querySelector(selector).nextElementSibling
+    // options.classList.toggle("hidden")
+    // document.addEventListener("click", hideOptions)
 }
 
 export function renderSectionExtraOptions(e) {

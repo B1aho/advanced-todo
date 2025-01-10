@@ -868,9 +868,9 @@ export function createProjectForm() {
     return diag
 }
 
-export function handleProjectExtraOption(target) {
-    const projId = target.parentElement.getAttribute("data-id")
-    const actionType = target.getAttribute("data-action")
+export function handleProjectExtraOption(e) {
+    const actionType = e.detail.action
+    const projId = e.detail.projId
     switch (actionType) {
         case "remove":
             createConfirmDiagAndShow(projId, "project")
