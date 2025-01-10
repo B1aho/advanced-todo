@@ -16,23 +16,28 @@ export class ProjectListItem extends HTMLElement {
         // Логика при добавлении компонента в DOM
         const style = document.createElement("style")
         style.textContent = styles
-        this.shadowRoot.append(style)
+
+        this.self = this.shadowRoot
+        this.listItem = this.self.querySelector(".sidebar-list-item")
+
+        this.self.append(style)
+    }
+
+    disconnectedCallback() {
     }
 
     setData(project) {
-        const elem = this.shadowRoot
-
-        const listItem = elem.querySelector(".sidebar-list-item")
-        elem.host.setAttribute("data-id", project.id)
-        elem.host.setAttribute("draggable", true)
-        elem.host.classList.add("project-list-item")
+        const shadow = this.shadowRoot
+        const listItem = shadow.querySelector(".sidebar-list-item")
+        this.setAttribute("data-id", project.id)
+        this.setAttribute("draggable", true)
+        this.classList.add("project-list-item")
         listItem.setAttribute("data-id", project.id)
 
         const svgContainer = listItem.querySelector(".sidebar-svg-container")
         svgContainer.setAttribute("color", project.color)
 
         const select = document.createElement("my-select")
-        listItem.append(select)
         const options = [
             {
                 action: "remove",
@@ -43,8 +48,9 @@ export class ProjectListItem extends HTMLElement {
                 content: "Изменить",
             },
         ];
-
+        select.setData(options)
         select.setAttribute("data-id", project.id)
+        listItem.append(select)
 
         const title = listItem.querySelector(".sidebar-project-title")
         title.textContent = project.title

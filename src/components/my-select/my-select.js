@@ -12,49 +12,61 @@ export class MySelect extends HTMLElement {
         const template = document.querySelector("#my-select-templ")
         const templateContent = template.content
 
+        this.openSelect = this.openSelect.bind(this)
+        this.dispatchOptionEvent = this.dispatchOptionEvent.bind(this)
+
         // Вставляем клонированный шаблон в элемент
         shadow.append(templateContent.cloneNode(true))
     }
 
     connectedCallback() {
+        this.self = this.shadowRoot.querySelector(".my-select")
+        this.selectBtn = this.self.querySelector(".select-btn")
+        this.options = this.self.querySelector(".select-options")
         allSelects.add(this);
         // Добавляем инкапсулируемые стили
         const style = document.createElement("style")
         style.textContent = styles
-        this.shadowRoot.append(style)
+        this.self.append(style)
 
-        const mySelectBody = this.shadowRoot
-        const options = mySelectBody.querySelector(".select-options")
-        options.addEventListener("click", (e) => {
-            const customEvent = new CustomEvent('handleExtraOption', {
-                bubbles: true,
-                composed: true, // Событие сможет выйти из Shadow DOM
-                detail: {
-                    action: e.target.dataset.action,
-                    projId: mySelectBody.host.dataset.id
-                }
-            });
-            options.dispatchEvent(customEvent);
-        })
+        this.options.addEventListener("click", this.dispatchOptionEvent)
 
-        const selectBtn = mySelectBody.querySelector(".select-btn")
-        selectBtn.addEventListener("click", (e) => {
-            this.closeOtherSelects()
-            if (e.target === selectBtn)
-                e.stopPropagation()      // Предотвращаем событие от всплытия
-            options.classList.toggle("hidden")
-            document.addEventListener("click", () => {
-                this.closeSelect(options)
-            })
+        this.selectBtn.addEventListener("click", this.openSelect)
+    }
+
+    disconnectedCallback() {
+        this.selectBtn.removeEventListener("click", this.openSelect)
+        this.options.removeEventListener("click", this.dispatchOptionEvent)
+    }
+
+    openSelect(e) {
+        this.closeOtherSelects()
+        if (e.target === this.selectBtn)
+            e.stopPropagation()      // Предотвращаем событие от всплытия
+        this.options.classList.toggle("hidden")
+        document.addEventListener("click", () => {
+            this.closeSelect(this.options)
         })
     }
 
     closeSelect() {
-        const options = this.shadowRoot.querySelector(".select-options")
-        options.classList.add("hidden")
+        this.options.classList.add("hidden")
         document.removeEventListener("click", () => {
-            this.closeSelect(options)
+            this.closeSelect()
         })
+    }
+
+    dispatchOptionEvent(e) {
+        const customEvent = new CustomEvent('handleExtraOption', {
+            bubbles: true,
+            composed: true, // Событие сможет выйти из Shadow DOM
+            detail: {
+                action: e.target.dataset.action,
+                projId: this.dataset.id
+            }
+        })
+
+        this.options.dispatchEvent(customEvent);
     }
 
     setData(optionsArr) {
@@ -79,35 +91,4 @@ export class MySelect extends HTMLElement {
 
 }
 
-
 customElements.define("my-select", MySelect)
-
-/**
- * 
-
-        closeOption() {
-        const elem = this.shadowRoot
-        const options = elem.querySelector(".options")
-        options.classList.add("hidden")
-    }
-
-    attachEventToSelect(selectBtn, options) {
-        selectBtn.addEventListener("click", () => {
-            options.classList.toggle("hidden")
-
-            const eventName = options.classList.contains("hidden")
-            // Понятное имя условию дай
-            if (!eventName) {
-                const customEvent = new CustomEvent('openOptions', {
-                    bubbles: true,
-                    composed: true, // Событие сможет выйти из Shadow DOM
-                    detail: { 
-                        options: options,
-                        id: selectBtn.dataset.id
-                     } // Передаем строку через detail
-                });
-                selectBtn.dispatchEvent(customEvent);
-            }
-        })
-    }
- */
