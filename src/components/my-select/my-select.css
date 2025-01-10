@@ -1,0 +1,46 @@
+.my-select {
+    position: relative;
+    display: inline-block;
+}
+
+.select-btn {
+    padding: 0px 2px;
+    cursor: pointer;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    border-radius: 10px;
+    transition: all ease-in-out 0.2s;
+}
+
+.select-btn:hover {
+    background-color: rgba(82, 98, 99, 0.575);
+}
+
+.select-options {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.select-options.hidden {
+    display: none;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #f0f0f0;
+}

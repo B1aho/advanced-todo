@@ -20,7 +20,6 @@ export class ProjectListItem extends HTMLElement {
     }
 
     setData(project) {
-        console.log("Устанавливаем данные")
         const elem = this.shadowRoot
 
         const listItem = elem.querySelector(".sidebar-list-item")
@@ -32,23 +31,19 @@ export class ProjectListItem extends HTMLElement {
         const svgContainer = listItem.querySelector(".sidebar-svg-container")
         svgContainer.setAttribute("color", project.color)
 
-        const select = listItem.querySelector(".select-project-btn")
-        const options = listItem.querySelector(".options")
+        const select = document.createElement("my-select")
+        listItem.append(select)
+        const options = [
+            {
+                action: "remove",
+                content: "Удалить",
+            },
+            {
+                action: "change",
+                content: "Изменить",
+            },
+        ];
 
-        this.attachEventToSelect(select, options)
-
-        options.setAttribute("data-id", project.id)
-        options.addEventListener("click", (e) => {
-            const customEvent = new CustomEvent('handleExtraOption', {
-                bubbles: true,
-                composed: true, // Событие сможет выйти из Shadow DOM
-                detail: {
-                    action: e.target.dataset.action,
-                    projId: project.id
-                } // Передаем строку через detail
-            });
-            listItem.dispatchEvent(customEvent);
-        })
         select.setAttribute("data-id", project.id)
 
         const title = listItem.querySelector(".sidebar-project-title")
@@ -56,39 +51,13 @@ export class ProjectListItem extends HTMLElement {
 
         // 
         listItem.addEventListener("click", (e) => {
-            if (e.target === svgContainer || e.target === title) {
+            if (e.target !== select) {
                 const customEvent = new CustomEvent('openProject', {
                     bubbles: true,
                     composed: true, // Событие сможет выйти из Shadow DOM
                     detail: { id: project.id } // Передаем строку через detail
                 });
                 listItem.dispatchEvent(customEvent);
-            }
-        })
-    }
-
-    closeOption() {
-        const elem = this.shadowRoot
-        const options = elem.querySelector(".options")
-        options.classList.add("hidden")
-    }
-
-    attachEventToSelect(selectBtn, options) {
-        selectBtn.addEventListener("click", () => {
-            options.classList.toggle("hidden")
-
-            const eventName = options.classList.contains("hidden")
-            // Понятное имя условию дай
-            if (!eventName) {
-                const customEvent = new CustomEvent('openOptions', {
-                    bubbles: true,
-                    composed: true, // Событие сможет выйти из Shadow DOM
-                    detail: { 
-                        options: options,
-                        id: selectBtn.dataset.id
-                     } // Передаем строку через detail
-                });
-                selectBtn.dispatchEvent(customEvent);
             }
         })
     }

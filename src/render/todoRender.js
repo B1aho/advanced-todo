@@ -44,12 +44,12 @@ export function renderListOfProjects(projectMap) {
 
 function hideOtherOptions(e) {
     const id = e.detail.id
+    
     const listItems = document.querySelectorAll(".project-list-item")
     listItems.forEach(item => {
-        if (item.dataset.id !== id) {
-            item.closeOption()
-        }
+        item.closeOption()
     })
+    document.removeEventListener("click", hideOtherOptions)
     // Пройтись по всем, исключая открытый и выбрать метода закрыть окно + на документ повесить клик, который закрывает открытй
 }
 
