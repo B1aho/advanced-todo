@@ -1,3 +1,4 @@
+import { isThisSecond } from "date-fns";
 import styles from "./project-list-item.css?raw";  // Подключаем стили
 
 export class ProjectListItem extends HTMLElement {
@@ -10,6 +11,12 @@ export class ProjectListItem extends HTMLElement {
 
         // Вставляем клонированный шаблон в элемент
         shadow.append(templateContent.cloneNode(true))
+
+        this.listItem = this.shadowRoot.querySelector(".sidebar-list-item")
+        this.svgContainer = this.shadowRoot.querySelector(".sidebar-svg-container")
+        this.shadow = this.shadowRoot
+        this.dispatchOpenProjectEvent = this.dispatchOpenProjectEvent.bind(this)
+        this.setData = this.setData.bind(this)
     }
 
     connectedCallback() {
@@ -17,27 +24,24 @@ export class ProjectListItem extends HTMLElement {
         const style = document.createElement("style")
         style.textContent = styles
 
-        this.self = this.shadowRoot
-        this.listItem = this.self.querySelector(".sidebar-list-item")
+        this.shadowRoot.append(style)
 
-        this.self.append(style)
+        this.listItem.addEventListener("click", this.dispatchOpenProjectEvent)
     }
 
     disconnectedCallback() {
+        this.listItem.removeEventListener("click", this.dispatchOpenProjectEvent)
     }
 
     setData(project) {
-        const shadow = this.shadowRoot
-        const listItem = shadow.querySelector(".sidebar-list-item")
         this.setAttribute("data-id", project.id)
         this.setAttribute("draggable", true)
         this.classList.add("project-list-item")
-        listItem.setAttribute("data-id", project.id)
-
-        const svgContainer = listItem.querySelector(".sidebar-svg-container")
-        svgContainer.setAttribute("color", project.color)
+        this.listItem.setAttribute("data-id", project.id)
+        this.svgContainer.setAttribute("color", project.color)
 
         const select = document.createElement("my-select")
+        this.select = select
         const options = [
             {
                 action: "remove",
@@ -50,22 +54,21 @@ export class ProjectListItem extends HTMLElement {
         ];
         select.setData(options)
         select.setAttribute("data-id", project.id)
-        listItem.append(select)
+        this.listItem.append(select)
 
-        const title = listItem.querySelector(".sidebar-project-title")
+        const title = this.shadow.querySelector(".sidebar-project-title")
         title.textContent = project.title
+    }
 
-        // 
-        listItem.addEventListener("click", (e) => {
-            if (e.target !== select) {
-                const customEvent = new CustomEvent('openProject', {
-                    bubbles: true,
-                    composed: true, // Событие сможет выйти из Shadow DOM
-                    detail: { id: project.id } // Передаем строку через detail
-                });
-                listItem.dispatchEvent(customEvent);
-            }
-        })
+    dispatchOpenProjectEvent(e) { 
+        if (e.target !== this.select) {
+            const customEvent = new CustomEvent('openProject', {
+                bubbles: true,
+                composed: true, // Событие сможет выйти из Shadow DOM
+                detail: { id: this.dataset.id } // Передаем строку через detail
+            });
+            this.listItem.dispatchEvent(customEvent);
+        }
     }
 
 }

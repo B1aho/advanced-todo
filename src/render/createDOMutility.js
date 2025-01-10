@@ -1021,6 +1021,8 @@ export function handleDragoverProjectList(evt) {
     //const nextElement = currentElement
     const nextElement = getNextElement(evt.clientY, currentElement)
 
+    if (nextElement === null)
+        return
     // Вставляем activeElement перед nextElement
     if (currentElement.nextElementSibling === null)
         nextElement.after(activeElement)

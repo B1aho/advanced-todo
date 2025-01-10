@@ -12,25 +12,25 @@ export class MySelect extends HTMLElement {
         const template = document.querySelector("#my-select-templ")
         const templateContent = template.content
 
-        this.openSelect = this.openSelect.bind(this)
-        this.dispatchOptionEvent = this.dispatchOptionEvent.bind(this)
-
         // Вставляем клонированный шаблон в элемент
         shadow.append(templateContent.cloneNode(true))
-    }
 
-    connectedCallback() {
         this.self = this.shadowRoot.querySelector(".my-select")
         this.selectBtn = this.self.querySelector(".select-btn")
         this.options = this.self.querySelector(".select-options")
+        
+        this.openSelect = this.openSelect.bind(this)
+        this.dispatchOptionEvent = this.dispatchOptionEvent.bind(this)
+    }
+
+    connectedCallback() {
         allSelects.add(this);
         // Добавляем инкапсулируемые стили
         const style = document.createElement("style")
         style.textContent = styles
+
         this.self.append(style)
-
         this.options.addEventListener("click", this.dispatchOptionEvent)
-
         this.selectBtn.addEventListener("click", this.openSelect)
     }
 

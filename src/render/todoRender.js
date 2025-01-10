@@ -26,8 +26,6 @@ export function renderListOfProjects(projectMap) {
         renderProjectContent(e.detail.id)
     })
 
-    list.addEventListener("openOptions", hideOtherOptions)
-
     list.addEventListener("handleExtraOption", handleProjectExtraOption)
 
     list.addEventListener('dragstart', (e) => {
@@ -40,17 +38,6 @@ export function renderListOfProjects(projectMap) {
     });
 
     list.addEventListener("dragover", handleDragoverProjectList)
-}
-
-function hideOtherOptions(e) {
-    const id = e.detail.id
-    
-    const listItems = document.querySelectorAll(".project-list-item")
-    listItems.forEach(item => {
-        item.closeOption()
-    })
-    document.removeEventListener("click", hideOtherOptions)
-    // Пройтись по всем, исключая открытый и выбрать метода закрыть окно + на документ повесить клик, который закрывает открытй
 }
 
 /**
