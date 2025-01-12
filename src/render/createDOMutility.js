@@ -9,7 +9,7 @@ import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
 import { hideOptions, renderProjectContent, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
-import { toggleCheckedAllTodoNodes, toggleCheckedTodoData } from "../components/todo-item/todo-item"
+import { toggleCheckedTodoData } from "../components/todo-list/todo-list"
 
 /**
  * Fabric that create button that can render new Section
@@ -183,16 +183,16 @@ function fillArrayWithDirectSubtaskNodes(arr, todo) {
 //     return todoContainer
 // }
 
-function haveUncheckedSubtask(todo) {
-    const subtaskIdSet = todo.subtask
-    if (subtaskIdSet.size <= 0)
-        return false
-    for (const id of subtaskIdSet) {
-        if (!new DataStorage().getTodoById(id).checked)
-            return true
-    }
-    return false
-}
+// function haveUncheckedSubtask(todo) {
+//     const subtaskIdSet = todo.subtask
+//     if (subtaskIdSet.size <= 0)
+//         return false
+//     for (const id of subtaskIdSet) {
+//         if (!new DataStorage().getTodoById(id).checked)
+//             return true
+//     }
+//     return false
+// }
 
 // Проверь, что то todo передается всегда
 // Добавить эту же функциональность в кнопку в детально форме туду 
@@ -275,10 +275,11 @@ export function showUndoPopup(todo) {
 
     // Обработчик кнопки "Отменить"
     undoButton.addEventListener('click', () => {
+        const todoList = document.querySelector("todo-list")
         clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
         clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
         popup.remove();
-        toggleCheckedAllTodoNodes(todo)
+        todoList.toggleCheckedAllTodoNodes(todo)
         toggleCheckedTodoData(todo)
     });
 
@@ -294,17 +295,13 @@ export function showUndoPopup(todo) {
  * @param {TodoItem} todo 
  */
 function hideCheckedTodo(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoNode = document.querySelector(selector)
-    todoNode.hide()
+    const todoList = document.querySelector("todo-list")
+    todoList.hideCheckedTodo(todo)
 }
 
 function unhideCheckedTodo(todo) {
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoNode = document.querySelector(selector)
-    todoNode.unhide()
+    const todoList = document.querySelector("todo-list")
+    todoList.hideCheckedTodo(todo)
 }
 
 function handleFilterClick(e) {
@@ -328,12 +325,8 @@ function handleFilterClick(e) {
 // }
 
 function uncheckTodoContainers(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => uncheckTodoContainers(new DataStorage().getTodoById(subId)))
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoNode = document.querySelector(selector)
-    if (todo.checked)
-        todoNode.unhide()
+    const todoList = document.querySelector("todo-list")
+    todoList.uncheckTodoContainers(todo)
 }
 
 

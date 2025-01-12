@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         navbar.style.pointerEvents = "none"
     })
 
+    // Неправильно, надо его вешать только когда mousedown, а то так на постояенке тектит
     document.addEventListener("mousemove", (e) => {
         if (!isResizing) return
 

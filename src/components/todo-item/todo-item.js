@@ -1,10 +1,8 @@
 // Блин, можно же просто id, узлу задать и все, у self брать id, когда надо
 import { DataStorage } from "../../dataSaving/dataStorage";
-import { TodoItem } from "../../entities/todoItem";
-import { addCollapseBtnOnTodo, checkTodo, createConfirmDiagAndShow, getCheckColor, showUndoPopup } from "../../render/createDOMutility";
+import { addCollapseBtnOnTodo, createConfirmDiagAndShow, getCheckColor } from "../../render/createDOMutility";
 import { RenderTodoDiag } from "../../render/todoRender";
 import styles from "./todo-item.css?raw";
-import { saveData } from "../../dataSaving/localStore";
 
 export class TodoItemElement extends HTMLElement {
     constructor() {
@@ -58,7 +56,7 @@ export class TodoItemElement extends HTMLElement {
         this.todoId = todoObj.id
         this.self.dataset.id =  todoObj.id
         this.self.dataset.indent = todoObj.indent
-        
+
         this.todo.dataset.id = todoObj.id
         this.todoBody.dataset.id = todoObj.id
         // this.checkBtn.setAttribute("data-id", todoObj.id)
@@ -97,93 +95,53 @@ export class TodoItemElement extends HTMLElement {
     checkTodo() {
         const data = new DataStorage()
         const todoObj = data.getTodoById(this.todoId)
-        // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
-        toggleCheckedAllTodoNodes(todoObj)
-        // Затогглить данные в хранилище и сохранить
-        toggleCheckedTodoData(todoObj)
-        saveData()
+        // Dispatch наверх списку что тогнули с id
+        const customEvent = new CustomEvent("todoChecked", {
+            bubbles: true,
+            composed: true,
+            detail: { todoObj: todoObj } 
+        })
 
-        if (todoObj.checked) {
-            const todoDiag = document.querySelector("#todo-dialog")
-            data.lastTimeRef = setTimeout(() => {
-                hideTodoWithSubtasks(todoObj)
-            }, 3000)
+        this.self.dispatchEvent(customEvent)
+    //     // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
+    //     toggleCheckedAllTodoNodes(todoObj)
+    //     // Затогглить данные в хранилище и сохранить
+    //     toggleCheckedTodoData(todoObj)
+    //     saveData()
 
-            if (!todoDiag || !todoDiag.open)
-                showUndoPopup(todoObj)
-        } else {
-            if (data.lastTimeRef)
-                clearTimeout(data.lastTimeRef)
-            this.unhide()
-            const undoPopup = document.querySelector(".undo-popup")
-            if (undoPopup)
-                undoPopup.remove()
-        }
-    }
+    //     if (todoObj.checked) {
+    //         const todoDiag = document.querySelector("#todo-dialog")
+    //         data.lastTimeRef = setTimeout(() => {
+    //             hideTodoWithSubtasks(todoObj)
+    //         }, 3000)
 
-    /**
-    * 
-    * @param {TodoItem} todo 
-    */
+    //         if (!todoDiag || !todoDiag.open)
+    //             showUndoPopup(todoObj)
+    //     } else {
+    //         if (data.lastTimeRef)
+    //             clearTimeout(data.lastTimeRef)
+    //         this.unhide()
+    //         const undoPopup = document.querySelector(".undo-popup")
+    //         if (undoPopup)
+    //             undoPopup.remove()
+    //     }
+     }
+
     toggleCheckedTodoContent() {
         this.checkBtn.classList.toggle("checked")
         this.todoBody.classList.toggle("checked")
     }
 
     hide() {
-        this.todo.classList.add("checked")
+        this.self.classList.add("checked")
     }
 
     unhide() {
-        this.todo.classList.remove("checked")
+        this.self.classList.remove("checked")
     }
 }
 
 customElements.define("todo-item", TodoItemElement)
-
- /**
-* 
-* @param {TodoItem} todo 
-*/
-export function toggleCheckedAllTodoNodes(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId)))
-
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoItem = document.querySelector(selector)
-    todoItem.toggleCheckedTodoContent()
-
-    const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const diagTextContainer = document.querySelector(dialiogSelector)
-    if (diagTextContainer) {
-        diagTextContainer.classList.toggle("checked")
-    }
-}
-
-/**
- * 
- * @param {TodoItem} todo 
- */
-export function toggleCheckedTodoData(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => toggleCheckedTodoData(new DataStorage().getTodoById(subId)))
-    if (todo.checked)
-        todo.checked = false
-    else
-        todo.checked = true
-}
-
-/**
- * 
- * @param {TodoItem} todo 
- */
-function hideTodoWithSubtasks(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => hideTodoWithSubtasks(new DataStorage().getTodoById(subId)))
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoNode = document.querySelector(selector)
-    todoNode.hide()
-}
 
 function haveUncheckedSubtask(todo) {
     const subtaskIdSet = todo.subtask

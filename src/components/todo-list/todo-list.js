@@ -1,7 +1,8 @@
 // Данный компонент отвечает за создание todo-item, за формы для создания todo и за
 import { DataStorage } from "../../dataSaving/dataStorage";
 import { saveData } from "../../dataSaving/localStore";
-import { fillArrayWithSubtaskNodes } from "../../render/createDOMutility";
+import { TodoItem } from "../../entities/todoItem";
+import { fillArrayWithSubtaskNodes, showUndoPopup } from "../../render/createDOMutility";
 import styles from "./todo-list.css?raw";  // Подключаем стили
 
 export class TodoList extends HTMLElement {
@@ -16,6 +17,8 @@ export class TodoList extends HTMLElement {
         this.createAddTodoBtn = this.createAddTodoBtn.bind(this)
         this.createTodoItem = this.createTodoItem.bind(this)
         this.showButton = this.showButton.bind(this)
+        this.toggleCheckedAllTodoNodes = this.toggleCheckedAllTodoNodes.bind(this)
+        this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this)
     }
 
     connectedCallback() {
@@ -29,12 +32,14 @@ export class TodoList extends HTMLElement {
         this.addTodoBtn.addEventListener("click", this.renderTodoForm)
         this.list.addEventListener("formValue", this.createTodoItem)
         this.list.addEventListener("cancelForm", this.showButton)
+        this.list.addEventListener("todoChecked", this.handleTodoCheck)
     }
 
     disconnectedCallback() {
         this.addTodoBtn.removeEventListener("click", this.renderTodoForm)
-        this.shadowRoot.removeEventListener("formValue", this.createTodoItem)
-        this.shadowRoot.removeEventListener("cancelForm", this.showButton)
+        this.list.addEventListener("formValue", this.createTodoItem)
+        this.list.addEventListener("cancelForm", this.showButton)
+        this.list.addEventListener("todoChecked", this.handleTodoCheck)
     }
 
     handleTodoSet(todoSet) {
@@ -120,6 +125,92 @@ export class TodoList extends HTMLElement {
         this.showButton()
         this.addTodoBtn.before(todoNode)
     }
+
+    handleTodoCheck(e) {
+        const todoObj = e.detail.todoObj
+        const data = new DataStorage()
+        // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
+        this.toggleCheckedAllTodoNodes(todoObj)
+        // Затогглить данные в хранилище и сохранить
+        toggleCheckedTodoData(todoObj)
+        saveData()
+
+        if (todoObj.checked) {
+            const todoDiag = document.querySelector("#todo-dialog")
+            data.lastTimeRef = setTimeout(() => {
+                this.hideTodoWithSubtasks(todoObj)
+            }, 3000)
+            // Popup сделать отдельным компонентом, мб наверх посылать и приложение решит само, мб в индексе
+            if (!todoDiag || !todoDiag.open)
+                showUndoPopup(todoObj)
+        } else {
+            if (data.lastTimeRef)
+                clearTimeout(data.lastTimeRef)
+            this.uncheckTodoContainers(todoObj)
+            const undoPopup = document.querySelector(".undo-popup")
+            if (undoPopup)
+                undoPopup.remove()
+        }
+    }
+
+    toggleCheckedAllTodoNodes(todo) {
+        if (todo.subtask.size > 0)
+            todo.subtask.forEach(subId => toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId)))
+    
+        const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const todoItem = this.shadowRoot.querySelector(selector)
+        todoItem.toggleCheckedTodoContent()
+        // С этим разобраться: мб это вообще не юрисдикция todo-list так что просто диалог будет какому-то верхнему компоненту передавать, который порешает
+        const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const diagTextContainer = document.querySelector(dialiogSelector)
+        if (diagTextContainer) {
+            diagTextContainer.classList.toggle("checked")
+        }
+    }
+
+    hideTodoWithSubtasks(todo) {
+        if (todo.subtask.size > 0)
+            todo.subtask.forEach(subId => hideTodoWithSubtasks(new DataStorage().getTodoById(subId)))
+        const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const todoNode = this.shadowRoot.querySelector(selector)
+        todoNode.hide()
+    }
+
+    hideCheckedTodo(todo) {
+        if (todo.subtask.size > 0)
+            todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
+        const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const todoNode = this.shadowRoot.querySelector(selector)
+        todoNode.hide()
+    }
+    
+    unhideCheckedTodo(todo) {
+        const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const todoNode = this.shadowRoot.querySelector(selector)
+        todoNode.unhide()
+    }
+
+    uncheckTodoContainers(todo) {
+        if (todo.subtask.size > 0)
+            todo.subtask.forEach(subId => uncheckTodoContainers(new DataStorage().getTodoById(subId)))
+        const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+        const todoNode = this.shadowRoot.querySelector(selector)
+        if (todo.checked)
+            todoNode.unhide()
+    }
 }
 
 customElements.define("todo-list", TodoList)
+
+/**
+ * 
+ * @param {TodoItem} todo 
+ */
+export function toggleCheckedTodoData(todo) {
+    if (todo.subtask.size > 0)
+        todo.subtask.forEach(subId => toggleCheckedTodoData(new DataStorage().getTodoById(subId)))
+    if (todo.checked)
+        todo.checked = false
+    else
+        todo.checked = true
+}
