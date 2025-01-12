@@ -1,7 +1,10 @@
 import { format } from "date-fns";
 import { ItcCustomSelect } from "../../../assets/select/itc-custom-select";
+import  ItcStyles  from "../../../assets/select/itc-custom-select.css?raw";
+import  DatepickerStyles  from "../../../assets/datepicker.css?raw";
 import styles from "./add-todo-form.css?raw";
 import { pickTodoFormData } from "../../render/todoForm";
+import { Datepicker } from "vanillajs-datepicker";
 
 export class AddTodoForm extends HTMLElement {
     constructor() {
@@ -30,31 +33,36 @@ export class AddTodoForm extends HTMLElement {
 
         this.cancelBtn = this.form.querySelector(".cancel-btn")
         this.submitBtn = this.form.querySelector(".submit-btn")
+
+        this.submitForm = this.submitForm.bind(this)
+        this.cancelForm = this.cancelForm.bind(this)
     }
 
     connectedCallback() {
         const style = document.createElement("style")
-        style.textContent = styles
+        style.textContent = styles + ItcStyles + DatepickerStyles
+        console.log(ItcStyles)
 
         this.shadowRoot.append(style)
-    }
-
-    disconnectedCallback() {
-        this.cancelBtn.rempveEventListener("click", this.cancelForm)
-        this.submitBtn.removeEventListener("click", this.submitForm)
-    }
-
-
-    setEventListeners(addTodoBtn) {
-        this.addTodoBtn = addTodoBtn
 
         this.cancelBtn.addEventListener("click", this.cancelForm)
         this.submitBtn.addEventListener("click", this.submitForm)
     }
 
+    disconnectedCallback() {
+        this.cancelBtn.removeEventListener("click", this.cancelForm)
+        this.submitBtn.removeEventListener("click", this.submitForm)
+    }
+
+
     cancelForm() {
+        //this.addTodoBtn.style.display = "block"
+        const customEvent = new CustomEvent("cancelForm", {
+            bubbles: true,
+            composed: true,
+        });
+        this.form.dispatchEvent(customEvent)
         this.form.remove()
-        this.addTodoBtn.style.display = "block"
     }
 
     // Метод доделать
@@ -63,7 +71,15 @@ export class AddTodoForm extends HTMLElement {
             return
         evt.preventDefault()
 
-        const formValues = pickTodoFormData(form.elements)
+        const formValues = pickTodoFormData(this.form.elements)
+        const customEvent = new CustomEvent("formValue", {
+            bubbles: true,
+            composed: true,
+            detail: { formValues: formValues } 
+        });
+        this.form.dispatchEvent(customEvent);
+        this.form.remove()
+        /*
         this.form.remove()
         this.addTodoBtn.style.display = "block"
 
@@ -74,9 +90,9 @@ export class AddTodoForm extends HTMLElement {
         const todoNode = document.createElement("todo-item")
         todoNode.setData(todoNode)
         // В форме нет смысла что-то свертывать
-        const collapseBtn = todoNode.querySelector(".collapse-btn")
-        if (collapseBtn)
-            collapseBtn.remove()
+        //const collapseBtn = todoNode.querySelector(".collapse-btn")
+        // if (collapseBtn)
+        //     collapseBtn.remove()
         if (btn.classList.contains("add-todo-btn")) {
             btn.before(todoNode)
         } else {
@@ -84,6 +100,7 @@ export class AddTodoForm extends HTMLElement {
             document.querySelector(".subtask-diag-list").append(todoNode)
             updateProjectRendering(todoObj.parentId, todoNode)
         }
+            */
     }
 }
 

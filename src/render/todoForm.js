@@ -141,37 +141,6 @@ function pickSectionFormData(formElems) {
  * @param {*} parentId 
  * @returns 
  */
-function createTodoObj(formValues, parentId) {
-    const data = new DataStorage()
-    const parts = parentId.split("-")
-    const parentType = parts[0]
-    const id = parts.slice(1).join("-")
-    let parent
-    if (parentType === "project") {
-        parent = data.getProjectById(id)
-    }
-    if (parentType === "section") {
-        parent = data.getSectionById(id)
-    }
-    if (parentType === "todo") {
-        parent = data.getTodoById(id)
-    }
-
-    formValues.tags = formValues.tags.split(" ")
-
-    formValues.deadline = formValues.deadline ? formValues.deadline : null
-    const todo = parent.createTodo(formValues)
-    data.saveTodo(todo)
-    saveData()
-    return todo
-}
-
-/**
- * 
- * @param {*} formValues 
- * @param {*} parentId 
- * @returns 
- */
 function createSectionObj(formValues, parentId) {
     const data = new DataStorage()
     const parts = parentId.split("-")

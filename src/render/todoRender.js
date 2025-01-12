@@ -1,5 +1,5 @@
 import { DataStorage } from "../dataSaving/dataStorage";
-import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, createTodoList, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos, toggleNavbar } from "./createDOMutility";
+import { addCollapseBtnOnSection, addCollapseBtnOnTodo, checkTodo, collapseSectionTodoList, countTodoNodes, createAddSectionBtn, createConfirmDiagAndShow, createDiagFromTempl, createSectionFromTempl, handleDragoverProjectList, handleDragoverSection, handleProjectExtraOption, handleSectionExtraOption, showActualTodos, showCompletedTodos, toggleNavbar } from "./createDOMutility";
 /**
  * @param {Map} projectMap 
  */
@@ -144,7 +144,11 @@ export function renderProjectContent(projectId) {
     const taskContainer = clone.querySelector(".project-container")
     taskContainer.setAttribute("data-id", projectId)
     // Render porject's todos
-    taskContainer.append(createTodoList(project.todos, "project-" + projectId))
+    const todoList = document.createElement("todo-list")
+    todoList.dataset.id = project.id
+    todoList.dataset.parentType = "project"
+    taskContainer.append(todoList)
+    todoList.handleTodoSet(project.todos)
     taskContainer.append(createAddSectionBtn("project-" + projectId))
     // Render project's sections
     project.sections.forEach(secId => {
@@ -153,7 +157,9 @@ export function renderProjectContent(projectId) {
         const templTodoList = section.querySelector(".todo-list")
         templTodoList.remove()
         const collapseBtn = section.querySelector(".collapse-btn-section")
-        const todoList = createTodoList(sectObj.todos, "section-" + secId)
+        const todoList = document.createElement("todo-list")
+        todoList.dataset.id = section.id
+        todoList.dataset.parentType = "section"
         section.append(todoList)
         collapseBtn.remove()
         addCollapseBtnOnSection(section)

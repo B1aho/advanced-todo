@@ -57,8 +57,8 @@ export class TodoItemElement extends HTMLElement {
             this.hide()
         this.todoId = todoObj.id
         this.self.dataset.id =  todoObj.id
-        this.todo.dataset.indent = todoObj.indent
-        this.self.classList.add("todo-item")
+        this.self.dataset.indent = todoObj.indent
+        
         this.todo.dataset.id = todoObj.id
         this.todoBody.dataset.id = todoObj.id
         // this.checkBtn.setAttribute("data-id", todoObj.id)

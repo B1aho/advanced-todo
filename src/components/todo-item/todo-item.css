@@ -27,10 +27,6 @@
     text-decoration: line-through;
 }
 
-.todo-container.checked {
-    display: none;
-}
-
 .todo-check-btn.checked::after {
     content: "✅";
 }
@@ -53,24 +49,4 @@
 
 .collapse-btn.active-collapse {
     transform: rotate(0deg);
-}
-
-.todo-container[data-indent="2"] {
-    margin-left: 28px;
-}
-
-.todo-container[data-indent="3"] {
-    margin-left: 56px;
-}
-
-.todo-container[data-indent="4"] {
-    margin-left: 84px;
-}
-
-.todo-container[data-indent="5"] {
-    margin-left: 112px;
-}
-
-.diag-indent {
-    margin-left: 28px;
 }

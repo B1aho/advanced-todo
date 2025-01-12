@@ -27,21 +27,6 @@ export function createAddSectionBtn(parentId) {
 }
 
 /**
- * Fabric that create button that can render form for creating todo
- * @param {String} parentId - string that represent parent's id (project or section id)
- * @returns {HTMLButtonElement}
- */
-export function createAddTodoBtn(parentId) {
-    const btn = document.createElement("button")
-    btn.classList.add("add-todo-btn")
-    btn.type = "button"
-    btn.setAttribute("data-parent-id", parentId)
-    btn.addEventListener("click", renderTodoForm)
-    btn.textContent = "Add new Todo"
-    return btn
-}
-
-/**
  * Fabric that create button that can render form for creating subtask
  * @param {String} parentId - string that represent parent's id.
  * Only instances of TodoItem can be parents of subtasks
@@ -60,42 +45,42 @@ function createAddSubtaskBtn(parentId) {
     return btn
 }
 
-/**
- * An HTML node is created, which is filled with nodes representing todos, along with all the subtask 
- * nodes of each todo, and this list element is returned
- * @param {Set} todoSet - set of todo IDs that represent all todos belonging to the parent
- * @param {String} parentId - id of parent that of current todoSet 
- * @returns {HTMLDivElement} - Container that represent list of todos
- */
-export function createTodoList(todoSet, parentId) {
-    if (!(todoSet instanceof Set)) {
-        throw new Error("Argument must be instance of Set")
-    }
-    const data = new DataStorage()
-    const todoList = document.createElement("div")
-    todoList.classList.add("todo-list")
-    // Здесь надо проверить есть ли вложенные туду и функцию для их генерации, на забывая отступ
-    todoSet.forEach(id => {
-        const subtaskArr = []
-        const todo = data.getTodoById(id)
-        const todoNode = document.createElement("todo-item")
-        todoNode.setData(todo)
-        todoList.append(todoNode)
-        if (todo.subtask.size > 0) {
-            fillArrayWithSubtaskNodes(subtaskArr, todo)
-        }
-        subtaskArr.forEach(subtask => {
-            todoList.append(subtask)
-        })
+// /**
+//  * An HTML node is created, which is filled with nodes representing todos, along with all the subtask 
+//  * nodes of each todo, and this list element is returned
+//  * @param {Set} todoSet - set of todo IDs that represent all todos belonging to the parent
+//  * @param {String} parentId - id of parent that of current todoSet 
+//  * @returns {HTMLDivElement} - Container that represent list of todos
+//  */
+// export function createTodoList(todoSet, parentId) {
+//     if (!(todoSet instanceof Set)) {
+//         throw new Error("Argument must be instance of Set")
+//     }
+//     const data = new DataStorage()
+//     const todoList = document.createElement("div")
+//     todoList.classList.add("todo-list")
+//     // Здесь надо проверить есть ли вложенные туду и функцию для их генерации, на забывая отступ
+//     todoSet.forEach(id => {
+//         const subtaskArr = []
+//         const todo = data.getTodoById(id)
+//         const todoNode = document.createElement("todo-item")
+//         todoNode.setData(todo)
+//         todoList.append(todoNode)
+//         if (todo.subtask.size > 0) {
+//             fillArrayWithSubtaskNodes(subtaskArr, todo)
+//         }
+//         subtaskArr.forEach(subtask => {
+//             todoList.append(subtask)
+//         })
 
-    })
-    const addTodoBtn = createAddTodoBtn(parentId)
-    todoList.append(addTodoBtn)
-    todoList.addEventListener("todoCreated", (e) => {
-        addTodoBtn.before(e.detail.todoNode)
-    })
-    return todoList;
-}
+//     })
+//     const addTodoBtn = createAddTodoBtn(parentId)
+//     todoList.append(addTodoBtn)
+//     todoList.addEventListener("todoCreated", (e) => {
+//         addTodoBtn.before(e.detail.todoNode)
+//     })
+//     return todoList;
+// }
 
 /**
  * It creates HTML elements from each todo's subtask ans subtask's subtask and places these nodes 
@@ -103,7 +88,7 @@ export function createTodoList(todoSet, parentId) {
  * @param {Array} arr 
  * @param {TodoItem} todo 
  */
-function fillArrayWithSubtaskNodes(arr, todo) {
+export function fillArrayWithSubtaskNodes(arr, todo) {
     const data = new DataStorage()
     const subtask = todo.subtask
     subtask.forEach(subtaskId => {

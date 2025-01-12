@@ -176,7 +176,7 @@ main {
 }
 
 .todo-item,
-.todo-list,
+todo-list,
 .diag-todo-item {
     display: flex;
     flex-direction: column;
@@ -189,10 +189,6 @@ main {
 
 .todo-check-btn.checked::after {
     content: "✅";
-}
-
-.todo-container.checked {
-    display: none;
 }
 
 button {
