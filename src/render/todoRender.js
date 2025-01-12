@@ -54,22 +54,22 @@ export function renderProjectListItem(projObj) {
     changeProjectListHeaderNumber(1)
 }
 
-/**
- * 
- * @param {Event} e 
- * @returns 
- */
-function handleProjectListClick(e) {
-    e.stopPropagation()
-    hideOptions(e)
-    const target = e.target
-    if (target.id === "project-list" || target.id === "project-list-header")
-        return
-    else if (target.classList.contains("option"))
-        handleProjectExtraOption(target)
-    else if (target.classList.contains("select-project-btn"))
-        renderExtraOptions(target.getAttribute("data-id"))
-}
+// /**
+//  * 
+//  * @param {Event} e 
+//  * @returns 
+//  */
+// function handleProjectListClick(e) {
+//     e.stopPropagation()
+//     hideOptions(e)
+//     const target = e.target
+//     if (target.id === "project-list" || target.id === "project-list-header")
+//         return
+//     else if (target.classList.contains("option"))
+//         handleProjectExtraOption(target)
+//     else if (target.classList.contains("select-project-btn"))
+//         renderExtraOptions(target.getAttribute("data-id"))
+// }
 
 function changeProjectListHeaderNumber(number) {
     const header = document.querySelector("#project-list-header")
@@ -78,19 +78,19 @@ function changeProjectListHeaderNumber(number) {
     header.textContent = headerText.join(" ")
 }
 
-/**
- * 
- * @param {Event} e 
- */
-function renderExtraOptions(e) {
-    const options = e.detail.options
-    console.log(options)
-    //hideOptions()
-    // const selector = `.project-list-item[data-id="${CSS.escape(id)}"]`
-    // const options = document.querySelector(selector).nextElementSibling
-    // options.classList.toggle("hidden")
-    // document.addEventListener("click", hideOptions)
-}
+// /**
+//  * 
+//  * @param {Event} e 
+//  */
+// function renderExtraOptions(e) {
+//     const options = e.detail.options
+//     console.log(options)
+//     //hideOptions()
+//     // const selector = `.project-list-item[data-id="${CSS.escape(id)}"]`
+//     // const options = document.querySelector(selector).nextElementSibling
+//     // options.classList.toggle("hidden")
+//     // document.addEventListener("click", hideOptions)
+// }
 
 export function renderSectionExtraOptions(e) {
     const id = e.target.getAttribute("data-id")
@@ -194,35 +194,24 @@ export function RenderTodoDiag(e) {
  * @param {*} parentId 
  * @param {*} todoNode 
  */
-export function updateProjectRendering(parentId, todoNode) {
-    const selector = `.todo-container[data-id="${CSS.escape(parentId)}"]`
+export function updateProjectRendering(todoObj) {
+    const selector = `todo-item[data-id="${CSS.escape(todoObj.parentId)}"]`
     const data = new DataStorage()
     // Везде в таких местах предусмотреть ошибки, чтобы программа не крашилась
     let previousSibling = document.querySelector(selector)
-    const clone = todoNode.cloneNode(true)
-    clone.querySelector(".todo-item").addEventListener("click", RenderTodoDiag)
-    const removeBtn = clone.querySelector(".todo-remove-btn")
-    removeBtn.addEventListener("click", () => {
-        createConfirmDiagAndShow(todoNode.getAttribute("data-id"), "todo")
-    })
+    const todoNode = document.createElement("todo-item")
+    todoNode.setData(todoObj)
 
-    // Возвращаем слушаетли для клона - продумать более оптимальную стратегию
-    const checkBtn = clone.querySelector(".todo-check-btn")
-    checkBtn.addEventListener("click", (e) => {
-        checkTodo(e, new DataStorage().getTodoById(todoNode.getAttribute("data-id")))
-    })
-
-    clone.classList.remove("diag-indent")
-    const taskNumber = countTodoNodes(data.getTodoById(parentId))
+    const taskNumber = countTodoNodes(data.getTodoById(todoObj.parentId))
     for (let i = 1; i < taskNumber; i++) {
         previousSibling = previousSibling.nextElementSibling
     }
     addCollapseBtnOnTodo(previousSibling)
-    previousSibling.after(clone)
+    previousSibling.after(todoNode)
 }
 
 export function updateTodoRemoveRender(todoId, number) {
-    const selector = `.todo-container[data-id="${CSS.escape(todoId)}"]`
+    const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`
     let todoItem = document.querySelector(selector)
 
     while (number) {

@@ -9,6 +9,7 @@ import { Project, Section } from "../entities/todoParent"
 import { openProjectFormDiag, renderSectionForm, renderTodoForm } from "./todoForm"
 import { hideOptions, renderProjectContent, renderProjectListItem, renderSectionExtraOptions, RenderTodoDiag, updateProjectContentAfterChanging, updateProjectContentAfterDeletion, updateProjectListAfterChanging, updateProjectListAfterDeletion, updateProjectListRendering, updateProjectMainRendering, updateSectionContentAfterDeletion, updateTodoRemoveRender } from "./todoRender"
 import { format } from "date-fns"
+import { toggleCheckedAllTodoNodes, toggleCheckedTodoData } from "../components/todo-item/todo-item"
 
 /**
  * Fabric that create button that can render new Section
@@ -77,8 +78,9 @@ export function createTodoList(todoSet, parentId) {
     todoSet.forEach(id => {
         const subtaskArr = []
         const todo = data.getTodoById(id)
-
-        todoList.append(createTodoFromTempl(todo))
+        const todoNode = document.createElement("todo-item")
+        todoNode.setData(todo)
+        todoList.append(todoNode)
         if (todo.subtask.size > 0) {
             fillArrayWithSubtaskNodes(subtaskArr, todo)
         }
@@ -87,7 +89,11 @@ export function createTodoList(todoSet, parentId) {
         })
 
     })
-    todoList.append(createAddTodoBtn(parentId))
+    const addTodoBtn = createAddTodoBtn(parentId)
+    todoList.append(addTodoBtn)
+    todoList.addEventListener("todoCreated", (e) => {
+        addTodoBtn.before(e.detail.todoNode)
+    })
     return todoList;
 }
 
@@ -103,7 +109,9 @@ function fillArrayWithSubtaskNodes(arr, todo) {
     subtask.forEach(subtaskId => {
         const subtask = data.getTodoById(subtaskId)
         // add todoNode to the array
-        arr.push(createTodoFromTempl(subtask))
+        const todoNode = document.createElement("todo-item")
+        todoNode.setData(subtask)
+        arr.push(todoNode)
         if (subtask.subtask.size > 0)
             fillArrayWithSubtaskNodes(arr, subtask)
     })
@@ -121,71 +129,74 @@ function fillArrayWithDirectSubtaskNodes(arr, todo) {
     subtaskSet.forEach(subtaskId => {
         const subtask = data.getTodoById(subtaskId)
         // add todoNode to the array
-        arr.push(createTodoFromTempl(subtask))
+        // add todoNode to the array
+        const todoNode = document.createElement("todo-item")
+        todoNode.setData(subtask)
+        arr.push(todoNode)
     })
 }
 
-/**
- * This function initializes the HTML elements of the todo template based on the provided 
- * instance of TodoItem
- * @param {TodoItem} todo 
- * @returns {HTMLElement}
- */
-export function createTodoFromTempl(todo) {
-    const template = document.querySelector("#todo-item-template")
-    const clone = template.content.cloneNode(true)
-    const todoContainer = clone.querySelector(".todo-container")
-    if (todo.checked)
-        todoContainer.classList.add("checked")
-    todoContainer.setAttribute("data-id", todo.id)
-    todoContainer.setAttribute("data-indent", todo.indent)
+// /**
+//  * This function initializes the HTML elements of the todo template based on the provided 
+//  * instance of TodoItem
+//  * @param {TodoItem} todo 
+//  * @returns {HTMLElement}
+//  */
+// export function createTodoFromTempl(todo) {
+//     const template = document.querySelector("#todo-item-template")
+//     const clone = template.content.cloneNode(true)
+//     const todoContainer = clone.querySelector(".todo-container")
+//     if (todo.checked)
+//         todoContainer.classList.add("checked")
+//     todoContainer.setAttribute("data-id", todo.id)
+//     todoContainer.setAttribute("data-indent", todo.indent)
 
-    const checkBtn = clone.querySelector(".todo-check-btn")
-    checkBtn.setAttribute("data-id", todo.id)
-    checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
-    checkBtn.addEventListener("click", (e) => {
-        checkTodo(e, todo)
-    })
+//     const checkBtn = clone.querySelector(".todo-check-btn")
+//     checkBtn.setAttribute("data-id", todo.id)
+//     checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel)
+//     checkBtn.addEventListener("click", (e) => {
+//         checkTodo(e, todo)
+//     })
 
-    const removeBtn = clone.querySelector(".todo-remove-btn")
-    removeBtn.addEventListener("click", () => {
-        createConfirmDiagAndShow(todo.id, "todo")
-    })
+//     const removeBtn = clone.querySelector(".todo-remove-btn")
+//     removeBtn.addEventListener("click", () => {
+//         createConfirmDiagAndShow(todo.id, "todo")
+//     })
 
-    if (haveUncheckedSubtask(todo)) {
-        addCollapseBtnOnTodo(todoContainer)
-    }
+//     if (haveUncheckedSubtask(todo)) {
+//         addCollapseBtnOnTodo(todoContainer)
+//     }
 
-    const todoTitle = clone.querySelector(".todo-title")
-    todoTitle.textContent = todo.title
+//     const todoTitle = clone.querySelector(".todo-title")
+//     todoTitle.textContent = todo.title
 
-    const todoDesc = clone.querySelector(".todo-desc")
-    todoDesc.textContent = todo.desc
+//     const todoDesc = clone.querySelector(".todo-desc")
+//     todoDesc.textContent = todo.desc
 
-    const todoDeadline = clone.querySelector(".deadline-container")
-    todoDeadline.textContent = todo.deadline
+//     const todoDeadline = clone.querySelector(".deadline-container")
+//     todoDeadline.textContent = todo.deadline
 
-    if (todo.tags) {
-        const todoTags = clone.querySelector(".tags-container")
-        todo.tags.forEach((tag) => {
-            const tagSpan = document.createElement("span")
-            tagSpan.classList.add("tag")
-            tagSpan.textContent = tag
-            todoTags.append(tagSpan)
-        })
-    }
+//     if (todo.tags) {
+//         const todoTags = clone.querySelector(".tags-container")
+//         todo.tags.forEach((tag) => {
+//             const tagSpan = document.createElement("span")
+//             tagSpan.classList.add("tag")
+//             tagSpan.textContent = tag
+//             todoTags.append(tagSpan)
+//         })
+//     }
 
-    const todoBody = clone.querySelector(".todo-item")
-    todoBody.setAttribute("data-id", todo.id)
-    todoBody.addEventListener("click", RenderTodoDiag)
+//     const todoBody = clone.querySelector(".todo-item")
+//     todoBody.setAttribute("data-id", todo.id)
+//     todoBody.addEventListener("click", RenderTodoDiag)
 
-    if (todo.checked) {
-        checkBtn.classList.add("checked")
-        todoBody.classList.add("checked")
-    }
+//     if (todo.checked) {
+//         checkBtn.classList.add("checked")
+//         todoBody.classList.add("checked")
+//     }
 
-    return todoContainer
-}
+//     return todoContainer
+// }
 
 function haveUncheckedSubtask(todo) {
     const subtaskIdSet = todo.subtask
@@ -234,7 +245,7 @@ export function checkTodo(event, todo) {
     }
 }
 
-function showUndoPopup(todo) {
+export function showUndoPopup(todo) {
     const popup = document.createElement('div')
     popup.classList.add("undo-popup")
 
@@ -282,7 +293,7 @@ function showUndoPopup(todo) {
         clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
         clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
         popup.remove();
-        toggleCheckedTodoContent(todo)
+        toggleCheckedAllTodoNodes(todo)
         toggleCheckedTodoData(todo)
     });
 
@@ -300,15 +311,15 @@ function showUndoPopup(todo) {
 function hideCheckedTodo(todo) {
     if (todo.subtask.size > 0)
         todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
-    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
-    const todoContainer = document.querySelector(selector)
-    todoContainer.classList.add("checked")
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const todoNode = document.querySelector(selector)
+    todoNode.hide()
 }
 
 function unhideCheckedTodo(todo) {
-    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
-    const todoContainer = document.querySelector(selector)
-    todoContainer.classList.remove("checked")
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const todoNode = document.querySelector(selector)
+    todoNode.unhide()
 }
 
 function handleFilterClick(e) {
@@ -322,22 +333,22 @@ function handleFilterClick(e) {
     return false
 }
 
-function checkTodoContainers(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => checkTodoContainers(new DataStorage().getTodoById(subId)))
-    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
-    const todoContainer = document.querySelector(selector)
-    if (todo.checked)
-        todoContainer.classList.add("checked")
-}
+// function checkTodoContainers(todo) {
+//     if (todo.subtask.size > 0)
+//         todo.subtask.forEach(subId => checkTodoContainers(new DataStorage().getTodoById(subId)))
+//     const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
+//     const todoContainer = document.querySelector(selector)
+//     if (todo.checked)
+//         todoContainer.classList.add("checked")
+// }
 
 function uncheckTodoContainers(todo) {
     if (todo.subtask.size > 0)
         todo.subtask.forEach(subId => uncheckTodoContainers(new DataStorage().getTodoById(subId)))
-    const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
-    const todoContainer = document.querySelector(selector)
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
+    const todoNode = document.querySelector(selector)
     if (todo.checked)
-        todoContainer.classList.remove("checked")
+        todoNode.unhide()
 }
 
 
@@ -350,20 +361,6 @@ export function showActualTodos(e) {
     if (handleFilterClick(e))
         return
     renderProjectContent(document.querySelector(".project-container").getAttribute("data-id"))
-    // const projId = document.querySelector(".project-container").getAttribute("data-id")
-    // const proj = new DataStorage().getProjectById(projId)
-    // proj.todos.forEach(todoId => {
-    //     const todo = new DataStorage().getTodoById(todoId)
-    //     checkTodoContainers(todo)
-    // })
-    // // Для секций тоже самое 
-    // proj.sections.forEach(secId => {
-    //     const section = new DataStorage().getSectionById(secId)
-    //     section.todos.forEach(todoId => {
-    //         const todo = new DataStorage().getTodoById(todoId)
-    //         checkTodoContainers(todo)
-    //     })
-    // })
 }
 
 export function showCompletedTodos(e) {
@@ -386,42 +383,42 @@ export function showCompletedTodos(e) {
         })
     })
 }
-/**
- * 
- * @param {TodoItem} todo 
- */
-function toggleCheckedTodoContent(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => toggleCheckedTodoContent(new DataStorage().getTodoById(subId)))
-    const checkBtnSelector = `.todo-check-btn[data-id="${CSS.escape(todo.id)}"]`
-    const checkBtns = document.querySelectorAll(checkBtnSelector)
-    checkBtns.forEach(btn => {
-        btn.classList.toggle("checked")
-    })
+// /**
+//  * 
+//  * @param {TodoItem} todo 
+//  */
+// function toggleCheckedTodoContent(todo) {
+//     if (todo.subtask.size > 0)
+//         todo.subtask.forEach(subId => toggleCheckedTodoContent(new DataStorage().getTodoById(subId)))
+//     const checkBtnSelector = `.todo-check-btn[data-id="${CSS.escape(todo.id)}"]`
+//     const checkBtns = document.querySelectorAll(checkBtnSelector)
+//     checkBtns.forEach(btn => {
+//         btn.classList.toggle("checked")
+//     })
 
-    const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const todoItem = document.querySelector(selector)
-    todoItem.classList.toggle("checked")
+//     const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`
+//     const todoItem = document.querySelector(selector)
+//     todoItem.classList.toggle("checked")
 
-    const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`
-    const diagTextContainer = document.querySelector(dialiogSelector)
-    if (diagTextContainer) {
-        diagTextContainer.classList.toggle("checked")
-    }
-}
+//     const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`
+//     const diagTextContainer = document.querySelector(dialiogSelector)
+//     if (diagTextContainer) {
+//         diagTextContainer.classList.toggle("checked")
+//     }
+// }
 
-/**
- * 
- * @param {TodoItem} todo 
- */
-function toggleCheckedTodoData(todo) {
-    if (todo.subtask.size > 0)
-        todo.subtask.forEach(subId => toggleCheckedTodoData(new DataStorage().getTodoById(subId)))
-    if (todo.checked)
-        todo.checked = false
-    else
-        todo.checked = true
-}
+// /**
+//  * 
+//  * @param {TodoItem} todo 
+//  */
+// function toggleCheckedTodoData(todo) {
+//     if (todo.subtask.size > 0)
+//         todo.subtask.forEach(subId => toggleCheckedTodoData(new DataStorage().getTodoById(subId)))
+//     if (todo.checked)
+//         todo.checked = false
+//     else
+//         todo.checked = true
+// }
 
 export function createConfirmDiagAndShow(id, type) {
     const templ = document.querySelector("#confirm-diag-templ")
@@ -1127,7 +1124,7 @@ export function addCollapseBtnOnTodo(todoItem) {
         collapseBtn.classList.toggle("active-collapse")
         const data = new DataStorage()
         const isNeedToCollapse = collapseBtn.classList.contains("active-collapse")
-        const todo = data.getTodoById(todoItem.getAttribute("data-id"))
+        const todo = data.getTodoById(todoItem.dataset.id)
 
         if (isNeedToCollapse) {
             collapseAllSubtasks(todo)
@@ -1145,9 +1142,9 @@ function collapseAllSubtasks(todo) {
         if (subtask.subtask.size > 0)
             collapseAllSubtasks(subtask)
         // Вынести в отдельную функцию getTodoContainerById
-        const selector = `.todo-container[data-id="${CSS.escape(id)}"]`
+        const selector = `todo-item[data-id="${CSS.escape(id)}"]`
         const todoContainer = document.querySelector(selector)
-        todoContainer.classList.add("collapsed")
+        todoContainer.hide()
     }
 }
 
@@ -1158,9 +1155,9 @@ function unCollapseAllSubtasks(todo) {
         if (subtask.subtask.size > 0)
             unCollapseAllSubtasks(subtask)
         // Вынести в отдельную функцию getTodoContainerById
-        const selector = `.todo-container[data-id="${CSS.escape(id)}"]`
+        const selector = `todo-item[data-id="${CSS.escape(id)}"]`
         const todoContainer = document.querySelector(selector)
-        todoContainer.classList.remove("collapsed")
+        todoContainer.unhide()
     }
 }
 

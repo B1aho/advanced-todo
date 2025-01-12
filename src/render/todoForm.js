@@ -49,7 +49,8 @@ export function renderTodoForm(e) {
         form.remove()
         btn.style.display = "block"
         const todoObj = createTodoObj(formValues, parentId)
-        const todoNode = createTodoFromTempl(todoObj)
+        const todoNode = document.createElement("todo-item")
+        todoNode.setData(todoObj)
         // В форме нет смысла что-то свертывать
         const collapseBtn = todoNode.querySelector(".collapse-btn")
         if (collapseBtn)
@@ -59,20 +60,20 @@ export function renderTodoForm(e) {
         } else {
             todoNode.classList.add("diag-indent")
             document.querySelector(".subtask-diag-list").append(todoNode)
-            updateProjectRendering(todoObj.parentId, todoNode)
+            updateProjectRendering(todoObj)
         }
     })
 
     btn.before(form)
     btn.style.display = "none"
 }
-
+// Оставить ИХ КАК УТИЛИТИ ФУНКЦИИ В ОТДЕЛЬНОЙ ПАПКЕ
 /**
  * 
  * @param {*} formElems 
  * @returns 
  */
-function pickTodoFormData(formElems) {
+export function pickTodoFormData(formElems) {
     const formValues = Array.from(formElems)
         .filter(element => {
             return element.name

@@ -12,9 +12,9 @@
         <nav id="menu">
             <div id="project-list">
                 <header id="project-list-header">My projects: </header>
-            </div>
-            <div id="add-project-btn-wrapper">
-                <button id="add-project-btn">Add new project</button>
+                <div id="add-project-btn-wrapper">
+                    <button id="add-project-btn">Add new project</button>
+                </div>
             </div>
             <footer></footer>
         </nav>
@@ -96,7 +96,7 @@
     <template id="todo-item-template">
         <div class="todo-container">
             <button class="todo-check-btn"></button>
-            <div class="todo-item">
+            <div class="todo-body">
                 <div class="todo-content todo-title"></div>
                 <div class="todo-content todo-desc"></div>
                 <div class="todo-content todo-other">
@@ -175,18 +175,22 @@
                         </div>
                         <div class="change-prior-container">
                             <div class="itc-select" id="priority-menu-diag">
-                                <button type="button" class="itc-select__toggle" name="prior" value="" data-select="toggle"
-                                    data-index="-1">Приоритет</button>
+                                <button type="button" class="itc-select__toggle" name="prior" value=""
+                                    data-select="toggle" data-index="-1">Приоритет</button>
                                 <div class="itc-select__dropdown">
                                     <ul class="itc-select__options">
-                                        <li class="itc-select__option" data-select="option" data-value="0" data-index="0">
+                                        <li class="itc-select__option" data-select="option" data-value="0"
+                                            data-index="0">
                                             None
                                         </li>
-                                        <li class="itc-select__option" data-select="option" data-value="1" data-index="1">
+                                        <li class="itc-select__option" data-select="option" data-value="1"
+                                            data-index="1">
                                             Low</li>
-                                        <li class="itc-select__option" data-select="option" data-value="2" data-index="2">
+                                        <li class="itc-select__option" data-select="option" data-value="2"
+                                            data-index="2">
                                             Medium</li>
-                                        <li class="itc-select__option" data-select="option" data-value="3" data-index="3">
+                                        <li class="itc-select__option" data-select="option" data-value="3"
+                                            data-index="3">
                                             High</li>
                                     </ul>
                                 </div>
@@ -272,7 +276,7 @@
             <button id="comleted-todos-btn" class="project-filter">Show All (Including Completed)</button>
         </div>
         <div class="project-container">
-            
+
         </div>
     </template>
 </body>

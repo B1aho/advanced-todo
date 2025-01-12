@@ -1,9 +1,10 @@
 import "../assets/style.css";
+import "./components";
 import { DataStorage } from "./dataSaving/dataStorage";
 import { getApp } from "./dataSaving/localStore";
 import { renderListOfProjects } from "./render/todoRender";
 import { initAddProjectBtn, initRemoveConfirmDiag, openNavbar, toggleNavbar } from "./render/createDOMutility";
-import "./components";
+
 /**
  * Инициализуируем ран-тайм хранилище, либо пусто, либо что-то есть. Отрисовываем то, что есть
  * Отрисовать список проектов в navbar

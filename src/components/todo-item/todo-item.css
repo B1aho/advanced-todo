@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.todo-container,
+.todo-check-btn,
+.todo-remove-btn {
+    display: flex;
+    cursor: pointer;
+}
+
+.todo-container {
+    position: relative;
+}
+
+.todo-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;
+}
+
+.todo-body.checked {
+    text-decoration: line-through;
+}
+
+.todo-container.checked {
+    display: none;
+}
+
+.todo-check-btn.checked::after {
+    content: "✅";
+}
+
+.collapsed {
+    display: none;
+}
+
+.collapse-btn {
+    position: absolute;
+    right: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 5px;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+}
+
+.collapse-btn.active-collapse {
+    transform: rotate(0deg);
+}
+
+.todo-container[data-indent="2"] {
+    margin-left: 28px;
+}
+
+.todo-container[data-indent="3"] {
+    margin-left: 56px;
+}
+
+.todo-container[data-indent="4"] {
+    margin-left: 84px;
+}
+
+.todo-container[data-indent="5"] {
+    margin-left: 112px;
+}
+
+.diag-indent {
+    margin-left: 28px;
+}
