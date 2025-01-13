@@ -4,6 +4,7 @@
  * И также эти события доходят потом до todo-list и он уже обрабатывает с более сложной логикой
  */
 import { DataStorage } from "../../dataSaving/dataStorage";
+import { saveData } from "../../dataSaving/localStore";
 import styles from "./subtask-list.css?raw";  // Подключаем стили
 
 export class SubtaskList extends HTMLElement {
@@ -14,7 +15,9 @@ export class SubtaskList extends HTMLElement {
 
         this.list = this.shadowRoot.host
 
-        this.handleSubtaskSet = this.handleSubtaskSet.bind(this)
+        this.renderSubtasks = this.renderSubtasks.bind(this)
+        this.renderTodoForm = this.renderTodoForm.bind(this)
+        this.addTodoItemFromForm = this.addTodoItemFromForm.bind(this)
     }
 
     connectedCallback() {
@@ -23,10 +26,9 @@ export class SubtaskList extends HTMLElement {
         style.textContent = styles
         this.shadowRoot.append(style)
 
-        this.addTodoBtn.addEventListener("click", this.renderTodoForm)
-        this.list.addEventListener("formValue", this.createTodoItem)
+        this.list.addEventListener("formValue", this.addTodoItemFromForm)
         this.list.addEventListener("cancelForm", this.showButton)
-        this.list.addEventListener("todoChecked", this.handleTodoCheck)
+        this.list.addEventListener("todoChecked", this.handleSubtaskCheck)
         this.list.addEventListener("showConfirmDiag", (e) => {
             this.diag.showDiag(e)
         })
@@ -34,17 +36,18 @@ export class SubtaskList extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.addTodoBtn.removeEventListener("click", this.renderTodoForm)
-        this.list.removeEventListener("formValue", this.createTodoItem)
+        if (this.addTodoBtn)
+            this.addTodoBtn.removeEventListener("click", this.renderTodoForm)
+        this.list.removeEventListener("formValue", this.addTodoItemFromForm)
         this.list.removeEventListener("cancelForm", this.showButton)
-        this.list.removeEventListener("todoChecked", this.handleTodoCheck)
+        this.list.removeEventListener("todoChecked", this.handleSubtaskCheck)
         this.list.removeEventListener("showConfirmDiag", (e) => {
             this.diag.showDiag(e)
         })
         this.list.removeEventListener("removeElement", this.removeTodo)
     }
 
-    handleSubtaskSet(subtaskSet) {
+    renderSubtasks(subtaskSet, canBeNested) {
         if (!(subtaskSet instanceof Set)) {
             throw new Error("Argument must be instance of Set")
         }
@@ -56,8 +59,11 @@ export class SubtaskList extends HTMLElement {
             todoNode.setData(todo)
             this.shadowRoot.append(todoNode)
         })
-        this.addTodoBtn = this.createAddTodoBtn()
-        this.shadowRoot.append(this.addTodoBtn)
+        if (canBeNested) {
+            this.addTodoBtn = this.createAddTodoBtn()
+            this.shadowRoot.append(this.addTodoBtn)
+            this.addTodoBtn.addEventListener("click", this.renderTodoForm)
+        }
     }
 
     /**
@@ -69,7 +75,7 @@ export class SubtaskList extends HTMLElement {
         const btn = document.createElement("button")
         btn.classList.add("add-todo-btn")
         btn.type = "button"
-        btn.setAttribute("data-parent-id", this.parentId)
+        //btn.setAttribute("data-parent-id", this.parentId)
         btn.textContent = "Add new subtask"
         return btn
     }
@@ -83,14 +89,15 @@ export class SubtaskList extends HTMLElement {
     addTodoItemFromForm(e) {
         const formValues = e.detail.formValues
         const data = new DataStorage()
-        const id = this.parentId
+        const id = this.list.id
         let parent = data.getTodoById(id)
-        
+
         formValues.tags = formValues.tags.split(" ")
         formValues.deadline = formValues.deadline ? formValues.deadline : null
 
         const todo = parent.createTodo(formValues)
         data.saveTodo(todo)
+        // Перемести это во внутрь data
         saveData()
 
         const todoNode = document.createElement("todo-item")
@@ -107,6 +114,13 @@ export class SubtaskList extends HTMLElement {
         const form = document.createElement("add-todo-form")
         this.addTodoBtn.before(form)
         this.addTodoBtn.style.display = "none"
+    }
+
+    handleSubtaskCheck(e) {
+        const id = e.detail.todoObj.id
+        const selector = `todo-item[data-id="${CSS.escape(id)}"]`
+        const todoItem = this.shadowRoot.querySelector(selector)
+        todoItem.toggleCheckedTodoContent()
     }
 }
 

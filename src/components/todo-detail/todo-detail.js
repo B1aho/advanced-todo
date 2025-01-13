@@ -21,17 +21,19 @@ export class TodoDetail extends HTMLElement {
         const shadow = this.attachShadow({ mode: "open" })
         const template = document.querySelector("#todo-detail-templ")
         const templateContent = template.content
-
-        // Вставляем клонированный шаблон в элемент
         shadow.append(templateContent.cloneNode(true))
+
         this.closeBtn = this.shadowRoot.querySelector("#close-diag-btn")
         this.checkBtn = this.shadowRoot.querySelector("#todo-check-btn")
-        this.title = this.shadowRoot.querySelector("#diag-todo-title")
+        this.todoTitle = this.shadowRoot.querySelector("#diag-todo-title")
         this.desc = this.shadowRoot.querySelector("#diag-todo-desc")
-        this.subtaskList = this.shadowRoot.querySelector("#subtask-list")
+        this.mainPart = this.shadowRoot.querySelector("#main-part")
+        this.subtaskList = document.createElement("subtask-list")
+        this.mainPart.append(this.subtaskList)
         this.optionWrapper = this.shadowRoot.querySelector("#option-part")
         this.options = document.createElement("todo-detail-options")
         this.optionWrapper.append(this.options)
+        this.diag = this.shadowRoot.querySelector("#todo-detail-dialog")
 
         this.showDiag = this.showDiag.bind(this)
     }
@@ -66,10 +68,11 @@ export class TodoDetail extends HTMLElement {
         this.todoId = e.detail.id
         const data = new DataStorage()
         const todoObj = data.getTodoById(this.todoId)
-        this.title.textContent = todoObj.title
+        this.todoTitle.textContent = todoObj.title
         this.desc.textContent = todoObj.desc
         this.options.updateData(todoObj)
-        this.subtaskList.renderSubtasks(todoObj.subtask)
+        this.subtaskList.id = e.detail.id
+        this.subtaskList.renderSubtasks(todoObj.subtask, (todoObj.indent < 5))
         if (!this.diag.open)
             this.diag.showModal()
     }
@@ -163,7 +166,7 @@ export function createDiagFromTempl(e) {
 
     const select = diag.querySelector("#priority-menu-diag")
     new ItcCustomSelect(select, {
-        onSelected(select, option) {
+        onSelected(select) {
             todo.priorLevel = select.value
             selectBtn.textContent = getCheckWord(todo.priorLevel)
             const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`
@@ -301,29 +304,6 @@ function updateTodoDeadline(todoId, newDeadline) {
     todoDeadline.textContent = newDeadline
 }
 
-
-/**
- * This function returns a string representing the word representation of todo priority level
- * @param {Number} prior - TodoItem.priorityLevel
- * @returns {String}
- */
-function getCheckWord(prior) {
-    let word = "None"
-    switch (prior) {
-        case 1:
-            word = "Low"
-            break;
-        case 2:
-            word = "Medium"
-            break;
-        case 3:
-            word = "High"
-            break;
-        default:
-            break;
-    }
-    return word
-}
 
 /**
  * This function creates HTML elements representing all the todo tags by initializing an HTML template. 

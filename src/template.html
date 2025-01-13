@@ -173,7 +173,6 @@
                         </div>
                         <hr>
                     </div>
-                    <div id="subtask-list"></div>
                 </div>
                 <div id="option-part">
                 </div>
@@ -189,7 +188,7 @@
             </div>
             <div class="change-prior-container">
                 <div class="itc-select" id="priority-menu-diag">
-                    <button type="button" class="itc-select__toggle" name="prior" value=""
+                    <button type="button" id="select-btn" class="itc-select__toggle" name="prior" value=""
                         data-select="toggle" data-index="-1">Приоритет</button>
                     <div class="itc-select__dropdown">
                         <ul class="itc-select__options">
@@ -211,7 +210,7 @@
                 </div>
             </div>
             <div class="change-tags-container">
-                <div class="tag-list"></div>
+                <div id="tag-list"></div>
                 <div>
                     <input type="text" id="add-tag-input" maxlength="30">
                     <button id="add-tag-btn">Add tags</button>

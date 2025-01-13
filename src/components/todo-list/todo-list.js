@@ -22,7 +22,9 @@ export class TodoList extends HTMLElement {
 
         this.list = this.shadowRoot.host
         this.diag = new ConfirmDiag("Эта задача будет удалена со всеми подзадачами - безвозвратно!")
-        this.shadowRoot.append(this.diag)
+        this.detailTodo = document.createElement("todo-detail")
+        this.shadowRoot.append(this.diag, this.detailTodo)
+        this.detailTodo.closeDiag()
 
         this.renderTodoForm = this.renderTodoForm.bind(this)
         this.handleTodoSet = this.handleTodoSet.bind(this)
@@ -64,7 +66,10 @@ export class TodoList extends HTMLElement {
         })
         this.list.removeEventListener("removeElement", this.removeTodo)
         this.list.removeEventListener("showDetailView", this.openDetailView)
+    }
 
+    openDetailView(evt) {
+        this.detailTodo.showDiag(evt)
     }
 
     removeTodo(evt) {
@@ -140,6 +145,8 @@ export class TodoList extends HTMLElement {
     createTodoItem(e) {
         const formValues = e.detail.formValues
         const data = new DataStorage()
+        // ЗДЕСЬ ОШИБКА, если создавать через детальное представление субтаск, то он будет созда todo, а здесь всегда
+        // parent проджеки - значит parent type, надо через событие передавать
         const parentType = this.parentType
         const id = this.parentId
         let parent

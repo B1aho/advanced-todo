@@ -41,8 +41,6 @@ export class AddTodoForm extends HTMLElement {
     connectedCallback() {
         const style = document.createElement("style")
         style.textContent = styles + ItcStyles + DatepickerStyles
-        console.log(ItcStyles)
-
         this.shadowRoot.append(style)
 
         this.cancelBtn.addEventListener("click", this.cancelForm)
