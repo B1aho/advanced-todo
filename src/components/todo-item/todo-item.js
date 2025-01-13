@@ -1,6 +1,6 @@
 // Блин, можно же просто id, узлу задать и все, у self брать id, когда надо
 import { DataStorage } from "../../dataSaving/dataStorage";
-import { addCollapseBtnOnTodo, createConfirmDiagAndShow, getCheckColor } from "../../render/createDOMutility";
+import { addCollapseBtnOnTodo, getCheckColor } from "../../render/createDOMutility";
 import { RenderTodoDiag } from "../../render/todoRender";
 import styles from "./todo-item.css?raw";
 
@@ -89,7 +89,13 @@ export class TodoItemElement extends HTMLElement {
 
     // Может вообще сделаем, что dispatchEvent, со ссылкой на узел, и его удаляет уже родиткльский компонент, после подтверждения
     confirmRemove() {
-        createConfirmDiagAndShow(this.todoId, "todo")
+        const customEvent = new CustomEvent("showConfirmDiag", {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.todoId } 
+        })
+
+        this.self.dispatchEvent(customEvent)
     }
 
     checkTodo() {
@@ -103,28 +109,6 @@ export class TodoItemElement extends HTMLElement {
         })
 
         this.self.dispatchEvent(customEvent)
-    //     // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
-    //     toggleCheckedAllTodoNodes(todoObj)
-    //     // Затогглить данные в хранилище и сохранить
-    //     toggleCheckedTodoData(todoObj)
-    //     saveData()
-
-    //     if (todoObj.checked) {
-    //         const todoDiag = document.querySelector("#todo-dialog")
-    //         data.lastTimeRef = setTimeout(() => {
-    //             hideTodoWithSubtasks(todoObj)
-    //         }, 3000)
-
-    //         if (!todoDiag || !todoDiag.open)
-    //             showUndoPopup(todoObj)
-    //     } else {
-    //         if (data.lastTimeRef)
-    //             clearTimeout(data.lastTimeRef)
-    //         this.unhide()
-    //         const undoPopup = document.querySelector(".undo-popup")
-    //         if (undoPopup)
-    //             undoPopup.remove()
-    //     }
      }
 
     toggleCheckedTodoContent() {

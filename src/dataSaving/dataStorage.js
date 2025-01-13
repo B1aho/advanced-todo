@@ -1,4 +1,5 @@
 import { TodoItem } from "../entities/todoItem";
+import { saveData } from "./localStore";
 
 /**
  * Class that implement run-time data-storage with singletone pattern
@@ -80,6 +81,7 @@ export class DataStorage {
         this[type].delete(elementId)
         count++
         elem = null
+        saveData()
         return count
     }
 

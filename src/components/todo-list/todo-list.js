@@ -3,6 +3,7 @@ import { DataStorage } from "../../dataSaving/dataStorage";
 import { saveData } from "../../dataSaving/localStore";
 import { TodoItem } from "../../entities/todoItem";
 import { fillArrayWithSubtaskNodes, showUndoPopup } from "../../render/createDOMutility";
+import { ConfirmDiag } from "../confirm-diag";
 import styles from "./todo-list.css?raw";  // Подключаем стили
 
 export class TodoList extends HTMLElement {
@@ -12,6 +13,9 @@ export class TodoList extends HTMLElement {
         this.attachShadow({ mode: "open" })
 
         this.list = this.shadowRoot.host
+        this.diag = new ConfirmDiag("Эта задача будет удалена со всеми подзадачами - безвозвратно!")
+        this.shadowRoot.append(this.diag)
+
         this.renderTodoForm = this.renderTodoForm.bind(this)
         this.handleTodoSet = this.handleTodoSet.bind(this)
         this.createAddTodoBtn = this.createAddTodoBtn.bind(this)
@@ -19,6 +23,7 @@ export class TodoList extends HTMLElement {
         this.showButton = this.showButton.bind(this)
         this.toggleCheckedAllTodoNodes = this.toggleCheckedAllTodoNodes.bind(this)
         this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this)
+        this.removeTodo = this.removeTodo.bind(this)
     }
 
     connectedCallback() {
@@ -33,13 +38,37 @@ export class TodoList extends HTMLElement {
         this.list.addEventListener("formValue", this.createTodoItem)
         this.list.addEventListener("cancelForm", this.showButton)
         this.list.addEventListener("todoChecked", this.handleTodoCheck)
+        this.list.addEventListener("showConfirmDiag", (e) => {
+            this.diag.showDiag(e)
+        })
+        this.list.addEventListener("removeElement", this.removeTodo)
     }
 
     disconnectedCallback() {
         this.addTodoBtn.removeEventListener("click", this.renderTodoForm)
-        this.list.addEventListener("formValue", this.createTodoItem)
-        this.list.addEventListener("cancelForm", this.showButton)
-        this.list.addEventListener("todoChecked", this.handleTodoCheck)
+        this.list.removeEventListener("formValue", this.createTodoItem)
+        this.list.removeEventListener("cancelForm", this.showButton)
+        this.list.removeEventListener("todoChecked", this.handleTodoCheck)
+        this.list.removeEventListener("showConfirmDiag", (e) => {
+            this.diag.showDiag(e)
+        })
+        this.list.removeEventListener("removeElement", this.removeTodo)
+
+    }
+
+    removeTodo(evt) {
+        const todoId = evt.detail.id
+        const data = new DataStorage()
+        let todosNumber = data.removeElement(todoId)
+
+        const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`
+        let todoItem = this.shadowRoot.querySelector(selector)
+        while (todosNumber) {
+            const nextTodo = todoItem.nextSibling
+            todoItem.remove()
+            todosNumber--
+            todoItem = nextTodo
+        }
     }
 
     handleTodoSet(todoSet) {
@@ -156,7 +185,7 @@ export class TodoList extends HTMLElement {
     toggleCheckedAllTodoNodes(todo) {
         if (todo.subtask.size > 0)
             todo.subtask.forEach(subId => toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId)))
-    
+
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoItem = this.shadowRoot.querySelector(selector)
         todoItem.toggleCheckedTodoContent()
@@ -183,7 +212,7 @@ export class TodoList extends HTMLElement {
         const todoNode = this.shadowRoot.querySelector(selector)
         todoNode.hide()
     }
-    
+
     unhideCheckedTodo(todo) {
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoNode = this.shadowRoot.querySelector(selector)

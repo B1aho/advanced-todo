@@ -398,34 +398,35 @@ export function showCompletedTodos(e) {
 //         todo.checked = true
 // }
 
-export function createConfirmDiagAndShow(id, type) {
-    const templ = document.querySelector("#confirm-diag-templ")
-    const clone = templ.content.cloneNode(true)
-    const diag = clone.querySelector(".confirm-remove")
 
-    const closeDiag = clone.querySelector("#close-confirm-diag")
-    closeDiag.addEventListener("click", () => {
-        diag.close()
-        diag.remove()
-    })
+// export function createConfirmDiagAndShow(id, type) {
+//     const templ = document.querySelector("#confirm-diag-templ")
+//     const clone = templ.content.cloneNode(true)
+//     const diag = clone.querySelector(".confirm-remove")
 
-    const confirmBtn = clone.querySelector("#remove-elem-btn")
-    confirmBtn.addEventListener("click", () => {
-        const data = new DataStorage()
-        if (type === "todo")
-            updateTodoRemoveRender(id, data.removeElement(id))
-        else if (type === "section")
-            removeSection(id)
-        else
-            removeProject(id)
-        saveData()
-        diag.close()
-        diag.remove()
-    })
+//     const closeDiag = clone.querySelector("#close-confirm-diag")
+//     closeDiag.addEventListener("click", () => {
+//         diag.close()
+//         diag.remove()
+//     })
 
-    document.body.append(diag)
-    diag.showModal()
-}
+//     const confirmBtn = clone.querySelector("#remove-elem-btn")
+//     confirmBtn.addEventListener("click", () => {
+//         const data = new DataStorage()
+//         if (type === "todo")
+//             updateTodoRemoveRender(id, data.removeElement(id))
+//         else if (type === "section")
+//             removeSection(id)
+//         else
+//             removeProject(id)
+//         saveData()
+//         diag.close()
+//         diag.remove()
+//     })
+
+//     document.body.append(diag)
+//     diag.showModal()
+// }
 
 /**
  * This function initializes the HTML elements of the section template based on the provided
