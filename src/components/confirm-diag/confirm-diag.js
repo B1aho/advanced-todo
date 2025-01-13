@@ -87,7 +87,3 @@ customElements.define("confirm-diag", ConfirmDiag)
 //         diag.close()
 //         diag.remove()
 //     })
-
-//     document.body.append(diag)
-//     diag.showModal()
-// }

@@ -57,7 +57,7 @@ export class MySelect extends HTMLElement {
     }
 
     dispatchOptionEvent(e) {
-        const customEvent = new CustomEvent('handleExtraOption', {
+        const customEvent = new CustomEvent("handleExtraOption", {
             bubbles: true,
             composed: true, // Событие сможет выйти из Shadow DOM
             detail: {

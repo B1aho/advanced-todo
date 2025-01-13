@@ -1,7 +1,6 @@
 // Блин, можно же просто id, узлу задать и все, у self брать id, когда надо
 import { DataStorage } from "../../dataSaving/dataStorage";
 import { addCollapseBtnOnTodo, getCheckColor } from "../../render/createDOMutility";
-import { RenderTodoDiag } from "../../render/todoRender";
 import styles from "./todo-item.css?raw";
 
 export class TodoItemElement extends HTMLElement {
@@ -31,6 +30,7 @@ export class TodoItemElement extends HTMLElement {
         this.unhide = this.unhide.bind(this)
         this.toggleCheckedTodoContent = this.toggleCheckedTodoContent.bind(this)
         this.confirmRemove = this.confirmRemove.bind(this)
+        this.dispatchDetailView = this.dispatchDetailView.bind(this)
 
     }
 
@@ -41,13 +41,13 @@ export class TodoItemElement extends HTMLElement {
         this.shadowRoot.append(style)
         this.checkBtn.addEventListener("click", this.checkTodo)
         this.removeBtn.addEventListener("click", this.confirmRemove)
-        this.todoBody.addEventListener("click", RenderTodoDiag)
+        this.todoBody.addEventListener("click", this.dispatchDetailView)
     }
 
     disconnectedCallback() {
         this.checkBtn.removeEventListener("click", this.checkTodo)
         this.removeBtn.removeEventListener("click", this.confirmRemove)
-        this.todoBody.removeEventListener("click", RenderTodoDiag)
+        this.todoBody.removeEventListener("click", this.dispatchDetailView)
     }
 
     setData(todoObj) {
@@ -90,6 +90,17 @@ export class TodoItemElement extends HTMLElement {
     // Может вообще сделаем, что dispatchEvent, со ссылкой на узел, и его удаляет уже родиткльский компонент, после подтверждения
     confirmRemove() {
         const customEvent = new CustomEvent("showConfirmDiag", {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.todoId } 
+        })
+
+        this.self.dispatchEvent(customEvent)
+    }
+
+    // Может вообще сделаем, что dispatchEvent, со ссылкой на узел, и его удаляет уже родиткльский компонент, после подтверждения
+    dispatchDetailView() {
+        const customEvent = new CustomEvent("showDetailView", {
             bubbles: true,
             composed: true,
             detail: { id: this.todoId } 

@@ -1,0 +1,27 @@
+#todo-detail-dialog {
+    display: flex;
+    flex-direction: column;
+}
+
+#detail-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#diag-container {
+    display: flex;
+}
+
+#main-part, #option-part, #main-todo {
+    display: flex;
+    flex-direction: column;
+}
+
+.diag-todo-container {
+    display: flex;
+}
+
+.diag-todo-item {
+    display: flex;
+    flex-direction: column;
+}

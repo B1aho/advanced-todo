@@ -54,22 +54,6 @@ export function renderProjectListItem(projObj) {
     changeProjectListHeaderNumber(1)
 }
 
-// /**
-//  * 
-//  * @param {Event} e 
-//  * @returns 
-//  */
-// function handleProjectListClick(e) {
-//     e.stopPropagation()
-//     hideOptions(e)
-//     const target = e.target
-//     if (target.id === "project-list" || target.id === "project-list-header")
-//         return
-//     else if (target.classList.contains("option"))
-//         handleProjectExtraOption(target)
-//     else if (target.classList.contains("select-project-btn"))
-//         renderExtraOptions(target.getAttribute("data-id"))
-// }
 
 function changeProjectListHeaderNumber(number) {
     const header = document.querySelector("#project-list-header")
@@ -77,20 +61,6 @@ function changeProjectListHeaderNumber(number) {
     headerText[2] = Number(headerText[2]) + number
     header.textContent = headerText.join(" ")
 }
-
-// /**
-//  * 
-//  * @param {Event} e 
-//  */
-// function renderExtraOptions(e) {
-//     const options = e.detail.options
-//     console.log(options)
-//     //hideOptions()
-//     // const selector = `.project-list-item[data-id="${CSS.escape(id)}"]`
-//     // const options = document.querySelector(selector).nextElementSibling
-//     // options.classList.toggle("hidden")
-//     // document.addEventListener("click", hideOptions)
-// }
 
 export function renderSectionExtraOptions(e) {
     const id = e.target.getAttribute("data-id")
@@ -182,18 +152,18 @@ export function renderProjectContent(projectId) {
     contentDiv.append(clone)
 }
 
-/**
- * 
- * @param {*} e 
- */
-export function RenderTodoDiag(e) {
-    let lastDiag = document.querySelector("#todo-dialog")
-    if (lastDiag)
-        lastDiag.remove()
-    const diag = createDiagFromTempl(e)
-    document.body.append(diag)
-    diag.showModal()
-}
+// /**
+//  * 
+//  * @param {*} e 
+//  */
+// export function RenderTodoDiag(e) {
+//     let lastDiag = document.querySelector("#todo-dialog")
+//     if (lastDiag)
+//         lastDiag.remove()
+//     const diag = createDiagFromTempl(e)
+//     document.body.append(diag)
+//     diag.showModal()
+// }
 
 /**
  * 

@@ -1,4 +1,12 @@
-// Данный компонент отвечает за создание todo-item, за формы для создания todo и за
+/**
+ * Компонент отвечает за изменения состояний задач (выполнение, удаление, изменение данных)
+ * Для этого вложенные задачи генерируют наверх списку разные события: 
+ * "ОткрытьФормуДляПодтверженияУдаления"
+ * "ОткрытьРасширенноеПредставлениеЗадачи"
+ * "ВыполнитьЗадачу"
+ * Открывает эти формы, далее формы также генерируют ему события, которые с результатом
+ * Компонент списка выполняет необходимые действия передавая дочерним компонентам события либо напрямую через методы дочерних компонентов 
+ */
 import { DataStorage } from "../../dataSaving/dataStorage";
 import { saveData } from "../../dataSaving/localStore";
 import { TodoItem } from "../../entities/todoItem";
@@ -24,6 +32,7 @@ export class TodoList extends HTMLElement {
         this.toggleCheckedAllTodoNodes = this.toggleCheckedAllTodoNodes.bind(this)
         this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this)
         this.removeTodo = this.removeTodo.bind(this)
+        this.openDetailView = this.openDetailView.bind(this)
     }
 
     connectedCallback() {
@@ -42,6 +51,7 @@ export class TodoList extends HTMLElement {
             this.diag.showDiag(e)
         })
         this.list.addEventListener("removeElement", this.removeTodo)
+        this.list.addEventListener("showDetailView", this.openDetailView)
     }
 
     disconnectedCallback() {
@@ -53,6 +63,7 @@ export class TodoList extends HTMLElement {
             this.diag.showDiag(e)
         })
         this.list.removeEventListener("removeElement", this.removeTodo)
+        this.list.removeEventListener("showDetailView", this.openDetailView)
 
     }
 
