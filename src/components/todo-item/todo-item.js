@@ -31,6 +31,7 @@ export class TodoItemElement extends HTMLElement {
         this.toggleCheckedTodoContent = this.toggleCheckedTodoContent.bind(this)
         this.confirmRemove = this.confirmRemove.bind(this)
         this.dispatchDetailView = this.dispatchDetailView.bind(this)
+        this.updateRendering = this.updateRendering.bind(this)
 
     }
 
@@ -68,18 +69,7 @@ export class TodoItemElement extends HTMLElement {
             addCollapseBtnOnTodo(this.todo)
         }
 
-        this.todoTitle.textContent = todoObj.title
-        this.todoDesc.textContent = todoObj.desc
-        this.todoDeadline.textContent = todoObj.deadline
-
-        if (todoObj.tags) {
-            todoObj.tags.forEach((tag) => {
-                const tagSpan = document.createElement("span")
-                tagSpan.classList.add("tag")
-                tagSpan.textContent = tag
-                this.todoTags.append(tagSpan)
-            })
-        }
+        this.updateRendering()
 
         // this.todoBody.setAttribute("data-id", todoObj.id)
 
@@ -135,6 +125,24 @@ export class TodoItemElement extends HTMLElement {
 
     unhide() {
         this.self.classList.remove("checked")
+    }
+
+    updateRendering() {
+        const todoObj = new DataStorage().getTodoById(this.todoId)
+        this.todoTitle.textContent = todoObj.title
+        this.todoDesc.textContent = todoObj.desc
+        this.todoDeadline.textContent = todoObj.deadline
+
+        this.todoTags.innerHTML = ""
+
+        if (todoObj.tags) {
+            todoObj.tags.forEach((tag) => {
+                const tagSpan = document.createElement("span")
+                tagSpan.classList.add("tag")
+                tagSpan.textContent = tag
+                this.todoTags.append(tagSpan)
+            })
+        }
     }
 }
 

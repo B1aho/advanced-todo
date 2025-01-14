@@ -1,10 +1,13 @@
 import { Datepicker } from "vanillajs-datepicker";
 import styles from "./todo-detail-options.css?raw";
-import  ItcStyles  from "../../../assets/select/itc-custom-select.css?raw";
-import  DatepickerStyles  from "../../../assets/datepicker.css?raw";
+import ItcStyles from "../../../assets/select/itc-custom-select.css?raw";
+import DatepickerStyles from "../../../assets/datepicker.css?raw";
 import { ItcCustomSelect } from "../../../assets/select/itc-custom-select";
 import { format } from "date-fns";
 import { TodoItem } from "../../entities/todoItem";
+import { DataStorage } from "../../dataSaving/dataStorage";
+import { saveData } from "../../dataSaving/localStore";
+import { TagNode } from "../tag-node/tag-node";
 
 export class TodoDetailOptions extends HTMLElement {
     constructor() {
@@ -31,6 +34,10 @@ export class TodoDetailOptions extends HTMLElement {
         this.tagList = this.shadowRoot.querySelector("#tag-list")
         this.tagInput = this.shadowRoot.querySelector("#add-tag-input")
         this.addTagBtn = this.shadowRoot.querySelector("#add-tag-btn")
+
+        this.updateTagList = this.updateTagList.bind(this)
+        this.updateData = this.updateData.bind(this)
+        this.addTags = this.addTags.bind(this)
     }
 
     connectedCallback() {
@@ -38,19 +45,27 @@ export class TodoDetailOptions extends HTMLElement {
         style.textContent = styles + ItcStyles + DatepickerStyles
         this.shadowRoot.append(style)
 
-        this.addTagBtn.addEventListener("click", () => {
-            if (this.tagInput.value === "")
-                return
-            todo.setTags(tagAddInput.value.split(" "))
-            updateTodoTags(todo)
-            this.tagList.innerHTML = ""
-            createTagsNodes(tagList, todo)
-            saveData()
-            tagAddInput.value = ""
+        this.addTagBtn.addEventListener("click", this.addTags)
+    }
+
+    addTags() {
+        if (this.tagInput.value === "")
+            return
+        let newTags = this.tagInput.value.split(" ")
+        const todoObj = new DataStorage().getTodoById(this.todoId)
+        newTags = removeDuplicatedTagsAndSave(todoObj, newTags)
+        this.updateTagList(newTags)
+        const customEvent = new CustomEvent("updateTodo", {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.todoId }
         })
+        this.shadowRoot.host.dispatchEvent(customEvent)
+        this.tagInput.value = ""
     }
 
     disconnectedCallback() {
+        this.addTagBtn.removeEventListener("click", this.addTags)
     }
 
     /**
@@ -61,10 +76,35 @@ export class TodoDetailOptions extends HTMLElement {
         this.todoId = todoObj.id
         this.changeDeadlineInput.value = todoObj.deadline
         this.selectBtn.textContent = getCheckWord(todoObj.priorLevel)
+        this.tagList.innerHTML = ""
+        this.updateTagList(todoObj.tags)
+    }
+
+    updateTagList(tagArray) {
+        tagArray.forEach(tag => {
+            this.tagList.append(new TagNode(tag))
+        })
     }
 }
 
 customElements.define("todo-detail-options", TodoDetailOptions)
+
+/**
+ * 
+ * @param {TodoItem} todoObj 
+ * @param {Array} newTags 
+ */
+function removeDuplicatedTagsAndSave(todoObj, newTags) {
+    const noDuplicateArr = []
+    const oldTags = todoObj.tags
+    newTags.forEach(tag => {
+        if (!oldTags.find(el => el === "#" + tag))
+            noDuplicateArr.push(tag)
+    })
+    todoObj.setTags(noDuplicateArr)
+    saveData()
+    return noDuplicateArr
+}
 
 /**
  * В общую папкус utility функциями, если нужна не только здесь!!!!!!!!!

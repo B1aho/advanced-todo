@@ -79,6 +79,7 @@ export class TodoDetail extends HTMLElement {
     // Данные должные при открытии заполнятся
     showDiag(e) {
         this.todoId = e.detail.id
+        this.options.todoId = this.todoId
         const data = new DataStorage()
         const todoObj = data.getTodoById(this.todoId)
         this.todoTitle.textContent = todoObj.title
@@ -242,25 +243,6 @@ function fillArrayWithDirectSubtaskNodes(arr, todo) {
         todoNode.setData(subtask)
         arr.push(todoNode)
     })
-}
-
-/**
- * Fabric that create button that can render form for creating subtask
- * @param {String} parentId - string that represent parent's id.
- * Only instances of TodoItem can be parents of subtasks
- * @returns {HTMLButtonElement}
- */
-function createAddSubtaskBtn(parentId) {
-    const btn = document.createElement("button")
-    btn.classList.add("add-subtask-btn")
-    btn.type = "button"
-    btn.setAttribute("data-parent-id", parentId)
-    btn.addEventListener("click", renderTodoForm)
-    if (parentId.includes("todo"))
-        btn.textContent = "Add new subtask"
-    else
-        btn.textContent = "Add new todo"
-    return btn
 }
 
 // В формы перенести

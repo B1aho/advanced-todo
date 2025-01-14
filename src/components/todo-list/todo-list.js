@@ -35,6 +35,7 @@ export class TodoList extends HTMLElement {
         this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this)
         this.removeTodo = this.removeTodo.bind(this)
         this.openDetailView = this.openDetailView.bind(this)
+        this.updateTodoItem = this.updateTodoItem.bind(this)
     }
 
     connectedCallback() {
@@ -54,6 +55,7 @@ export class TodoList extends HTMLElement {
         })
         this.list.addEventListener("removeElement", this.removeTodo)
         this.list.addEventListener("showDetailView", this.openDetailView)
+        this.list.addEventListener("updateTodo", this.updateTodoItem)
     }
 
     disconnectedCallback() {
@@ -66,12 +68,20 @@ export class TodoList extends HTMLElement {
         })
         this.list.removeEventListener("removeElement", this.removeTodo)
         this.list.removeEventListener("showDetailView", this.openDetailView)
+        this.list.removeEventListener("updateTodo", this.updateTodoItem)
     }
 
     openDetailView(evt) {
         this.detailTodo.showDiag(evt)
     }
 
+    updateTodoItem(evt) {
+        const todoId = evt.detail.id
+        const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`
+        const todoItem = this.shadowRoot.querySelector(selector)
+        todoItem.updateRendering()
+    }
+ 
     removeTodo(evt) {
         const todoId = evt.detail.id
         const data = new DataStorage()

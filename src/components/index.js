@@ -6,4 +6,5 @@ export { TodoList } from "./todo-list";
 export { ConfirmDiag } from "./confirm-diag";
 export { TodoDetail } from "./todo-detail";
 export { TodoDetailOptions } from "./todo-detail-options";
-export { SubtaskList } from "./subtask-list"
+export { SubtaskList } from "./subtask-list";
+export { TagNode } from "./tag-node";
