@@ -11,6 +11,8 @@ export class TagNode extends HTMLElement {
     this.tagContent = this.shadowRoot.querySelector('.tag-content');
     this.tagContent.textContent = tag[0] === '#' ? tag : '#' + tag;
     this.tagRemoveBtn = this.shadowRoot.querySelector('.tag-delete');
+
+    this.removeTag = this.removeTag.bind(this);
   }
 
   connectedCallback() {
@@ -18,9 +20,24 @@ export class TagNode extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = styles;
     this.shadowRoot.append(style);
+
+    this.tagRemoveBtn.addEventListener('click', this.removeTag);
   }
 
-  disconnectedCallback() {}
+  disconnectedCallback() {
+    this.tagRemoveBtn.removeEventListener('click', this.removeTag);
+  }
+
+  removeTag() {
+    const tag = this.tagContent.textContent;
+    const customEvent = new CustomEvent('removeTag', {
+      bubbles: true,
+      composed: true,
+      detail: { tag: tag },
+    });
+    this.shadowRoot.dispatchEvent(customEvent);
+    this.shadowRoot.host.remove();
+  }
 }
 
 customElements.define('tag-node', TagNode);

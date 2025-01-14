@@ -1,4 +1,4 @@
-/** Здесь осталось по аналогии реализовать обновление приоритета
+/** 
  * И в tagNode реализуй удаление тэгов и также генерируй ивент обновления
  *
  *  И реализовать компонент форма text area для изменения на лету названия. И тоже генерить тоже самое событие
@@ -48,6 +48,7 @@ export class TodoDetailOptions extends HTMLElement {
     this.makeUpdateEvent = this.makeUpdateEvent.bind(this);
     this.updateDeadline = this.updateDeadline.bind(this);
     this.updatePriority = this.updatePriority.bind(this);
+    this.removeTag = this.removeTag.bind(this);
   }
 
   connectedCallback() {
@@ -64,7 +65,7 @@ export class TodoDetailOptions extends HTMLElement {
     const todoObj = new DataStorage().getTodoById(this.todoId);
     newTags = removeDuplicatedTagsAndSave(todoObj, newTags);
     this.updateTagList(newTags);
-    this.shadowRoot.host.dispatchEvent(this.makeUpdateEvent);
+    this.shadowRoot.host.dispatchEvent(this.makeUpdateEvent());
     this.tagInput.value = '';
   }
 
@@ -74,6 +75,7 @@ export class TodoDetailOptions extends HTMLElement {
       'changeDate',
       this.updateDeadline
     );
+    this.shadowRoot.removeEventListener('removeTag', this.removeTag);
   }
 
   makeUpdateEvent() {
@@ -111,6 +113,7 @@ export class TodoDetailOptions extends HTMLElement {
     this.selectBtn.textContent = getCheckWord(todoObj.priorLevel);
     this.tagList.innerHTML = '';
     this.updateTagList(todoObj.tags);
+    this.shadowRoot.addEventListener('removeTag', this.removeTag);
   }
 
   updateTagList(tagArray) {
@@ -135,6 +138,15 @@ export class TodoDetailOptions extends HTMLElement {
       },
     });
     this.shadowRoot.host.dispatchEvent(customEvent);
+  }
+
+  removeTag(evt) {
+    const tag = evt.detail.tag;
+    const todo = new DataStorage().getTodoById(this.todoId);
+    todo.removeTag(tag);
+    this.shadowRoot.host.dispatchEvent(this.makeUpdateEvent());
+    // Перенеси все такое в entity
+    saveData();
   }
 }
 

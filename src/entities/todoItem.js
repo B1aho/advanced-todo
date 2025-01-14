@@ -72,6 +72,10 @@ export class TodoItem {
     else this.tags = arr;
   }
 
+  removeTag(str) {
+    this.tags = this.tags.filter((tag) => tag !== str);
+  }
+
   /**
    * Take values from todo-form and use this values to create istance of TodoItem
    * @param {object} values
