@@ -292,19 +292,6 @@ export function createTodoTextForm(todo, targetNode) {
 
 
 /**
- * This function updates the rendering of the todo's deadline string in the main project content view
- * @param {String} todoId - id of todo
- * @param {String} newDeadline - string represent deadline - "mm/dd/yyyy"
- */
-function updateTodoDeadline(todoId, newDeadline) {
-    const selector = `.todo-item[data-id="${CSS.escape(todoId)}"]`
-    const todoItem = document.querySelector(selector)
-    const todoDeadline = todoItem.querySelector(".deadline-container")
-    todoDeadline.textContent = newDeadline
-}
-
-
-/**
  * This function creates HTML elements representing all the todo tags by initializing an HTML template. 
  * As the tag elements are created, they are appended to the provided tagList container element
  * @param {HTMLElement} tagList - represent container for todo-items

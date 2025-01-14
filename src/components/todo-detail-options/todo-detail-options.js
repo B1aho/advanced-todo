@@ -38,6 +38,8 @@ export class TodoDetailOptions extends HTMLElement {
         this.updateTagList = this.updateTagList.bind(this)
         this.updateData = this.updateData.bind(this)
         this.addTags = this.addTags.bind(this)
+        this.makeUpdateEvent = this.makeUpdateEvent.bind(this)
+        this.updateDeadline = this.updateDeadline.bind(this)
     }
 
     connectedCallback() {
@@ -55,17 +57,30 @@ export class TodoDetailOptions extends HTMLElement {
         const todoObj = new DataStorage().getTodoById(this.todoId)
         newTags = removeDuplicatedTagsAndSave(todoObj, newTags)
         this.updateTagList(newTags)
-        const customEvent = new CustomEvent("updateTodo", {
-            bubbles: true,
-            composed: true,
-            detail: { id: this.todoId }
-        })
-        this.shadowRoot.host.dispatchEvent(customEvent)
+        this.shadowRoot.host.dispatchEvent(this.makeUpdateEvent)
         this.tagInput.value = ""
     }
 
     disconnectedCallback() {
         this.addTagBtn.removeEventListener("click", this.addTags)
+        this.changeDeadlineInput.removeEventListener("changeDate", this.updateDeadline)
+    }
+
+    makeUpdateEvent() {
+        const customEvent = new CustomEvent("updateTodo", {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.todoId }
+        })
+        return customEvent
+    }
+
+    updateDeadline() {
+        const newDeadline = this.changeDeadlineInput.value
+        const todo = new DataStorage().getTodoById(this.todoId)
+        todo.setDeadline(newDeadline)
+        saveData()
+        this.shadowRoot.host.dispatchEvent(this.makeUpdateEvent())
     }
 
     /**
@@ -75,6 +90,7 @@ export class TodoDetailOptions extends HTMLElement {
     updateData(todoObj) {
         this.todoId = todoObj.id
         this.changeDeadlineInput.value = todoObj.deadline
+        this.changeDeadlineInput.addEventListener("changeDate", this.updateDeadline)
         this.selectBtn.textContent = getCheckWord(todoObj.priorLevel)
         this.tagList.innerHTML = ""
         this.updateTagList(todoObj.tags)
