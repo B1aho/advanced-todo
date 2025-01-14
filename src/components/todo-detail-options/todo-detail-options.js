@@ -1,3 +1,11 @@
+/** Здесь осталось по аналогии реализовать обновление приоритета 
+ * И в tagNode реализуй удаление тэгов и также генерируй ивент обновления
+ * 
+ *  И реализовать компонент форма text area для изменения на лету названия. И тоже генерить тоже самое событие
+ * Только это сделать в todo-detail
+*/
+
+
 import { Datepicker } from "vanillajs-datepicker";
 import styles from "./todo-detail-options.css?raw";
 import ItcStyles from "../../../assets/select/itc-custom-select.css?raw";
