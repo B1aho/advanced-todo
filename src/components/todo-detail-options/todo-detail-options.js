@@ -11,7 +11,6 @@ import ItcStyles from '../../../assets/select/itc-custom-select.css?raw';
 import DatepickerStyles from '../../../assets/datepicker.css?raw';
 import { ItcCustomSelect } from '../../../assets/select/itc-custom-select';
 import { format } from 'date-fns';
-import { TodoItem } from '../../entities/todoItem';
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
 import { TagNode } from '../tag-node/tag-node';
@@ -48,6 +47,7 @@ export class TodoDetailOptions extends HTMLElement {
     this.addTags = this.addTags.bind(this);
     this.makeUpdateEvent = this.makeUpdateEvent.bind(this);
     this.updateDeadline = this.updateDeadline.bind(this);
+    this.updatePriority = this.updatePriority.bind(this);
   }
 
   connectedCallback() {
@@ -104,6 +104,10 @@ export class TodoDetailOptions extends HTMLElement {
       'changeDate',
       this.updateDeadline
     );
+    this.prioritySelect.addEventListener(
+      'itc.select.change',
+      this.updatePriority
+    );
     this.selectBtn.textContent = getCheckWord(todoObj.priorLevel);
     this.tagList.innerHTML = '';
     this.updateTagList(todoObj.tags);
@@ -113,6 +117,24 @@ export class TodoDetailOptions extends HTMLElement {
     tagArray.forEach((tag) => {
       this.tagList.append(new TagNode(tag));
     });
+  }
+
+  updatePriority(e) {
+    const btn = e.target.querySelector('.itc-select__toggle');
+    const newColor = getCheckColor(+btn.value);
+    const todo = new DataStorage().getTodoById(this.todoId);
+    todo.priorLevel = btn.value;
+    saveData();
+
+    const customEvent = new CustomEvent('changeCheckBtnColor', {
+      composed: true,
+      bubbles: true,
+      detail: {
+        newColor: newColor,
+        id: this.todoId,
+      },
+    });
+    this.shadowRoot.host.dispatchEvent(customEvent);
   }
 }
 
@@ -157,4 +179,28 @@ function getCheckWord(prior) {
       break;
   }
   return word;
+}
+
+/**
+ * This function returns a string representing the CSS background color of the button
+ * (marking the todo as completed) depending on the provided priority level
+ * @param {Number} prior - TodoItem.priorityLevel
+ * @returns {String}
+ */
+export function getCheckColor(prior) {
+  let color = 'gray';
+  switch (prior) {
+    case 1:
+      color = 'blue';
+      break;
+    case 2:
+      color = 'yellow';
+      break;
+    case 3:
+      color = 'red';
+      break;
+    default:
+      break;
+  }
+  return color;
 }

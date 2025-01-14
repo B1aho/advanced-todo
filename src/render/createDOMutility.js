@@ -243,29 +243,6 @@ export function createSectionFromTempl(sect) {
 }
 
 /**
- * This function returns a string representing the CSS background color of the button
- * (marking the todo as completed) depending on the provided priority level
- * @param {Number} prior - TodoItem.priorityLevel
- * @returns {String}
- */
-export function getCheckColor(prior) {
-  let color = 'gray';
-  switch (prior) {
-    case 1:
-      color = 'blue';
-      break;
-    case 2:
-      color = 'yellow';
-      break;
-    case 3:
-      color = 'red';
-      break;
-    default:
-      break;
-  }
-  return color;
-}
-/**
  * This function returns a string representing the word representation of todo priority level
  * @param {}
  * @return {}

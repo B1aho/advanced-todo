@@ -6,3 +6,7 @@ tag-node {
   display: flex;
   flex-direction: column;
 }
+
+.todo-check-btn.checked::after {
+  content: '✅';
+}

@@ -40,6 +40,7 @@ export class TodoList extends HTMLElement {
     this.removeTodo = this.removeTodo.bind(this);
     this.openDetailView = this.openDetailView.bind(this);
     this.updateTodoItem = this.updateTodoItem.bind(this);
+    this.changeColor = this.changeColor.bind(this)
   }
 
   connectedCallback() {
@@ -60,6 +61,7 @@ export class TodoList extends HTMLElement {
     this.list.addEventListener('removeElement', this.removeTodo);
     this.list.addEventListener('showDetailView', this.openDetailView);
     this.list.addEventListener('updateTodo', this.updateTodoItem);
+    this.list.addEventListener('changeCheckBtnColor', this.changeColor);
   }
 
   disconnectedCallback() {
@@ -73,6 +75,7 @@ export class TodoList extends HTMLElement {
     this.list.removeEventListener('removeElement', this.removeTodo);
     this.list.removeEventListener('showDetailView', this.openDetailView);
     this.list.removeEventListener('updateTodo', this.updateTodoItem);
+    this.list.removeEventListener('changeCheckBtnColor', this.changeColor);
   }
 
   openDetailView(evt) {
@@ -99,6 +102,13 @@ export class TodoList extends HTMLElement {
       todosNumber--;
       todoItem = nextTodo;
     }
+  }
+
+  changeColor(evt) {
+    const todoId = evt.detail.id;
+    const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`;
+    const todoItem = this.shadowRoot.querySelector(selector);
+    todoItem.changeColor(evt.detail.newColor);
   }
 
   handleTodoSet(todoSet) {

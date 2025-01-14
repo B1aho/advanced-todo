@@ -11,8 +11,8 @@
  * Что означает, что todo-list открывает компонент todo-detail, значит todo-detail сначала закрывает себя на всякий случай
  */
 import { DataStorage } from '../../dataSaving/dataStorage';
-import { getCheckColor } from '../../render/createDOMutility';
 import { ConfirmDiag } from '../confirm-diag';
+import { getCheckColor } from '../todo-detail-options/todo-detail-options';
 import styles from './todo-detail.css?raw';
 
 export class TodoDetail extends HTMLElement {
@@ -41,6 +41,7 @@ export class TodoDetail extends HTMLElement {
 
     this.showDiag = this.showDiag.bind(this);
     this.closeDiag = this.closeDiag.bind(this);
+    this.changeColor = this.changeColor.bind(this);
   }
 
   connectedCallback() {
@@ -65,6 +66,7 @@ export class TodoDetail extends HTMLElement {
       'removeElement',
       this.subtaskList.removeTodo
     );
+    this.checkBtn.removeEventListener('changeCheckBtnColor', this.changeColor);
   }
 
   dispatchRemoveEvent() {
@@ -93,13 +95,19 @@ export class TodoDetail extends HTMLElement {
     this.subtaskList.remove();
     this.subtaskList = document.createElement('subtask-list');
     this.mainPart.append(this.subtaskList);
+    this.checkBtn.style.backgroundColor = getCheckColor(todoObj.priorLevel);
     this.subtaskList.id = e.detail.id;
     this.subtaskList.renderSubtasks(todoObj.subtask, todoObj.indent < 5);
     this.shadowRoot.addEventListener(
       'removeElement',
       this.subtaskList.removeTodo
     );
+    this.shadowRoot.addEventListener('changeCheckBtnColor', this.changeColor);
     if (!this.diag.open) this.diag.showModal();
+  }
+
+  changeColor(e) {
+    this.checkBtn.style.backgroundColor = e.detail.newColor;
   }
 }
 
@@ -115,121 +123,6 @@ export function RenderTodoDiag(e) {
   const diag = createDiagFromTempl(e);
   document.body.append(diag);
   diag.showModal();
-}
-
-/**
- * This function creates a dialog window based on an HTML template (initializing the template) and returns
- * the HTML element of this dialog. The dialog window visualizes an extended representation of the todo,
- * allowing you to edit all todo parameters and add subtasks to the todo
- * @param {Event} e
- * @returns {HTMLElement}
- */
-export function createDiagFromTempl(e) {
-  const template = document.querySelector('#diag-templ');
-  const clone = template.content.cloneNode(true);
-  const diag = clone.querySelector('#todo-dialog');
-  const todoId = e.currentTarget.getAttribute('data-id');
-
-  const data = new DataStorage();
-  const todo = data.getTodoById(todoId);
-
-  const checkBtn = diag.querySelector('.todo-check-btn');
-
-  checkBtn.setAttribute('data-id', todoId);
-  checkBtn.addEventListener('click', (e) => {
-    checkTodo(e, todo);
-  });
-  checkBtn.style.backgroundColor = getCheckColor(todo.priorLevel);
-  const diagTitle = diag.querySelector('.diag-todo-title');
-  diagTitle.textContent = todo.title;
-  const diagDesc = diag.querySelector('.diag-todo-desc');
-  diagDesc.textContent = todo.desc === '' ? 'Описание' : todo.desc;
-
-  const subtaskList = diag.querySelector('.subtask-diag-list');
-  const subtaskArr = [];
-  if (todo.subtask.size > 0) {
-    fillArrayWithDirectSubtaskNodes(subtaskArr, todo);
-    subtaskArr.forEach((subtask) => {
-      subtask.classList.add('diag-indent');
-      subtaskList.append(subtask);
-    });
-  }
-
-  const otherOptions = diag.querySelector('.diag-options');
-
-  if (todo.checked) {
-    const todoWrapper = clone.querySelector('.cursor-wrapper-todo');
-    const optionWrapper = clone.querySelector('.cursor-wrapper-options');
-    otherOptions.classList.add('checked');
-    optionWrapper.classList.add('checked');
-    todoWrapper.classList.add('checked');
-  }
-
-  if (todo.indent < 5)
-    otherOptions.prepend(createAddSubtaskBtn('todo-' + todoId));
-
-  const diagTextContainer = diag.querySelector('.diag-todo-item');
-  diagTextContainer.setAttribute('data-id', todoId);
-  diagTextContainer.addEventListener('click', () =>
-    createTodoTextForm(todo, diagTextContainer)
-  );
-
-  const changeDeadline = diag.querySelector('#change-deadline');
-  changeDeadline.value = todo.deadline;
-  new Datepicker(changeDeadline, {
-    minDate: format(new Date(), 'P'),
-    autohide: true,
-    title: 'Change dead line',
-    clearButton: true,
-    todayButton: true,
-  });
-  changeDeadline.addEventListener('changeDate', () => {
-    todo.deadline = changeDeadline.value;
-    updateTodoDeadline(todo.id, changeDeadline.value);
-    saveData();
-  });
-
-  const select = diag.querySelector('#priority-menu-diag');
-  new ItcCustomSelect(select, {
-    onSelected(select) {
-      todo.priorLevel = select.value;
-      selectBtn.textContent = getCheckWord(todo.priorLevel);
-      const selector = `.todo-container[data-id="${CSS.escape(todo.id)}"]`;
-      const todoContainer = document.querySelector(selector);
-      const todoCheckbtn = todoContainer.querySelector('.todo-check-btn');
-      const newColor = getCheckColor(todo.priorLevel);
-      todoCheckbtn.style.backgroundColor = newColor;
-      checkBtn.style.backgroundColor = newColor;
-      saveData();
-    },
-  });
-  const selectBtn = select.querySelector('button');
-  selectBtn.textContent = getCheckWord(todo.priorLevel);
-
-  const tagList = diag.querySelector('.tag-list');
-  createTagsNodes(tagList, todo);
-  const tagAddInput = diag.querySelector('#add-tag-input');
-  const tagAddBtn = diag.querySelector('#add-tag-btn');
-  tagAddBtn.addEventListener('click', () => {
-    if (tagAddInput.value === '') return;
-    todo.setTags(tagAddInput.value.split(' '));
-    updateTodoTags(todo);
-    tagList.innerHTML = '';
-    createTagsNodes(tagList, todo);
-    saveData();
-    tagAddInput.value = '';
-  });
-  const closeBtn = diag.querySelector('#close-diag-btn');
-  closeBtn.addEventListener('click', () => {
-    diag.close();
-  });
-
-  if (todo.checked) {
-    checkBtn.classList.add('checked');
-    diagTextContainer.classList.add('checked');
-  }
-
-  return diag;
 }
 
 /**
@@ -294,49 +187,4 @@ export function createTodoTextForm(todo, targetNode) {
   const titleTextBox = document.querySelector('#todo-title-textbox');
   titleTextBox.focus();
   targetNode.style.display = 'none';
-}
-
-/**
- * This function creates HTML elements representing all the todo tags by initializing an HTML template.
- * As the tag elements are created, they are appended to the provided tagList container element
- * @param {HTMLElement} tagList - represent container for todo-items
- * @param {TodoItem} todo
- */
-function createTagsNodes(tagList, todo) {
-  const tags = todo.tags;
-  const temple = document.querySelector('#diag-tag-templ');
-  tags.forEach((tag) => {
-    const clone = temple.content.cloneNode(true);
-    const tagItem = clone.querySelector('.diag-tag');
-    const tagContent = clone.querySelector('.tag-content');
-    tagContent.textContent = tag;
-    const deleteBtn = clone.querySelector('.tag-delete');
-    deleteBtn.addEventListener('click', () => {
-      // Удаление узла в диалоговом окне
-      tagItem.remove();
-      // Удаление тэг в туду
-      todo.tags = todo.tags.filter((todoTag) => todoTag !== tag);
-      // Удаление тэга проекте
-      updateTodoTags(todo);
-      saveData();
-    });
-    tagList.append(tagItem);
-  });
-}
-
-/**
- * This function updates the rendering of the todo's tags in the main project content view
- * @param {TodoItem} todo
- */
-function updateTodoTags(todo) {
-  const selector = `.todo-item[data-id="${CSS.escape(todo.id)}"]`;
-  const todoItem = document.querySelector(selector);
-  const tagsContainer = todoItem.querySelector('.tags-container');
-  tagsContainer.innerHTML = '';
-  todo.tags.forEach((tag) => {
-    const tagSpan = document.createElement('span');
-    tagSpan.classList.add('tag');
-    tagSpan.textContent = tag;
-    tagsContainer.append(tagSpan);
-  });
 }

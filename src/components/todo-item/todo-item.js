@@ -1,9 +1,7 @@
 // Блин, можно же просто id, узлу задать и все, у self брать id, когда надо
 import { DataStorage } from '../../dataSaving/dataStorage';
-import {
-  addCollapseBtnOnTodo,
-  getCheckColor,
-} from '../../render/createDOMutility';
+import { addCollapseBtnOnTodo } from '../../render/createDOMutility';
+import { getCheckColor } from '../todo-detail-options/todo-detail-options';
 import styles from './todo-item.css?raw';
 
 export class TodoItemElement extends HTMLElement {
@@ -143,6 +141,10 @@ export class TodoItemElement extends HTMLElement {
         this.todoTags.append(tagSpan);
       });
     }
+  }
+
+  changeColor(newColor) {
+    this.checkBtn.style.backgroundColor = newColor
   }
 }
 
