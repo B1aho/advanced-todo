@@ -56,6 +56,8 @@ export class TodoItemElement extends HTMLElement {
         this.todoId = todoObj.id
         this.self.dataset.id =  todoObj.id
         this.self.dataset.indent = todoObj.indent
+        if (todoObj.indent > 1)
+            this.self.classList.add("diag-indent")
 
         this.todo.dataset.id = todoObj.id
         this.todoBody.dataset.id = todoObj.id

@@ -145,20 +145,26 @@ export class TodoList extends HTMLElement {
     createTodoItem(e) {
         const formValues = e.detail.formValues
         const data = new DataStorage()
-        // ЗДЕСЬ ОШИБКА, если создавать через детальное представление субтаск, то он будет созда todo, а здесь всегда
-        // parent проджеки - значит parent type, надо через событие передавать
+
+        if (e.detail.subtask) {
+            const todoNode = document.createElement("todo-item")
+            todoNode.setData(e.detail.subtaskObj)
+            this.showButton()
+            this.addTodoBtn.before(todoNode)
+            return
+        }
+
         const parentType = this.parentType
         const id = this.parentId
         let parent
         if (parentType === "project") {
             parent = data.getProjectById(id)
-        }
-        if (parentType === "section") {
+        } else /* if (parentType === "section") */ {
             parent = data.getSectionById(id)
         }
-        if (parentType === "todo") {
-            parent = data.getTodoById(id)
-        }
+        // if (parentType === "todo") {
+        //     parent = data.getTodoById(id)
+        // }
 
         formValues.tags = formValues.tags.split(" ")
         formValues.deadline = formValues.deadline ? formValues.deadline : null
@@ -202,7 +208,7 @@ export class TodoList extends HTMLElement {
 
     toggleCheckedAllTodoNodes(todo) {
         if (todo.subtask.size > 0)
-            todo.subtask.forEach(subId => toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId)))
+            todo.subtask.forEach(subId => this.toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId)))
 
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoItem = this.shadowRoot.querySelector(selector)
@@ -217,7 +223,7 @@ export class TodoList extends HTMLElement {
 
     hideTodoWithSubtasks(todo) {
         if (todo.subtask.size > 0)
-            todo.subtask.forEach(subId => hideTodoWithSubtasks(new DataStorage().getTodoById(subId)))
+            todo.subtask.forEach(subId => this.hideTodoWithSubtasks(new DataStorage().getTodoById(subId)))
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoNode = this.shadowRoot.querySelector(selector)
         todoNode.hide()
@@ -225,7 +231,7 @@ export class TodoList extends HTMLElement {
 
     hideCheckedTodo(todo) {
         if (todo.subtask.size > 0)
-            todo.subtask.forEach(subId => hideCheckedTodo(new DataStorage().getTodoById(subId)))
+            todo.subtask.forEach(subId => this.hideCheckedTodo(new DataStorage().getTodoById(subId)))
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoNode = this.shadowRoot.querySelector(selector)
         todoNode.hide()
@@ -239,7 +245,7 @@ export class TodoList extends HTMLElement {
 
     uncheckTodoContainers(todo) {
         if (todo.subtask.size > 0)
-            todo.subtask.forEach(subId => uncheckTodoContainers(new DataStorage().getTodoById(subId)))
+            todo.subtask.forEach(subId => this.uncheckTodoContainers(new DataStorage().getTodoById(subId)))
         const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`
         const todoNode = this.shadowRoot.querySelector(selector)
         if (todo.checked)

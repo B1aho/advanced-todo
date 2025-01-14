@@ -20,7 +20,3 @@ todo-item[data-indent="4"] {
 todo-item[data-indent="5"] {
     margin-left: 112px;
 }
-
-.diag-indent {
-    margin-left: 28px;
-}

@@ -14,10 +14,10 @@ export class SubtaskList extends HTMLElement {
         this.attachShadow({ mode: "open" })
 
         this.list = this.shadowRoot.host
-
         this.renderSubtasks = this.renderSubtasks.bind(this)
         this.renderTodoForm = this.renderTodoForm.bind(this)
         this.addTodoItemFromForm = this.addTodoItemFromForm.bind(this)
+        this.removeTodo = this.removeTodo.bind(this) 
     }
 
     connectedCallback() {
@@ -29,10 +29,6 @@ export class SubtaskList extends HTMLElement {
         this.list.addEventListener("formValue", this.addTodoItemFromForm)
         this.list.addEventListener("cancelForm", this.showButton)
         this.list.addEventListener("todoChecked", this.handleSubtaskCheck)
-        this.list.addEventListener("showConfirmDiag", (e) => {
-            this.diag.showDiag(e)
-        })
-        this.list.addEventListener("removeElement", this.removeTodo)
     }
 
     disconnectedCallback() {
@@ -41,10 +37,6 @@ export class SubtaskList extends HTMLElement {
         this.list.removeEventListener("formValue", this.addTodoItemFromForm)
         this.list.removeEventListener("cancelForm", this.showButton)
         this.list.removeEventListener("todoChecked", this.handleSubtaskCheck)
-        this.list.removeEventListener("showConfirmDiag", (e) => {
-            this.diag.showDiag(e)
-        })
-        this.list.removeEventListener("removeElement", this.removeTodo)
     }
 
     renderSubtasks(subtaskSet, canBeNested) {
@@ -80,6 +72,13 @@ export class SubtaskList extends HTMLElement {
         return btn
     }
 
+    removeTodo(evt) {
+        const todoId = evt.detail.id
+        const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`
+        let todoItem = this.shadowRoot.querySelector(selector)
+        todoItem.remove()
+    } 
+
     /**
     * 
     * @param {*} formValues 
@@ -88,6 +87,7 @@ export class SubtaskList extends HTMLElement {
     */
     addTodoItemFromForm(e) {
         const formValues = e.detail.formValues
+        e.detail.subtask = true 
         const data = new DataStorage()
         const id = this.list.id
         let parent = data.getTodoById(id)
@@ -96,6 +96,7 @@ export class SubtaskList extends HTMLElement {
         formValues.deadline = formValues.deadline ? formValues.deadline : null
 
         const todo = parent.createTodo(formValues)
+        e.detail.subtaskObj = todo
         data.saveTodo(todo)
         // Перемести это во внутрь data
         saveData()
@@ -121,6 +122,11 @@ export class SubtaskList extends HTMLElement {
         const selector = `todo-item[data-id="${CSS.escape(id)}"]`
         const todoItem = this.shadowRoot.querySelector(selector)
         todoItem.toggleCheckedTodoContent()
+    }
+
+    showDiag(e) {
+        this.confirmDiag.showModal()
+        this.elemId = e.detail.id
     }
 }
 

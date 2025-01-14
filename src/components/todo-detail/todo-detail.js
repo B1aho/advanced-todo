@@ -12,6 +12,7 @@
  */
 import { DataStorage } from "../../dataSaving/dataStorage";
 import { getCheckColor } from "../../render/createDOMutility";
+import { ConfirmDiag } from "../confirm-diag";
 import styles from "./todo-detail.css?raw"; 
 
 export class TodoDetail extends HTMLElement {
@@ -22,7 +23,8 @@ export class TodoDetail extends HTMLElement {
         const template = document.querySelector("#todo-detail-templ")
         const templateContent = template.content
         shadow.append(templateContent.cloneNode(true))
-
+        this.confirmDiag = new ConfirmDiag("Эта задача будет удалена со всеми подзадачами - безвозвратно!")
+        this.shadowRoot.append(this.confirmDiag)
         this.closeBtn = this.shadowRoot.querySelector("#close-diag-btn")
         this.checkBtn = this.shadowRoot.querySelector("#todo-check-btn")
         this.todoTitle = this.shadowRoot.querySelector("#diag-todo-title")
@@ -36,6 +38,7 @@ export class TodoDetail extends HTMLElement {
         this.diag = this.shadowRoot.querySelector("#todo-detail-dialog")
 
         this.showDiag = this.showDiag.bind(this)
+        this.closeDiag = this.closeDiag.bind(this)
     }
 
     connectedCallback() {
@@ -44,9 +47,19 @@ export class TodoDetail extends HTMLElement {
         style.textContent = styles
 
         this.shadowRoot.append(style)
+        this.closeBtn.addEventListener("click", this.closeDiag)
+        this.shadowRoot.addEventListener("showConfirmDiag", (e) => {
+            e.stopPropagation()
+            this.confirmDiag.showDiag(e)
+        })
     }
 
     disconnectedCallback() {
+        this.closeBtn.removeEventListener("click", this.closeDiag)
+        this.shadowRoot.removeEventListener("showConfirmDiag", (e) => {
+            this.confirmDiag.showDiag(e)
+        })
+        this.shadowRoot.removeEventListener("removeElement", this.subtaskList.removeTodo)
     }
 
     dispatchRemoveEvent() {
@@ -71,8 +84,12 @@ export class TodoDetail extends HTMLElement {
         this.todoTitle.textContent = todoObj.title
         this.desc.textContent = todoObj.desc
         this.options.updateData(todoObj)
+        this.subtaskList.remove()
+        this.subtaskList = document.createElement("subtask-list")
+        this.mainPart.append(this.subtaskList)
         this.subtaskList.id = e.detail.id
         this.subtaskList.renderSubtasks(todoObj.subtask, (todoObj.indent < 5))
+        this.shadowRoot.addEventListener("removeElement", this.subtaskList.removeTodo)
         if (!this.diag.open)
             this.diag.showModal()
     }
