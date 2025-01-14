@@ -1,22 +1,21 @@
 /*Сюда как раз нужно закинуть стили для todo-item типа indent и переделать там всё*/
 
 todo-item.checked {
-    display: none;
+  display: none;
 }
 
-
-todo-item[data-indent="2"] {
-    margin-left: 28px;
+todo-item[data-indent='2'] {
+  margin-left: 28px;
 }
 
-todo-item[data-indent="3"] {
-    margin-left: 56px;
+todo-item[data-indent='3'] {
+  margin-left: 56px;
 }
 
-todo-item[data-indent="4"] {
-    margin-left: 84px;
+todo-item[data-indent='4'] {
+  margin-left: 84px;
 }
 
-todo-item[data-indent="5"] {
-    margin-left: 112px;
+todo-item[data-indent='5'] {
+  margin-left: 112px;
 }

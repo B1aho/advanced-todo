@@ -1,294 +1,424 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Workflow</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="app">
-        <nav id="menu">
-            <div id="project-list">
-                <header id="project-list-header">My projects: </header>
-                <div id="add-project-btn-wrapper">
-                    <button id="add-project-btn">Add new project</button>
-                </div>
-            </div>
-            <footer></footer>
-        </nav>
-        <div id="resizer"></div>
-        <main>
-            <!--Переделать dashboard через template-->
-            <div id="dashboard">
-                <header id="dashboard-header">
-                    <button class="toggle-navbar"><</button>
-                    <h1>Dashboard</h1>
-                </header>
-            </div>
-        </main>
+      <nav id="menu">
+        <div id="project-list">
+          <header id="project-list-header">My projects:</header>
+          <div id="add-project-btn-wrapper">
+            <button id="add-project-btn">Add new project</button>
+          </div>
+        </div>
+        <footer></footer>
+      </nav>
+      <div id="resizer"></div>
+      <main>
+        <!--Переделать dashboard через template-->
+        <div id="dashboard">
+          <header id="dashboard-header">
+            <button class="toggle-navbar"><</button>
+            <h1>Dashboard</h1>
+          </header>
+        </div>
+      </main>
     </div>
 
     <template id="confirm-diag-templ">
-        <dialog id="confirm-remove-diag">
-            <div>
-                <h2 id="text-warning">
-                </h2>
-                <div class="dialog-confirm-controls">
-                    <button id="remove-elem-btn">Подтвердить</button>
-                    <button id="close-confirm-diag">Отменить</button>
-                </div>
-            </div>
-        </dialog>
+      <dialog id="confirm-remove-diag">
+        <div>
+          <h2 id="text-warning"></h2>
+          <div class="dialog-confirm-controls">
+            <button id="remove-elem-btn">Подтвердить</button>
+            <button id="close-confirm-diag">Отменить</button>
+          </div>
+        </div>
+      </dialog>
     </template>
 
     <template id="project-list-item">
-        <div class="sidebar-list-item">
-            <span class="sidebar-svg-container"></span>
-            <div class="sidebar-project-title"></div>
-        </div>
+      <div class="sidebar-list-item">
+        <span class="sidebar-svg-container"></span>
+        <div class="sidebar-project-title"></div>
+      </div>
     </template>
 
     <template id="my-select-templ">
-        <div class="my-select">
-            <button class="select-btn">...</button>
-            <div class="select-options hidden">
-            </div>
-        </div>
+      <div class="my-select">
+        <button class="select-btn">...</button>
+        <div class="select-options hidden"></div>
+      </div>
     </template>
 
     <template id="todo-form-template">
-        <form class="todo-form">
-            <input class="form-input" name="title" required type="text" maxlength="100"
-                placeholder="Заменить лампочку в холодильнике">
-            <input class="form-input" name="desc" type="text" placeholder="Описание.." maxlength="100">
-            <div class="form-options">
-                <div class="priority-menu-form">
-                    <div class="itc-select" id="priority-menu">
-                        <button type="button" class="itc-select__toggle" name="prior" value="" data-select="toggle"
-                            data-index="-1">Приоритет</button>
-                        <div class="itc-select__dropdown">
-                            <ul class="itc-select__options">
-                                <li class="itc-select__option" data-select="option" data-value="0" data-index="0">None
-                                </li>
-                                <li class="itc-select__option" data-select="option" data-value="1" data-index="1">
-                                    Low</li>
-                                <li class="itc-select__option" data-select="option" data-value="2" data-index="2">
-                                    Medium</li>
-                                <li class="itc-select__option" data-select="option" data-value="3" data-index="3">
-                                    High</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <input type="text" name="deadline" placeholder="Срок" class="deadline" readonly>
-                <input type="text" name="tags" placeholder="Тэги через пробел" class="tags">
+      <form class="todo-form">
+        <input
+          class="form-input"
+          name="title"
+          required
+          type="text"
+          maxlength="100"
+          placeholder="Заменить лампочку в холодильнике"
+        />
+        <input
+          class="form-input"
+          name="desc"
+          type="text"
+          placeholder="Описание.."
+          maxlength="100"
+        />
+        <div class="form-options">
+          <div class="priority-menu-form">
+            <div class="itc-select" id="priority-menu">
+              <button
+                type="button"
+                class="itc-select__toggle"
+                name="prior"
+                value=""
+                data-select="toggle"
+                data-index="-1"
+              >
+                Приоритет
+              </button>
+              <div class="itc-select__dropdown">
+                <ul class="itc-select__options">
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="0"
+                    data-index="0"
+                  >
+                    None
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="1"
+                    data-index="1"
+                  >
+                    Low
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="2"
+                    data-index="2"
+                  >
+                    Medium
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="3"
+                    data-index="3"
+                  >
+                    High
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div class="form-confirm">
-                <button class="submit-btn" type="submit">Send</button>
-                <button class="cancel-btn" type="button">Cancel</button>
-            </div>
-        </form>
+          </div>
+          <input
+            type="text"
+            name="deadline"
+            placeholder="Срок"
+            class="deadline"
+            readonly
+          />
+          <input
+            type="text"
+            name="tags"
+            placeholder="Тэги через пробел"
+            class="tags"
+          />
+        </div>
+        <div class="form-confirm">
+          <button class="submit-btn" type="submit">Send</button>
+          <button class="cancel-btn" type="button">Cancel</button>
+        </div>
+      </form>
     </template>
 
     <template id="todo-item-template">
-        <div class="todo-container">
-            <button class="todo-check-btn"></button>
-            <div class="todo-body">
-                <div class="todo-content todo-title"></div>
-                <div class="todo-content todo-desc"></div>
-                <div class="todo-content todo-other">
-                    <div class="deadline-container">
-                    </div>
-                    <div class="tags-container">
-
-                    </div>
-                </div>
-                <hr>
-            </div>
-            <button class="todo-remove-btn">X</button>
+      <div class="todo-container">
+        <button class="todo-check-btn"></button>
+        <div class="todo-body">
+          <div class="todo-content todo-title"></div>
+          <div class="todo-content todo-desc"></div>
+          <div class="todo-content todo-other">
+            <div class="deadline-container"></div>
+            <div class="tags-container"></div>
+          </div>
+          <hr />
         </div>
+        <button class="todo-remove-btn">X</button>
+      </div>
     </template>
 
     <template id="section-form-template">
-        <form class="section-form">
-            <input class="form-input" name="title" type="text" required maxlength="100" placeholder="Название раздела">
-            <div class="form-confirm-section">
-                <button class="submit-btn-section" type="submit">Создать раздел</button>
-                <button class="cancel-btn-section" type="button">закрыть</button>
-            </div>
-        </form>
+      <form class="section-form">
+        <input
+          class="form-input"
+          name="title"
+          type="text"
+          required
+          maxlength="100"
+          placeholder="Название раздела"
+        />
+        <div class="form-confirm-section">
+          <button class="submit-btn-section" type="submit">
+            Создать раздел
+          </button>
+          <button class="cancel-btn-section" type="button">закрыть</button>
+        </div>
+      </form>
     </template>
 
     <template id="section-container-template">
-        <div class="section-container" draggable="true" data-id="">
-            <div class="section-header-container">
-                <h2 class="section-title"></h2>
-                <div class="custom-select-extra-opt">
-                    <button class="select-section-btn">...</button>
-                    <div class="options hidden">
-                        <button class="option" data-action="remove">Удалить</button>
-                        <button class="option" data-action="rename">Переименовать</button>
-                    </div>
-                </div>
+      <div class="section-container" draggable="true" data-id="">
+        <div class="section-header-container">
+          <h2 class="section-title"></h2>
+          <div class="custom-select-extra-opt">
+            <button class="select-section-btn">...</button>
+            <div class="options hidden">
+              <button class="option" data-action="remove">Удалить</button>
+              <button class="option" data-action="rename">Переименовать</button>
             </div>
+          </div>
         </div>
+      </div>
     </template>
 
     <template id="dialog-form-templ">
-        <form id="dialog-form">
-            <div class="editable-container">
-                <div id="todo-title-textbox" role="textbox" contenteditable="true">
-                    <p id="dialog-form-title"></p>
-                </div>
-                <div role="textbox" contenteditable="true">
-                    <p id="dialog-form-desc"></p>
-                </div>
-            </div>
-            <div class="dialog-form-controls">
-                <button id="confirm-dialog-edit">Подтвердить!</button>
-                <button id="cancel-dialog-edit">Отменить</button>
-            </div>
-        </form>
+      <form id="dialog-form">
+        <div class="editable-container">
+          <div id="todo-title-textbox" role="textbox" contenteditable="true">
+            <p id="dialog-form-title"></p>
+          </div>
+          <div role="textbox" contenteditable="true">
+            <p id="dialog-form-desc"></p>
+          </div>
+        </div>
+        <div class="dialog-form-controls">
+          <button id="confirm-dialog-edit">Подтвердить!</button>
+          <button id="cancel-dialog-edit">Отменить</button>
+        </div>
+      </form>
     </template>
 
     <template id="todo-detail-templ">
-        <dialog id="todo-detail-dialog">
-            <header id="detail-header">
-                <p>Expanded view</p>
-                <button id="close-diag-btn">Close</button>
-            </header>
-            <div id="diag-container">
-                <div id="main-part">
-                    <div id="main-todo">
-                        <div class="diag-todo-container">
-                            <button class="todo-check-btn"></button>
-                            <div class="cursor-wrapper-todo">
-                                <div class="diag-todo-item">
-                                    <div id="diag-todo-title" class="diag-todo-content"></div>
-                                    <div id="diag-todo-desc" class="diag-todo-content"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
+      <dialog id="todo-detail-dialog">
+        <header id="detail-header">
+          <p>Expanded view</p>
+          <button id="close-diag-btn">Close</button>
+        </header>
+        <div id="diag-container">
+          <div id="main-part">
+            <div id="main-todo">
+              <div class="diag-todo-container">
+                <button class="todo-check-btn"></button>
+                <div class="cursor-wrapper-todo">
+                  <div class="diag-todo-item">
+                    <div id="diag-todo-title" class="diag-todo-content"></div>
+                    <div id="diag-todo-desc" class="diag-todo-content"></div>
+                  </div>
                 </div>
-                <div id="option-part">
-                </div>
+              </div>
+              <hr />
             </div>
-        </dialog>
+          </div>
+          <div id="option-part"></div>
+        </div>
+      </dialog>
     </template>
 
     <template id="detail-options-templ">
-        <div class="detail-options">
-            <div class="change-deadline-container">
-                <input id="change-deadline" type="text" name="deadline" placeholder="Срок" class="deadline"
-                    readonly>
-            </div>
-            <hr>
-            <div class="change-prior-container">
-                <div class="itc-select" id="priority-menu-diag">
-                    <button type="button" id="select-btn" class="itc-select__toggle" name="prior" value=""
-                        data-select="toggle" data-index="-1">Приоритет</button>
-                    <div class="itc-select__dropdown">
-                        <ul class="itc-select__options">
-                            <li class="itc-select__option" data-select="option" data-value="0"
-                                data-index="0">
-                                None
-                            </li>
-                            <li class="itc-select__option" data-select="option" data-value="1"
-                                data-index="1">
-                                Low</li>
-                            <li class="itc-select__option" data-select="option" data-value="2"
-                                data-index="2">
-                                Medium</li>
-                            <li class="itc-select__option" data-select="option" data-value="3"
-                                data-index="3">
-                                High</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="change-tags-container">
-                <div id="tag-list"></div>
-                <div>
-                    <input type="text" id="add-tag-input" maxlength="30">
-                    <button id="add-tag-btn">Add tags</button>
-                </div>
-            </div>
+      <div class="detail-options">
+        <div class="change-deadline-container">
+          <input
+            id="change-deadline"
+            type="text"
+            name="deadline"
+            placeholder="Срок"
+            class="deadline"
+            readonly
+          />
         </div>
+        <hr />
+        <div class="change-prior-container">
+          <div class="itc-select" id="priority-menu-diag">
+            <button
+              type="button"
+              id="select-btn"
+              class="itc-select__toggle"
+              name="prior"
+              value=""
+              data-select="toggle"
+              data-index="-1"
+            >
+              Приоритет
+            </button>
+            <div class="itc-select__dropdown">
+              <ul class="itc-select__options">
+                <li
+                  class="itc-select__option"
+                  data-select="option"
+                  data-value="0"
+                  data-index="0"
+                >
+                  None
+                </li>
+                <li
+                  class="itc-select__option"
+                  data-select="option"
+                  data-value="1"
+                  data-index="1"
+                >
+                  Low
+                </li>
+                <li
+                  class="itc-select__option"
+                  data-select="option"
+                  data-value="2"
+                  data-index="2"
+                >
+                  Medium
+                </li>
+                <li
+                  class="itc-select__option"
+                  data-select="option"
+                  data-value="3"
+                  data-index="3"
+                >
+                  High
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="change-tags-container">
+          <div id="tag-list"></div>
+          <div>
+            <input type="text" id="add-tag-input" maxlength="30" />
+            <button id="add-tag-btn">Add tags</button>
+          </div>
+        </div>
+      </div>
     </template>
 
     <template id="tag-teml">
-        <div class="tag">
-            <span class="tag-content"></span>
-            <button class="tag-delete">X</button>
-        </div>
+      <div class="tag">
+        <span class="tag-content"></span>
+        <button class="tag-delete">X</button>
+      </div>
     </template>
 
     <template id="diag-project-form-templ">
-        <dialog id="project-dialog">
-            <form id="dialog-project-form">
-                <div class="title-container">
-                    <label for="title">Имя</label>
-                    <input type="text" id="project-title-input" required maxlength="100">
-                </div>
-                <div class="color-container">
-                    <div class="itc-select" id="project-color">
-                        <button type="button" id="project-color-btn" class="itc-select__toggle" name="color" value=""
-                            data-select="toggle" data-index="-1">Project color</button>
-                        <div class="itc-select__dropdown">
-                            <ul class="itc-select__options">
-                                <li class="itc-select__option" data-select="option" data-value="red" data-index="0">Red
-                                </li>
-                                <li class="itc-select__option" data-select="option" data-value="green" data-index="1">
-                                    Green</li>
-                                <li class="itc-select__option" data-select="option" data-value="blue" data-index="2">
-                                    Blue</li>
-                                <li class="itc-select__option" data-select="option" data-value="gray" data-index="3">
-                                    Gray</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="form-control-btns">
-                    <button type="submit" id="confirm-project-form">Add</button>
-                    <button id="close-project-form">Close</button>
-                </div>
-            </form>
-        </dialog>
+      <dialog id="project-dialog">
+        <form id="dialog-project-form">
+          <div class="title-container">
+            <label for="title">Имя</label>
+            <input
+              type="text"
+              id="project-title-input"
+              required
+              maxlength="100"
+            />
+          </div>
+          <div class="color-container">
+            <div class="itc-select" id="project-color">
+              <button
+                type="button"
+                id="project-color-btn"
+                class="itc-select__toggle"
+                name="color"
+                value=""
+                data-select="toggle"
+                data-index="-1"
+              >
+                Project color
+              </button>
+              <div class="itc-select__dropdown">
+                <ul class="itc-select__options">
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="red"
+                    data-index="0"
+                  >
+                    Red
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="green"
+                    data-index="1"
+                  >
+                    Green
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="blue"
+                    data-index="2"
+                  >
+                    Blue
+                  </li>
+                  <li
+                    class="itc-select__option"
+                    data-select="option"
+                    data-value="gray"
+                    data-index="3"
+                  >
+                    Gray
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="form-control-btns">
+            <button type="submit" id="confirm-project-form">Add</button>
+            <button id="close-project-form">Close</button>
+          </div>
+        </form>
+      </dialog>
     </template>
 
     <template id="section-rename-templ">
-        <form id="section-rename-form">
-            <div class="editable-container">
-                <div id="section-textbox" role="textbox" contenteditable="true">
-                    <p id="section-form-title"></p>
-                </div>
-            </div>
-            <div class="dialog-form-controls">
-                <button id="confirm-section-edit">Подтвердить!</button>
-                <button id="cancel-section-edit">Отменить</button>
-            </div>
-        </form>
+      <form id="section-rename-form">
+        <div class="editable-container">
+          <div id="section-textbox" role="textbox" contenteditable="true">
+            <p id="section-form-title"></p>
+          </div>
+        </div>
+        <div class="dialog-form-controls">
+          <button id="confirm-section-edit">Подтвердить!</button>
+          <button id="cancel-section-edit">Отменить</button>
+        </div>
+      </form>
     </template>
 
     <template id="project-templ">
-        <div class="project-title-container">
-            <button class="toggle-navbar"><</button>
-            <h1 class="project-title"></h1>
-        </div>
-        <div class="project-filters">
-            <button id="all-todos-btn" class="project-filter active">Actual tasks</button>
-            <button id="comleted-todos-btn" class="project-filter">Show All (Including Completed)</button>
-        </div>
-        <div class="project-container">
-
-        </div>
+      <div class="project-title-container">
+        <button class="toggle-navbar"><</button>
+        <h1 class="project-title"></h1>
+      </div>
+      <div class="project-filters">
+        <button id="all-todos-btn" class="project-filter active">
+          Actual tasks
+        </button>
+        <button id="comleted-todos-btn" class="project-filter">
+          Show All (Including Completed)
+        </button>
+      </div>
+      <div class="project-container"></div>
     </template>
-</body>
-
+  </body>
 </html>

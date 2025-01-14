@@ -1,1 +1,1 @@
-export { ConfirmDiag } from "./confirm-diag.js"
+export { ConfirmDiag } from './confirm-diag.js';

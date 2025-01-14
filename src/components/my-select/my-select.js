@@ -1,94 +1,92 @@
-import styles from "./my-select.css?raw";
+import styles from './my-select.css?raw';
 
 // Глобальный реестр всех селектов
-const allSelects = new Set()
+const allSelects = new Set();
 
 export class MySelect extends HTMLElement {
-    constructor() {
-        super()
-        console.log("activate-my select")
-        // Клонируем шаблон
-        const shadow = this.attachShadow({ mode: "open" })
-        const template = document.querySelector("#my-select-templ")
-        const templateContent = template.content
+  constructor() {
+    super();
+    console.log('activate-my select');
+    // Клонируем шаблон
+    const shadow = this.attachShadow({ mode: 'open' });
+    const template = document.querySelector('#my-select-templ');
+    const templateContent = template.content;
 
-        // Вставляем клонированный шаблон в элемент
-        shadow.append(templateContent.cloneNode(true))
+    // Вставляем клонированный шаблон в элемент
+    shadow.append(templateContent.cloneNode(true));
 
-        this.self = this.shadowRoot.querySelector(".my-select")
-        this.selectBtn = this.self.querySelector(".select-btn")
-        this.options = this.self.querySelector(".select-options")
-        
-        this.openSelect = this.openSelect.bind(this)
-        this.dispatchOptionEvent = this.dispatchOptionEvent.bind(this)
-    }
+    this.self = this.shadowRoot.querySelector('.my-select');
+    this.selectBtn = this.self.querySelector('.select-btn');
+    this.options = this.self.querySelector('.select-options');
 
-    connectedCallback() {
-        allSelects.add(this);
-        // Добавляем инкапсулируемые стили
-        const style = document.createElement("style")
-        style.textContent = styles
+    this.openSelect = this.openSelect.bind(this);
+    this.dispatchOptionEvent = this.dispatchOptionEvent.bind(this);
+  }
 
-        this.self.append(style)
-        this.options.addEventListener("click", this.dispatchOptionEvent)
-        this.selectBtn.addEventListener("click", this.openSelect)
-    }
+  connectedCallback() {
+    allSelects.add(this);
+    // Добавляем инкапсулируемые стили
+    const style = document.createElement('style');
+    style.textContent = styles;
 
-    disconnectedCallback() {
-        this.selectBtn.removeEventListener("click", this.openSelect)
-        this.options.removeEventListener("click", this.dispatchOptionEvent)
-    }
+    this.self.append(style);
+    this.options.addEventListener('click', this.dispatchOptionEvent);
+    this.selectBtn.addEventListener('click', this.openSelect);
+  }
 
-    openSelect(e) {
-        this.closeOtherSelects()
-        if (e.target === this.selectBtn)
-            e.stopPropagation()      // Предотвращаем событие от всплытия
-        this.options.classList.toggle("hidden")
-        document.addEventListener("click", () => {
-            this.closeSelect(this.options)
-        })
-    }
+  disconnectedCallback() {
+    this.selectBtn.removeEventListener('click', this.openSelect);
+    this.options.removeEventListener('click', this.dispatchOptionEvent);
+  }
 
-    closeSelect() {
-        this.options.classList.add("hidden")
-        document.removeEventListener("click", () => {
-            this.closeSelect()
-        })
-    }
+  openSelect(e) {
+    this.closeOtherSelects();
+    if (e.target === this.selectBtn) e.stopPropagation(); // Предотвращаем событие от всплытия
+    this.options.classList.toggle('hidden');
+    document.addEventListener('click', () => {
+      this.closeSelect(this.options);
+    });
+  }
 
-    dispatchOptionEvent(e) {
-        const customEvent = new CustomEvent("handleExtraOption", {
-            bubbles: true,
-            composed: true, // Событие сможет выйти из Shadow DOM
-            detail: {
-                action: e.target.dataset.action,
-                projId: this.dataset.id
-            }
-        })
+  closeSelect() {
+    this.options.classList.add('hidden');
+    document.removeEventListener('click', () => {
+      this.closeSelect();
+    });
+  }
 
-        this.options.dispatchEvent(customEvent);
-    }
+  dispatchOptionEvent(e) {
+    const customEvent = new CustomEvent('handleExtraOption', {
+      bubbles: true,
+      composed: true, // Событие сможет выйти из Shadow DOM
+      detail: {
+        action: e.target.dataset.action,
+        projId: this.dataset.id,
+      },
+    });
 
-    setData(optionsArr) {
-        const elem = this.shadowRoot
-        const options = elem.querySelector(".select-options")
-        optionsArr.forEach(optionObj => {
-            const option = document.createElement("button")
-            option.classList.add("option")
-            option.dataset.action = optionObj.action
-            option.textContent = optionObj.content
-            options.append(option)
-        });
-    }
+    this.options.dispatchEvent(customEvent);
+  }
 
-    closeOtherSelects() {
-        allSelects.forEach((select) => {
-            if (select !== this) {
-                select.closeSelect();
-            }
-        });
-    }
+  setData(optionsArr) {
+    const elem = this.shadowRoot;
+    const options = elem.querySelector('.select-options');
+    optionsArr.forEach((optionObj) => {
+      const option = document.createElement('button');
+      option.classList.add('option');
+      option.dataset.action = optionObj.action;
+      option.textContent = optionObj.content;
+      options.append(option);
+    });
+  }
 
+  closeOtherSelects() {
+    allSelects.forEach((select) => {
+      if (select !== this) {
+        select.closeSelect();
+      }
+    });
+  }
 }
 
-customElements.define("my-select", MySelect)
+customElements.define('my-select', MySelect);

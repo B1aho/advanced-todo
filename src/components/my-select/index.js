@@ -1,1 +1,1 @@
-export { MySelect } from "./my-select.js";
+export { MySelect } from './my-select.js';

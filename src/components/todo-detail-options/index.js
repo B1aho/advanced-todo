@@ -1,1 +1,1 @@
-export { TodoDetailOptions } from "./todo-detail-options.js";
+export { TodoDetailOptions } from './todo-detail-options.js';

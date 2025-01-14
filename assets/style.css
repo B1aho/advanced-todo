@@ -2,20 +2,21 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* 2. Remove default margin */
 * {
-    margin: 0;
+  margin: 0;
 }
 
 body {
-    /* 3. Add accessible line-height */
-    line-height: 1.5;
-    /* 4. Improve text rendering */
-    -webkit-font-smoothing: antialiased;
-    font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+  /* 3. Add accessible line-height */
+  line-height: 1.5;
+  /* 4. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium',
+    'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
 }
 
 /* 5. Improve media defaults */
@@ -24,8 +25,8 @@ picture,
 video,
 canvas,
 svg {
-    display: block;
-    max-width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 /* 6. Inherit fonts for form controls */
@@ -33,7 +34,7 @@ input,
 button,
 textarea,
 select {
-    font: inherit;
+  font: inherit;
 }
 
 /* 7. Avoid text overflows */
@@ -44,12 +45,12 @@ h3,
 h4,
 h5,
 h6 {
-    overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* 8. Improve line wrapping */
 p {
-    text-wrap: pretty;
+  text-wrap: pretty;
 }
 
 h1,
@@ -58,7 +59,7 @@ h3,
 h4,
 h5,
 h6 {
-    text-wrap: balance;
+  text-wrap: balance;
 }
 
 /*
@@ -66,29 +67,30 @@ h6 {
   */
 #root,
 #__next {
-    isolation: isolate;
+  isolation: isolate;
 }
 
-:root {}
+:root {
+}
 
 body {
-    min-width: 100%;
-    min-height: 100%;
+  min-width: 100%;
+  min-height: 100%;
 }
 
 #app {
-    display: flex;
-    min-width: 100%;
-    min-height: 100%;
-    padding: 1%;
+  display: flex;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 1%;
 }
 
 #menu {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid rgba(0, 0, 0, 0.607);
-    border-radius: 5px;
-    width: 200px; /* Начальная ширина панели */
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.607);
+  border-radius: 5px;
+  width: 200px; /* Начальная ширина панели */
   min-width: 100px; /* Минимальная ширина */
   max-width: 400px; /* Максимальная ширина */
   overflow: hidden;
@@ -97,30 +99,31 @@ body {
 }
 
 main {
-    /* overflow-x: visible; - с ними пропадает из видимости toggle-btn
+  /* overflow-x: visible; - с ними пропадает из видимости toggle-btn
     overflow-y: auto; */
-    max-height: 100vh;
-    min-width: 50%;
+  max-height: 100vh;
+  min-width: 50%;
 }
 
-.project-title-container, #dashboard-header {
-    display: flex;
+.project-title-container,
+#dashboard-header {
+  display: flex;
 }
 
 #resizer {
-    margin-left: 3px;
-    width: 5px;
-    cursor: ew-resize;
-    background-color: #ccc;
+  margin-left: 3px;
+  width: 5px;
+  cursor: ew-resize;
+  background-color: #ccc;
 }
 
 #project-list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .project-container {
-    user-select: none;
+  user-select: none;
 }
 
 .sidebar-list-item,
@@ -128,270 +131,272 @@ main {
 .todo-container,
 .todo-check-btn,
 .todo-remove-btn {
-    display: flex;
-    cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 
 .dragging {
-    opacity: 0.5;
-    border: 2px dashed #000;
-    cursor: grabbing;
+  opacity: 0.5;
+  border: 2px dashed #000;
+  cursor: grabbing;
 }
 
 .sect-dragging {
-    opacity: 0.5;
-    border: 2px dashed #000;
-    cursor: grabbing;
+  opacity: 0.5;
+  border: 2px dashed #000;
+  cursor: grabbing;
 }
 
 .diag-todo-container,
 .section-header-container,
 .project-filters {
-    display: flex;
+  display: flex;
 }
 
 .section-header-container {
-    justify-content: space-between;
-    align-items: center;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sidebar-svg-container {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .sidebar-project-title {
-    text-align: left;
-    width: 100%;
+  text-align: left;
+  width: 100%;
 }
 
 .diag-todo-item.checked,
 .diag-options.checked {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .cursor-wrapper-options.checked,
 .cursor-wrapper-todo.checked {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
 .todo-item,
 todo-list,
 .diag-todo-item {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .todo-item.checked,
 .diag-todo-item.checked {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .todo-check-btn.checked::after {
-    content: "✅";
+  content: '✅';
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .todo-form,
 .section-form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .todo-other {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
 
 .undo-popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 20px;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    z-index: 1000;
-    max-width: 300px;
-    font-family: Arial, sans-serif;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+  max-width: 300px;
+  font-family: Arial, sans-serif;
 }
 
 .undo-popup p {
-    margin: 0 0 10px 0;
+  margin: 0 0 10px 0;
 }
 
 .active {
-    background-color: #00ff88;
-    /* Цвет выбранного фильтра */
-    border-color: #00b36b;
-    /* Цвет рамки */
-    color: white;
-    /* Цвет текста */
-    box-shadow: 0 0 10px rgba(0, 255, 179, 0.5);
-    /* Подсветка */
+  background-color: #00ff88;
+  /* Цвет выбранного фильтра */
+  border-color: #00b36b;
+  /* Цвет рамки */
+  color: white;
+  /* Цвет текста */
+  box-shadow: 0 0 10px rgba(0, 255, 179, 0.5);
+  /* Подсветка */
 }
 
 .loader-container {
-    height: 4px;
-    background: #ddd;
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 10px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .loader {
-    height: 100%;
-    width: 100%;
-    background: #4caf50;
-    transform: scaleX(1);
-    transform-origin: left;
-    transition: transform 3s linear;
+  height: 100%;
+  width: 100%;
+  background: #4caf50;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 3s linear;
 }
 
 .undo {
-    padding: 5px 10px;
-    background: #f44336;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 5px 10px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .close-undo-popup {
-    padding: 5px 10px;
-    background: #ddd;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 5px 10px;
+  background: #ddd;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .form-options {
-    display: flex;
+  display: flex;
 }
 
 .tag {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
-.todo-container[data-indent="2"] {
-    margin-left: 28px;
+.todo-container[data-indent='2'] {
+  margin-left: 28px;
 }
 
-.todo-container[data-indent="3"] {
-    margin-left: 56px;
+.todo-container[data-indent='3'] {
+  margin-left: 56px;
 }
 
-.todo-container[data-indent="4"] {
-    margin-left: 84px;
+.todo-container[data-indent='4'] {
+  margin-left: 84px;
 }
 
-.todo-container[data-indent="5"] {
-    margin-left: 112px;
+.todo-container[data-indent='5'] {
+  margin-left: 112px;
 }
 
 .todo-container.diag-indent {
-    margin-left: 28px;
+  margin-left: 28px;
 }
 
 .collapsed {
-    display: none;
+  display: none;
 }
 
 main {
-    margin-left: 5%;
+  margin-left: 5%;
 }
 
-.todo-container, .section-header-container {
-    position: relative;
+.todo-container,
+.section-header-container {
+  position: relative;
 }
-.collapse-btn, .collapse-btn-section {
-    position: absolute;
-    right: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-right: 5px;
-    transform: rotate(90deg);
-    transition: transform 0.2s ease;
+.collapse-btn,
+.collapse-btn-section {
+  position: absolute;
+  right: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 5px;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
 }
 
-.collapse-btn.active-collapse
-,.collapse-btn-section.active-collapse {
-    transform: rotate(0deg);
+.collapse-btn.active-collapse,
+.collapse-btn-section.active-collapse {
+  transform: rotate(0deg);
 }
 
 .todo-item {
-    min-width: 100%;
+  min-width: 100%;
 }
 
 body:has(dialog[open]) {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 #menu,
 #todo-dialog {
-    user-select: none;
+  user-select: none;
 }
 
 .form-control-btns {
-    display: flex;
+  display: flex;
 }
 
 .tag-list {
-    display: flex;
+  display: flex;
 }
 
 .custom-select-extra-opt {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .select-project-btn,
 .select-section-btn {
-    padding: 0px 2px;
-    cursor: pointer;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
-    border-radius: 10px;
-    transition: all ease-in-out 0.2s;
+  padding: 0px 2px;
+  cursor: pointer;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 10px;
+  transition: all ease-in-out 0.2s;
 }
 
 .select-project-btn:hover,
 .select-section-btn:hover {
-    background-color: rgba(82, 98, 99, 0.575);
+  background-color: rgba(82, 98, 99, 0.575);
 }
 
 .options {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
 .options.hidden {
-    display: none;
+  display: none;
 }
 
 .option {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    text-align: left;
-    background: #fff;
-    border: none;
-    cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: #fff;
+  border: none;
+  cursor: pointer;
 }
 
 .option:hover {
-    background: #f0f0f0;
+  background: #f0f0f0;
 }
 
 /* #todo-dialog {

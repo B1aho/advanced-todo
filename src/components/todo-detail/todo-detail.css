@@ -4,32 +4,34 @@
 } */
 
 #detail-header {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 #diag-container {
-    display: flex;
+  display: flex;
 }
 
-#main-part, #option-part, #main-todo {
-    display: flex;
-    flex-direction: column;
+#main-part,
+#option-part,
+#main-todo {
+  display: flex;
+  flex-direction: column;
 }
 
 .diag-todo-container {
-    display: flex;
+  display: flex;
 }
 
 .diag-todo-item {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 #main-part {
-    width: 70%;
+  width: 70%;
 }
 
 #option-part {
-    width: 30%;
+  width: 30%;
 }

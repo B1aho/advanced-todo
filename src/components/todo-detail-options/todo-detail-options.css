@@ -1,8 +1,8 @@
 tag-node {
-    display: flex;
+  display: flex;
 }
 
 #tag-list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }

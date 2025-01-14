@@ -1,52 +1,54 @@
 * {
-    margin: 0;
+  margin: 0;
 }
 
-*, *::before, *::after {
-    box-sizing: border-box;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 .todo-container,
 .todo-check-btn,
 .todo-remove-btn {
-    display: flex;
-    cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 
 .todo-container {
-    position: relative;
+  position: relative;
 }
 
 .todo-body {
-    display: flex;
-    flex-direction: column;
-    min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
 }
 
 .todo-body.checked {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .todo-check-btn.checked::after {
-    content: "✅";
+  content: '✅';
 }
 
 .collapsed {
-    display: none;
+  display: none;
 }
 
 .collapse-btn {
-    position: absolute;
-    right: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-right: 5px;
-    transform: rotate(90deg);
-    transition: transform 0.2s ease;
+  position: absolute;
+  right: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 5px;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
 }
 
 .collapse-btn.active-collapse {
-    transform: rotate(0deg);
+  transform: rotate(0deg);
 }

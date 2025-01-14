@@ -1,15 +1,15 @@
 .sidebar-list-item,
 .sidebar-project-btn {
-    display: flex;
-    cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 
 .sidebar-svg-container {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .sidebar-project-title {
-    text-align: left;
-    width: 100%;
+  text-align: left;
+  width: 100%;
 }
