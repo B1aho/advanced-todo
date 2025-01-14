@@ -1,3 +1,4 @@
+// Использовать min, max, clamp - функции для указания ширины, resizable, когда двигается navbar
 import '../assets/style.css';
 import './components';
 import { DataStorage } from './dataSaving/dataStorage';
@@ -5,7 +6,6 @@ import { getApp } from './dataSaving/localStore';
 import { renderListOfProjects } from './render/todoRender';
 import {
   initAddProjectBtn,
-  initRemoveConfirmDiag,
   openNavbar,
   toggleNavbar,
 } from './render/createDOMutility';

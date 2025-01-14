@@ -23,9 +23,15 @@
   display: flex;
 }
 
-.diag-todo-item {
+#diag-todo-item {
   display: flex;
   flex-direction: column;
+  min-width: 100%;
+}
+
+#diag-todo-title,
+#diag-todo-desc {
+  min-width: 100%;
 }
 
 #main-part {

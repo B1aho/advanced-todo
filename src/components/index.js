@@ -8,3 +8,4 @@ export { TodoDetail } from './todo-detail';
 export { TodoDetailOptions } from './todo-detail-options';
 export { SubtaskList } from './subtask-list';
 export { TagNode } from './tag-node';
+export { EditableTodoForm } from './editable-todo-form';

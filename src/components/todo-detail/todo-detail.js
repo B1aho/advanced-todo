@@ -1,4 +1,9 @@
 /**
+ * editable форма добавляет, но не фокусируется и ничего не меняется
+ * и reportValidity не работает! 
+ * 
+ * 
+ * 
  * Компонент отвечающий за детальное прдеставление задачи
  * Имеет дочерний компонент: textAreaForm, - форма для имзенения описания или названия задачи на лету
  * diag options - тоже сделать отдельным компонентом - как имзенения какие-то он пускает наверх событие и это событие
@@ -11,8 +16,10 @@
  * Что означает, что todo-list открывает компонент todo-detail, значит todo-detail сначала закрывает себя на всякий случай
  */
 import { DataStorage } from '../../dataSaving/dataStorage';
+import { saveData } from '../../dataSaving/localStore';
 import { ConfirmDiag } from '../confirm-diag';
-import { getCheckColor } from '../todo-detail-options/todo-detail-options';
+import { EditableTodoForm } from '../editable-todo-form';
+import { getCheckColor, TodoDetailOptions } from '../todo-detail-options/todo-detail-options';
 import styles from './todo-detail.css?raw';
 
 export class TodoDetail extends HTMLElement {
@@ -31,6 +38,7 @@ export class TodoDetail extends HTMLElement {
     this.checkBtn = this.shadowRoot.querySelector('#todo-check-btn');
     this.todoTitle = this.shadowRoot.querySelector('#diag-todo-title');
     this.desc = this.shadowRoot.querySelector('#diag-todo-desc');
+    this.todoText = this.shadowRoot.querySelector('#diag-todo-item');
     this.mainPart = this.shadowRoot.querySelector('#main-part');
     this.subtaskList = document.createElement('subtask-list');
     this.mainPart.append(this.subtaskList);
@@ -42,6 +50,9 @@ export class TodoDetail extends HTMLElement {
     this.showDiag = this.showDiag.bind(this);
     this.closeDiag = this.closeDiag.bind(this);
     this.changeColor = this.changeColor.bind(this);
+    this.addEditableForm = this.addEditableForm.bind(this);
+    this.changeTodoText = this.changeTodoText.bind(this);
+    this.showTodoItem = this.showTodoItem.bind(this);
   }
 
   connectedCallback() {
@@ -55,6 +66,11 @@ export class TodoDetail extends HTMLElement {
       e.stopPropagation();
       this.confirmDiag.showDiag(e);
     });
+    this.shadowRoot.addEventListener(
+      'confirmEditableForm',
+      this.changeTodoText
+    );
+    this.shadowRoot.addEventListener('cancelEditableForm', this.showTodoItem);
   }
 
   disconnectedCallback() {
@@ -67,6 +83,14 @@ export class TodoDetail extends HTMLElement {
       this.subtaskList.removeTodo
     );
     this.checkBtn.removeEventListener('changeCheckBtnColor', this.changeColor);
+    this.shadowRoot.removeEventListener(
+      'confirmEditableForm',
+      this.changeTodoText
+    );
+    this.shadowRoot.removeEventListener(
+      'cancelEditableForm',
+      this.showTodoItem
+    );
   }
 
   dispatchRemoveEvent() {
@@ -103,7 +127,40 @@ export class TodoDetail extends HTMLElement {
       this.subtaskList.removeTodo
     );
     this.shadowRoot.addEventListener('changeCheckBtnColor', this.changeColor);
+    this.todoText.addEventListener('click', this.addEditableForm);
     if (!this.diag.open) this.diag.showModal();
+  }
+
+  addEditableForm() {
+    const todo = new DataStorage().getTodoById(this.todoId);
+    this.editForm = new EditableTodoForm(todo.title, todo.desc);
+    this.todoText.before(this.editForm);
+    this.todoText.style.display = 'none';
+  }
+
+  changeTodoText(evt) {
+    const newTitle = evt.detail.newTesc;
+    const newDesc = evt.detail.newDesc;
+    this.todoTitle = newTitle;
+    this.desc = newDesc;
+    const todo = new DataStorage().getTodoById(this.todoId);
+    todo.title = newTitle;
+    todo.desc = newDesc;
+    saveData();
+
+    const customEvent = new CustomEvent('updateTodo', {
+      bubbles: true,
+      composed: true,
+      detail: { id: this.todoId },
+    });
+
+    this.shadowRoot.dispatchEvent(customEvent);
+    this.showTodoItem();
+  }
+
+  showTodoItem() {
+    this.editForm.remove();
+    this.todoText.style.display = 'flex';
   }
 
   changeColor(e) {
