@@ -1,9 +1,4 @@
 /**
- * editable форма добавляет, но не фокусируется и ничего не меняется
- * и reportValidity не работает! 
- * 
- * 
- * 
  * Компонент отвечающий за детальное прдеставление задачи
  * Имеет дочерний компонент: textAreaForm, - форма для имзенения описания или названия задачи на лету
  * diag options - тоже сделать отдельным компонентом - как имзенения какие-то он пускает наверх событие и это событие
@@ -14,12 +9,15 @@
  *
  * Субтаска, которая здесь в subtakList, которая по существу todo-item при нажатии, генерит open detail view
  * Что означает, что todo-list открывает компонент todo-detail, значит todo-detail сначала закрывает себя на всякий случай
+ * -------------------------------------------------------------------------------------------------------------------
+ * Осталось для checktodoBtn - правильное поведение дописать (после того как компонент undoPopup сделаешь)
+ * Правильное добавление подзадач
  */
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
 import { ConfirmDiag } from '../confirm-diag';
 import { EditableTodoForm } from '../editable-todo-form';
-import { getCheckColor, TodoDetailOptions } from '../todo-detail-options/todo-detail-options';
+import { getCheckColor } from '../todo-detail-options/todo-detail-options';
 import styles from './todo-detail.css?raw';
 
 export class TodoDetail extends HTMLElement {
@@ -113,6 +111,7 @@ export class TodoDetail extends HTMLElement {
     this.options.todoId = this.todoId;
     const data = new DataStorage();
     const todoObj = data.getTodoById(this.todoId);
+    this.showTodoItem();
     this.todoTitle.textContent = todoObj.title;
     this.desc.textContent = todoObj.desc;
     this.options.updateData(todoObj);
@@ -139,10 +138,10 @@ export class TodoDetail extends HTMLElement {
   }
 
   changeTodoText(evt) {
-    const newTitle = evt.detail.newTesc;
+    const newTitle = evt.detail.newTitle;
     const newDesc = evt.detail.newDesc;
-    this.todoTitle = newTitle;
-    this.desc = newDesc;
+    this.todoTitle.textContent = newTitle;
+    this.desc.textContent = newDesc;
     const todo = new DataStorage().getTodoById(this.todoId);
     todo.title = newTitle;
     todo.desc = newDesc;
@@ -159,7 +158,7 @@ export class TodoDetail extends HTMLElement {
   }
 
   showTodoItem() {
-    this.editForm.remove();
+    if (this.editForm) this.editForm.remove();
     this.todoText.style.display = 'flex';
   }
 
@@ -169,18 +168,6 @@ export class TodoDetail extends HTMLElement {
 }
 
 customElements.define('todo-detail', TodoDetail);
-
-/**
- *
- * @param {*} e
- */
-export function RenderTodoDiag(e) {
-  const lastDiag = document.querySelector('#todo-dialog');
-  if (lastDiag) lastDiag.remove();
-  const diag = createDiagFromTempl(e);
-  document.body.append(diag);
-  diag.showModal();
-}
 
 /**
  * It creates HTML elements from each todo's subtask (but not subtask's subtasks) and places these nodes
@@ -199,49 +186,4 @@ function fillArrayWithDirectSubtaskNodes(arr, todo) {
     todoNode.setData(subtask);
     arr.push(todoNode);
   });
-}
-
-// В формы перенести
-/**
- * This function creates a form by initializing a template. The form provides editable fields for modifying
- * the title and description of a todo while being displayed in the extended representation of the todo (dialog window)
- * @param {TodoItem} todo
- * @param {HTMLElement} targetNode - an HTML element before which the form will be inserted in the dialog window
- */
-export function createTodoTextForm(todo, targetNode) {
-  const template = document.querySelector('#dialog-form-templ');
-  const clone = template.content.cloneNode(true);
-  const form = clone.querySelector('#dialog-form');
-
-  const title = clone.querySelector('#dialog-form-title');
-  title.textContent = todo.title;
-  const desc = clone.querySelector('#dialog-form-desc');
-  desc.textContent = todo.desc === '' ? 'Описание' : todo.desc;
-
-  const confirm = clone.querySelector('#confirm-dialog-edit');
-  confirm.addEventListener('click', (e) => {
-    e.preventDefault();
-    const newTitle = title.textContent;
-    const newDesc = desc.textContent;
-    todo.title = newTitle;
-    todo.desc = newDesc;
-
-    updateDiagText(newTitle, newDesc);
-    updateTodoText(newTitle, newDesc, todo.id);
-    form.remove();
-    saveData();
-    targetNode.style.display = 'flex';
-  });
-
-  const cancel = clone.querySelector('#cancel-dialog-edit');
-  cancel.addEventListener('click', (e) => {
-    e.preventDefault();
-    form.remove();
-    targetNode.style.display = 'flex';
-  });
-
-  targetNode.before(form);
-  const titleTextBox = document.querySelector('#todo-title-textbox');
-  titleTextBox.focus();
-  targetNode.style.display = 'none';
 }

@@ -30,8 +30,10 @@
 }
 
 #diag-todo-title,
-#diag-todo-desc {
+#diag-todo-desc,
+.cursor-wrapper-todo {
   min-width: 100%;
+  cursor: pointer;
 }
 
 #main-part {

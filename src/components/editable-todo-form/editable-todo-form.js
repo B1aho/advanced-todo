@@ -11,7 +11,6 @@ export class EditableTodoForm extends HTMLElement {
     this.todoTitle.textContent = title;
     this.todoDesc = this.shadowRoot.querySelector('#todo-desc-textbox');
     this.todoDesc.textContent = desc === '' ? ' ' : desc;
-    this.todoTitle.focus();
     this.confirmBtn = this.shadowRoot.querySelector('#confirm-dialog-edit');
     this.cancelBtn = this.shadowRoot.querySelector('#cancel-dialog-edit');
 
@@ -24,7 +23,7 @@ export class EditableTodoForm extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = styles;
     this.shadowRoot.append(style);
-
+    if (this.todoTitle) this.todoTitle.focus();
     this.confirmBtn.addEventListener('click', this.dispatchConfirm);
     this.cancelBtn.addEventListener('click', this.dispatchCancel);
   }
