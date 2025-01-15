@@ -18,6 +18,7 @@ export class SubtaskList extends HTMLElement {
     this.renderTodoForm = this.renderTodoForm.bind(this);
     this.addTodoItemFromForm = this.addTodoItemFromForm.bind(this);
     this.removeTodo = this.removeTodo.bind(this);
+    this.checkTodos = this.checkTodos.bind(this);
   }
 
   connectedCallback() {
@@ -77,6 +78,14 @@ export class SubtaskList extends HTMLElement {
     const selector = `todo-item[data-id="${CSS.escape(todoId)}"]`;
     const todoItem = this.shadowRoot.querySelector(selector);
     todoItem.remove();
+  }
+
+  checkTodos() {
+    const todoItems = this.shadowRoot.querySelectorAll('todo-item');
+    todoItems.forEach((todo) => {
+      todo.addCheckedClass();
+      todo.checkTodo();
+    });
   }
 
   /**

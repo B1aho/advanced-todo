@@ -1,0 +1,51 @@
+#undo-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#loader {
+    height: 100%;
+    width: 100%;
+    background: #4caf50;
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform 3s linear;
+}
+
+#loader-container {
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#undo-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1000;
+    max-width: 300px;
+    font-family: Arial, sans-serif;
+}
+
+#undo-btn {
+    padding: 5px 10px;
+    background: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#close-undo-btn {
+    padding: 5px 10px;
+    background: #ddd;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

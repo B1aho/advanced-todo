@@ -51,98 +51,65 @@ export function fillArrayWithSubtaskNodes(arr, todo) {
   });
 }
 
-// Проверь, что то todo передается всегда
-// Добавить эту же функциональность в кнопку в детально форме туду
-// Возможно лучше использовать подход, который скрывает выполненные todo также через таймаут, а на completed показывает все скрытые с зачеркиваниями
-/**
- *
- * @param {Event} event
- * @param {TodoItem} todo
- * @returns
- */
-export function checkTodo(event, todo) {
-  const data = new DataStorage();
-  // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
-  toggleCheckedTodoContent(todo);
+// export function showUndoPopup(todo) {
+//   const popup = document.createElement('div');
+//   popup.classList.add('undo-popup');
 
-  // Затогглить данные в хранилище и сохранить
-  toggleCheckedTodoData(todo);
-  saveData();
-  // если диалог есть, то он автоматически должен закрываться, если за отведенное время никто не удалил todo
-  if (todo.checked) {
-    const todoDiag = document.querySelector('#todo-dialog');
-    //blockDialogAction(todoDiag)
-    data.lastTimeRef = setTimeout(() => {
-      hideCheckedTodo(todo);
-    }, 3000);
-    if (!todoDiag || !todoDiag.open) showUndoPopup(todo);
-  } else {
-    if (data.lastTimeRef) clearTimeout(data.lastTimeRef);
-    unhideCheckedTodo(todo);
-    const undoPopup = document.querySelector('.undo-popup');
-    if (undoPopup) undoPopup.remove();
-  }
-}
+//   const text = document.createElement('p');
+//   text.textContent = 'Задача выполнена';
 
-export function showUndoPopup(todo) {
-  const popup = document.createElement('div');
-  popup.classList.add('undo-popup');
+//   const loaderContainer = document.createElement('div');
+//   loaderContainer.classList.add('loader-container');
+//   const loader = document.createElement('div');
+//   loader.classList.add('loader');
+//   loaderContainer.append(loader);
 
-  const text = document.createElement('p');
-  text.textContent = 'Задача выполнена';
+//   const buttonContainer = document.createElement('div');
+//   buttonContainer.style.display = 'flex';
+//   buttonContainer.style.justifyContent = 'space-between';
 
-  const loaderContainer = document.createElement('div');
-  loaderContainer.classList.add('loader-container');
-  const loader = document.createElement('div');
-  loader.classList.add('loader');
-  loaderContainer.append(loader);
+//   const undoButton = document.createElement('button');
+//   undoButton.textContent = 'Отменить';
+//   undoButton.classList.add('undo');
 
-  const buttonContainer = document.createElement('div');
-  buttonContainer.style.display = 'flex';
-  buttonContainer.style.justifyContent = 'space-between';
+//   const closeButton = document.createElement('button');
+//   closeButton.textContent = '✖';
+//   closeButton.classList.add('close-undo-popup');
 
-  const undoButton = document.createElement('button');
-  undoButton.textContent = 'Отменить';
-  undoButton.classList.add('undo');
+//   buttonContainer.append(undoButton, closeButton);
 
-  const closeButton = document.createElement('button');
-  closeButton.textContent = '✖';
-  closeButton.classList.add('close-undo-popup');
+//   // Добавляем элементы в попап
+//   popup.append(text, loaderContainer, buttonContainer);
 
-  buttonContainer.append(undoButton, closeButton);
+//   // Добавляем попап в DOM
+//   document.body.append(popup);
 
-  // Добавляем элементы в попап
-  popup.append(text, loaderContainer, buttonContainer);
+//   // Начинаем анимацию лоадера
+//   setTimeout(() => {
+//     loader.style.transform = 'scaleX(0)';
+//   }, 0);
 
-  // Добавляем попап в DOM
-  document.body.append(popup);
+//   // Таймаут для автоматического закрытия попапа через 2 секунды
+//   const autoCloseTimeout = setTimeout(() => {
+//     popup.remove();
+//   }, 3000);
 
-  // Начинаем анимацию лоадера
-  setTimeout(() => {
-    loader.style.transform = 'scaleX(0)';
-  }, 0);
+//   // Обработчик кнопки "Отменить"
+//   undoButton.addEventListener('click', () => {
+//     const todoList = document.querySelector('todo-list');
+//     clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+//     clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+//     popup.remove();
+//     todoList.toggleCheckedAllTodoNodes(todo);
+//     toggleCheckedTodoData(todo);
+//   });
 
-  // Таймаут для автоматического закрытия попапа через 2 секунды
-  const autoCloseTimeout = setTimeout(() => {
-    popup.remove();
-  }, 3000);
-
-  // Обработчик кнопки "Отменить"
-  undoButton.addEventListener('click', () => {
-    const todoList = document.querySelector('todo-list');
-    clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
-    clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-    popup.remove();
-    todoList.toggleCheckedAllTodoNodes(todo);
-    toggleCheckedTodoData(todo);
-  });
-
-  // Обработчик кнопки "Закрыть"
-  closeButton.addEventListener('click', () => {
-    clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-    document.body.removeChild(popup); // Удаляем попап
-  });
-}
+//   // Обработчик кнопки "Закрыть"
+//   closeButton.addEventListener('click', () => {
+//     clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
+//     document.body.removeChild(popup); // Удаляем попап
+//   });
+// }
 
 /**
  *

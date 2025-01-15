@@ -9,11 +9,9 @@
  */
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
-import {
-  fillArrayWithSubtaskNodes,
-  showUndoPopup,
-} from '../../render/createDOMutility';
+import { fillArrayWithSubtaskNodes } from '../../render/createDOMutility';
 import { ConfirmDiag } from '../confirm-diag';
+import { UndoPopup } from '../undo-popup/undo-popup';
 import styles from './todo-list.css?raw'; // Подключаем стили
 
 export class TodoList extends HTMLElement {
@@ -36,11 +34,14 @@ export class TodoList extends HTMLElement {
     this.createTodoItem = this.createTodoItem.bind(this);
     this.showButton = this.showButton.bind(this);
     this.toggleCheckedAllTodoNodes = this.toggleCheckedAllTodoNodes.bind(this);
+    this.unhideTodoWithSubtasks = this.unhideTodoWithSubtasks.bind(this);
     this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this);
     this.removeTodo = this.removeTodo.bind(this);
     this.openDetailView = this.openDetailView.bind(this);
     this.updateTodoItem = this.updateTodoItem.bind(this);
-    this.changeColor = this.changeColor.bind(this)
+    this.changeColor = this.changeColor.bind(this);
+    this.addSubtask = this.addSubtask.bind(this);
+    this.undoCheck = this.undoCheck.bind(this);
   }
 
   connectedCallback() {
@@ -62,6 +63,7 @@ export class TodoList extends HTMLElement {
     this.list.addEventListener('showDetailView', this.openDetailView);
     this.list.addEventListener('updateTodo', this.updateTodoItem);
     this.list.addEventListener('changeCheckBtnColor', this.changeColor);
+    this.list.addEventListener('undoCheck', this.undoCheck);
   }
 
   disconnectedCallback() {
@@ -76,6 +78,7 @@ export class TodoList extends HTMLElement {
     this.list.removeEventListener('showDetailView', this.openDetailView);
     this.list.removeEventListener('updateTodo', this.updateTodoItem);
     this.list.removeEventListener('changeCheckBtnColor', this.changeColor);
+    this.list.removeEventListener('undoCheck', this.undoCheck);
   }
 
   openDetailView(evt) {
@@ -170,10 +173,8 @@ export class TodoList extends HTMLElement {
     const data = new DataStorage();
 
     if (e.detail.subtask) {
-      const todoNode = document.createElement('todo-item');
-      todoNode.setData(e.detail.subtaskObj);
-      this.showButton();
-      this.addTodoBtn.before(todoNode);
+      const todoObj = e.detail.subtaskObj;
+      this.addSubtask(todoObj);
       return;
     }
 
@@ -202,28 +203,54 @@ export class TodoList extends HTMLElement {
     this.addTodoBtn.before(todoNode);
   }
 
+  addSubtask(todoObj) {
+    const data = new DataStorage();
+    const todoNode = document.createElement('todo-item');
+    todoNode.setData(todoObj);
+    const selector = `todo-item[data-id="${CSS.escape(todoObj.parentId)}"]`;
+    let todoParent = this.shadowRoot.querySelector(selector);
+    let childNum = getSubtasksNumber(data.getTodoById(todoObj.parentId)) - 1;
+    // Функцию сделать которая считаает не только подзадачи этой задачи, но и всех подзадач и выдает число
+    while (childNum) {
+      todoParent = todoParent.nextElementSibling;
+      childNum--;
+    }
+    todoParent.after(todoNode);
+    this.showButton();
+  }
+
   handleTodoCheck(e) {
     const todoObj = e.detail.todoObj;
-    const data = new DataStorage();
-    // Затоглить все субтаски этой задачи рекурсивно мб в отдельный функционал всё что тоглит выше
+    const inDetail = e.detail.inDetail;
+    //const data = new DataStorage();
+    // Затоглить все субтаски этой задачи рекурсивно
+    this.toggleCheckedAllTodoNodes(todoObj);
+    // Затоглить данные в хранилище и сохранить
+    toggleCheckedTodoData(todoObj);
+    saveData();
+    if (this.undoPopup) this.undoPopup.removeSelf();
+    if (todoObj.checked) {
+      this.hideTodoWithSubtasks(todoObj);
+      // data.lastTimeRef = setTimeout(() => {
+      //   this.hideTodoWithSubtasks(todoObj);
+      // }, 3000);
+      if (!inDetail) {
+        this.undoPopup = new UndoPopup(todoObj.id);
+        this.shadowRoot.append(this.undoPopup);
+      }
+    } else {
+      clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+    }
+  }
+
+  undoCheck(evt) {
+    const todoObj = new DataStorage().getTodoById(evt.detail.id);
     this.toggleCheckedAllTodoNodes(todoObj);
     // Затогглить данные в хранилище и сохранить
     toggleCheckedTodoData(todoObj);
-    saveData();
-
-    if (todoObj.checked) {
-      const todoDiag = document.querySelector('#todo-dialog');
-      data.lastTimeRef = setTimeout(() => {
-        this.hideTodoWithSubtasks(todoObj);
-      }, 3000);
-      // Popup сделать отдельным компонентом, мб наверх посылать и приложение решит само, мб в индексе
-      if (!todoDiag || !todoDiag.open) showUndoPopup(todoObj);
-    } else {
-      if (data.lastTimeRef) clearTimeout(data.lastTimeRef);
-      this.uncheckTodoContainers(todoObj);
-      const undoPopup = document.querySelector('.undo-popup');
-      if (undoPopup) undoPopup.remove();
-    }
+    //this.uncheckTodoContainers(todoObj);
+    this.unhideTodoWithSubtasks(todoObj);
+    //clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
   }
 
   toggleCheckedAllTodoNodes(todo) {
@@ -241,6 +268,16 @@ export class TodoList extends HTMLElement {
     if (diagTextContainer) {
       diagTextContainer.classList.toggle('checked');
     }
+  }
+
+  unhideTodoWithSubtasks(todo) {
+    if (todo.subtask.size > 0)
+      todo.subtask.forEach((subId) =>
+        this.unhideTodoWithSubtasks(new DataStorage().getTodoById(subId))
+      );
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
+    const todoNode = this.shadowRoot.querySelector(selector);
+    todoNode.unhide();
   }
 
   hideTodoWithSubtasks(todo) {
@@ -293,4 +330,18 @@ export function toggleCheckedTodoData(todo) {
     );
   if (todo.checked) todo.checked = false;
   else todo.checked = true;
+  saveData();
+}
+
+/**
+ * @param {TodoItem} todoObj
+ */
+function getSubtasksNumber(todoObj) {
+  const data = new DataStorage();
+  let number = 0;
+  todoObj.subtask.forEach((subId) => {
+    number++;
+    number += getSubtasksNumber(data.getTodoById(subId));
+  });
+  return number;
 }

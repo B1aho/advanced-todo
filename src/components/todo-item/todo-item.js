@@ -33,6 +33,7 @@ export class TodoItemElement extends HTMLElement {
     this.confirmRemove = this.confirmRemove.bind(this);
     this.dispatchDetailView = this.dispatchDetailView.bind(this);
     this.updateRendering = this.updateRendering.bind(this);
+    this.addCheckedClass = this.addCheckedClass.bind(this);
   }
 
   connectedCallback() {
@@ -69,8 +70,6 @@ export class TodoItemElement extends HTMLElement {
 
     this.updateRendering();
 
-    // this.todoBody.setAttribute("data-id", todoObj.id)
-
     if (todoObj.checked) {
       this.checkBtn.classList.add('checked');
       this.todoBody.classList.add('checked');
@@ -99,6 +98,17 @@ export class TodoItemElement extends HTMLElement {
     this.self.dispatchEvent(customEvent);
   }
 
+  /**
+   * Переписать так, что  this.undoPopup = new UndoPopup(this.todoId);
+         this.diag.append(this.undoPopup);
+    каждый todo-item может создавать undoPopup, соответсвтенно если subtaskList получает это событие, то он
+    убирает checked с todo-item и всё. Если todo-list получает такое событие, то он тогглит сами данные туду
+    Сохраняет это, короче возвращает todo-item со всеми субтасками, - делает ровно то же, что и нажатие на выполненные
+    задачи в фильтре выполненные
+
+    Нажатие же на кнопку в детальном view. Чекает все субтаски и создает undoPopup, отмена этого действия, снимает 
+    checked только с задачи чья todo-detail. 
+   */
   checkTodo() {
     const data = new DataStorage();
     const todoObj = data.getTodoById(this.todoId);
@@ -115,6 +125,11 @@ export class TodoItemElement extends HTMLElement {
   toggleCheckedTodoContent() {
     this.checkBtn.classList.toggle('checked');
     this.todoBody.classList.toggle('checked');
+  }
+
+  addCheckedClass() {
+    this.checkBtn.classList.add('checked');
+    this.todoBody.classList.add('checked');
   }
 
   hide() {

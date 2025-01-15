@@ -11,13 +11,14 @@
  * Что означает, что todo-list открывает компонент todo-detail, значит todo-detail сначала закрывает себя на всякий случай
  * -------------------------------------------------------------------------------------------------------------------
  * Осталось для checktodoBtn - правильное поведение дописать (после того как компонент undoPopup сделаешь)
- * Правильное добавление подзадач
  */
+import { isThisSecond } from 'date-fns';
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
 import { ConfirmDiag } from '../confirm-diag';
 import { EditableTodoForm } from '../editable-todo-form';
 import { getCheckColor } from '../todo-detail-options/todo-detail-options';
+import { UndoPopup } from '../undo-popup/undo-popup';
 import styles from './todo-detail.css?raw';
 
 export class TodoDetail extends HTMLElement {
@@ -37,6 +38,9 @@ export class TodoDetail extends HTMLElement {
     this.todoTitle = this.shadowRoot.querySelector('#diag-todo-title');
     this.desc = this.shadowRoot.querySelector('#diag-todo-desc');
     this.todoText = this.shadowRoot.querySelector('#diag-todo-item');
+    this.todoTextWrapper = this.shadowRoot.querySelector(
+      '.cursor-wrapper-todo'
+    );
     this.mainPart = this.shadowRoot.querySelector('#main-part');
     this.subtaskList = document.createElement('subtask-list');
     this.mainPart.append(this.subtaskList);
@@ -51,6 +55,8 @@ export class TodoDetail extends HTMLElement {
     this.addEditableForm = this.addEditableForm.bind(this);
     this.changeTodoText = this.changeTodoText.bind(this);
     this.showTodoItem = this.showTodoItem.bind(this);
+    this.blockInteraction = this.blockInteraction.bind(this);
+    this.handleTodoCheck = this.handleTodoCheck.bind(this);
   }
 
   connectedCallback() {
@@ -69,6 +75,12 @@ export class TodoDetail extends HTMLElement {
       this.changeTodoText
     );
     this.shadowRoot.addEventListener('cancelEditableForm', this.showTodoItem);
+    this.checkBtn.addEventListener('click', this.handleTodoCheck);
+    this.diag.addEventListener(
+      'todoChecked',
+      (e) => (e.detail.inDetail = true)
+    );
+    this.shadowRoot.addEventListener('undoCheck', this.blockInteraction);
   }
 
   disconnectedCallback() {
@@ -89,6 +101,32 @@ export class TodoDetail extends HTMLElement {
       'cancelEditableForm',
       this.showTodoItem
     );
+    this.diag.removeEventListener(
+      'todoChecked',
+      (e) => (e.detail.inDetail = true)
+    );
+    this.shadowRoot.removeEventListener('undoCheck', this.blockInteraction);
+  }
+
+  handleTodoCheck() {
+    if (this.undoPopup) this.undoPopup.remove();
+    // Как минимум здесь нужно будет создать undoPopup,
+    const todoObj = new DataStorage().getTodoById(this.todoId);
+    const customEvent = new CustomEvent('todoChecked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        todoObj: todoObj,
+        inDetail: true,
+      },
+    });
+    this.blockInteraction();
+    if (!todoObj.checked) {
+      // Создание undo popup, его обработка, а также логика того чтобы тогглить субатаски в subtaskList
+      this.undoPopup = new UndoPopup(this.todoId);
+      this.diag.append(this.undoPopup);
+    }
+    this.shadowRoot.dispatchEvent(customEvent);
   }
 
   dispatchRemoveEvent() {
@@ -127,7 +165,19 @@ export class TodoDetail extends HTMLElement {
     );
     this.shadowRoot.addEventListener('changeCheckBtnColor', this.changeColor);
     this.todoText.addEventListener('click', this.addEditableForm);
+    if (todoObj.checked) {
+      this.blockInteraction();
+    }
     if (!this.diag.open) this.diag.showModal();
+  }
+
+  blockInteraction() {
+    this.optionWrapper.classList.toggle('block');
+    this.subtaskList.classList.toggle('block');
+    this.todoTextWrapper.classList.toggle('block');
+    this.todoText.classList.toggle('checked');
+    this.checkBtn.classList.toggle('checked');
+    this.subtaskList.checkTodos();
   }
 
   addEditableForm() {
@@ -169,21 +219,21 @@ export class TodoDetail extends HTMLElement {
 
 customElements.define('todo-detail', TodoDetail);
 
-/**
- * It creates HTML elements from each todo's subtask (but not subtask's subtasks) and places these nodes
- * into the passed array without returning anything
- * @param {Array} arr
- * @param {TodoItem} todo
- */
-function fillArrayWithDirectSubtaskNodes(arr, todo) {
-  const data = new DataStorage();
-  const subtaskSet = todo.subtask;
-  subtaskSet.forEach((subtaskId) => {
-    const subtask = data.getTodoById(subtaskId);
-    // add todoNode to the array
-    // add todoNode to the array
-    const todoNode = document.createElement('todo-item');
-    todoNode.setData(subtask);
-    arr.push(todoNode);
-  });
-}
+// /**
+//  * It creates HTML elements from each todo's subtask (but not subtask's subtasks) and places these nodes
+//  * into the passed array without returning anything
+//  * @param {Array} arr
+//  * @param {TodoItem} todo
+//  */
+// function fillArrayWithDirectSubtaskNodes(arr, todo) {
+//   const data = new DataStorage();
+//   const subtaskSet = todo.subtask;
+//   subtaskSet.forEach((subtaskId) => {
+//     const subtask = data.getTodoById(subtaskId);
+//     // add todoNode to the array
+//     // add todoNode to the array
+//     const todoNode = document.createElement('todo-item');
+//     todoNode.setData(subtask);
+//     arr.push(todoNode);
+//   });
+// }

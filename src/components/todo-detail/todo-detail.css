@@ -3,6 +3,10 @@
     flex-direction: column;
 } */
 
+button {
+  cursor: pointer;
+}
+
 #detail-header {
   display: flex;
   justify-content: space-between;
@@ -42,4 +46,17 @@
 
 #option-part {
   width: 30%;
+}
+
+.block {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+#diag-todo-item.checked {
+  text-decoration: line-through;
+}
+
+#todo-check-btn.checked::after {
+  content: '✅';
 }
