@@ -5,6 +5,7 @@
  */
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
+import { UndoPopup } from '../undo-popup/undo-popup';
 import styles from './subtask-list.css?raw'; // Подключаем стили
 
 export class SubtaskList extends HTMLElement {
@@ -30,6 +31,7 @@ export class SubtaskList extends HTMLElement {
     this.list.addEventListener('formValue', this.addTodoItemFromForm);
     this.list.addEventListener('cancelForm', this.showButton);
     this.list.addEventListener('todoChecked', this.handleSubtaskCheck);
+    this.list.addEventListener('undoCheck', this.handleUndo);
   }
 
   disconnectedCallback() {
@@ -84,8 +86,15 @@ export class SubtaskList extends HTMLElement {
     const todoItems = this.shadowRoot.querySelectorAll('todo-item');
     todoItems.forEach((todo) => {
       todo.addCheckedClass();
-      todo.checkTodo();
+      //todo.checkTodo();
     });
+  }
+
+  handleUndo(evt) {
+    evt.detail.fromSubtask = true;
+    const selector = `todo-item[data-id="${CSS.escape(evt.detail.id)}"]`;
+    const todoItem = this.shadowRoot.querySelector(selector);
+    todoItem.toggleCheckedTodoContent();
   }
 
   /**
@@ -127,10 +136,17 @@ export class SubtaskList extends HTMLElement {
   }
 
   handleSubtaskCheck(e) {
-    const id = e.detail.todoObj.id;
+    const todoObj = e.detail.todoObj;
+    const id = todoObj.id;
     const selector = `todo-item[data-id="${CSS.escape(id)}"]`;
     const todoItem = this.shadowRoot.querySelector(selector);
     todoItem.toggleCheckedTodoContent();
+
+    if (!todoObj.checked) {
+      // Создание undo popup, его обработка, а также логика того чтобы тогглить субатаски в subtaskList
+      this.undoPopup = new UndoPopup(todoObj.id);
+      this.shadowRoot.append(this.undoPopup);
+    }
   }
 
   showDiag(e) {

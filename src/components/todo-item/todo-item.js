@@ -98,17 +98,6 @@ export class TodoItemElement extends HTMLElement {
     this.self.dispatchEvent(customEvent);
   }
 
-  /**
-   * Переписать так, что  this.undoPopup = new UndoPopup(this.todoId);
-         this.diag.append(this.undoPopup);
-    каждый todo-item может создавать undoPopup, соответсвтенно если subtaskList получает это событие, то он
-    убирает checked с todo-item и всё. Если todo-list получает такое событие, то он тогглит сами данные туду
-    Сохраняет это, короче возвращает todo-item со всеми субтасками, - делает ровно то же, что и нажатие на выполненные
-    задачи в фильтре выполненные
-
-    Нажатие же на кнопку в детальном view. Чекает все субтаски и создает undoPopup, отмена этого действия, снимает 
-    checked только с задачи чья todo-detail. 
-   */
   checkTodo() {
     const data = new DataStorage();
     const todoObj = data.getTodoById(this.todoId);
@@ -159,7 +148,7 @@ export class TodoItemElement extends HTMLElement {
   }
 
   changeColor(newColor) {
-    this.checkBtn.style.backgroundColor = newColor
+    this.checkBtn.style.backgroundColor = newColor;
   }
 }
 

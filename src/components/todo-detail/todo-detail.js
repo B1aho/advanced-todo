@@ -106,12 +106,15 @@ export class TodoDetail extends HTMLElement {
       (e) => (e.detail.inDetail = true)
     );
     this.shadowRoot.removeEventListener('undoCheck', this.blockInteraction);
+    this.checkBtn.removeEventListener('click', this.handleTodoCheck);
   }
 
-  handleTodoCheck() {
+  handleTodoCheck(evt) {
     if (this.undoPopup) this.undoPopup.remove();
     // Как минимум здесь нужно будет создать undoPopup,
-    const todoObj = new DataStorage().getTodoById(this.todoId);
+    const todoObj = evt.detail.todoObj
+      ? evt.detail.todoObj
+      : new DataStorage().getTodoById(this.todoId);
     const customEvent = new CustomEvent('todoChecked', {
       bubbles: true,
       composed: true,
@@ -171,7 +174,9 @@ export class TodoDetail extends HTMLElement {
     if (!this.diag.open) this.diag.showModal();
   }
 
-  blockInteraction() {
+  blockInteraction(evt) {
+    if (evt && evt.detail.fromSubtask) return;
+    if (evt) evt.detail.onlyTodo = true;
     this.optionWrapper.classList.toggle('block');
     this.subtaskList.classList.toggle('block');
     this.todoTextWrapper.classList.toggle('block');
@@ -218,22 +223,3 @@ export class TodoDetail extends HTMLElement {
 }
 
 customElements.define('todo-detail', TodoDetail);
-
-// /**
-//  * It creates HTML elements from each todo's subtask (but not subtask's subtasks) and places these nodes
-//  * into the passed array without returning anything
-//  * @param {Array} arr
-//  * @param {TodoItem} todo
-//  */
-// function fillArrayWithDirectSubtaskNodes(arr, todo) {
-//   const data = new DataStorage();
-//   const subtaskSet = todo.subtask;
-//   subtaskSet.forEach((subtaskId) => {
-//     const subtask = data.getTodoById(subtaskId);
-//     // add todoNode to the array
-//     // add todoNode to the array
-//     const todoNode = document.createElement('todo-item');
-//     todoNode.setData(subtask);
-//     arr.push(todoNode);
-//   });
-// }

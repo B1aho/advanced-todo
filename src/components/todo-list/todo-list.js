@@ -42,6 +42,8 @@ export class TodoList extends HTMLElement {
     this.changeColor = this.changeColor.bind(this);
     this.addSubtask = this.addSubtask.bind(this);
     this.undoCheck = this.undoCheck.bind(this);
+    this.toggleCheckedAllTodoParentNodes =
+      this.toggleCheckedAllTodoParentNodes.bind(this);
   }
 
   connectedCallback() {
@@ -219,35 +221,51 @@ export class TodoList extends HTMLElement {
     this.showButton();
   }
 
+  // определится с логикой - на бумаге!!!
   handleTodoCheck(e) {
     const todoObj = e.detail.todoObj;
     const inDetail = e.detail.inDetail;
     //const data = new DataStorage();
     // Затоглить все субтаски этой задачи рекурсивно
     this.toggleCheckedAllTodoNodes(todoObj);
+    this.toggleCheckedAllTodoParentNodes(todoObj);
     // Затоглить данные в хранилище и сохранить
-    toggleCheckedTodoData(todoObj);
+    toggleCheckedTodoDataWithSubtasks(todoObj);
     saveData();
     if (this.undoPopup) this.undoPopup.removeSelf();
     if (todoObj.checked) {
       this.hideTodoWithSubtasks(todoObj);
-      // data.lastTimeRef = setTimeout(() => {
-      //   this.hideTodoWithSubtasks(todoObj);
-      // }, 3000);
       if (!inDetail) {
         this.undoPopup = new UndoPopup(todoObj.id);
         this.shadowRoot.append(this.undoPopup);
       }
     } else {
-      clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+      if (inDetail) {
+        e.detail.onlyTodo = true;
+        e.detail.id = todoObj.id;
+        e.detail.touchUndo = true;
+        this.undoCheck(e);
+      }
+      else this.unhideTodoWithSubtasks(todoObj);
     }
   }
 
   undoCheck(evt) {
     const todoObj = new DataStorage().getTodoById(evt.detail.id);
+    if (evt.detail.onlyTodo) {
+      // if (evt.detail.touchUndo) {
+      //   //toggleCheckedTodoData(todoObj);
+      //   this.unhideCheckedTodo(todoObj);
+      //   return;
+      // }
+      toggleCheckedTodoData(todoObj);
+      this.unhideCheckedTodo(todoObj);
+      this.toggleCheckedTodoNode(todoObj);
+      return;
+    }
     this.toggleCheckedAllTodoNodes(todoObj);
     // Затогглить данные в хранилище и сохранить
-    toggleCheckedTodoData(todoObj);
+    toggleCheckedTodoDataWithSubtasks(todoObj);
     //this.uncheckTodoContainers(todoObj);
     this.unhideTodoWithSubtasks(todoObj);
     //clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
@@ -262,12 +280,24 @@ export class TodoList extends HTMLElement {
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoItem = this.shadowRoot.querySelector(selector);
     todoItem.toggleCheckedTodoContent();
-    // С этим разобраться: мб это вообще не юрисдикция todo-list так что просто диалог будет какому-то верхнему компоненту передавать, который порешает
-    const dialiogSelector = `.diag-todo-item[data-id="${CSS.escape(todo.id)}"]`;
-    const diagTextContainer = document.querySelector(dialiogSelector);
-    if (diagTextContainer) {
-      diagTextContainer.classList.toggle('checked');
+  }
+
+  toggleCheckedAllTodoParentNodes(todo) {
+    const todoParentObj = new DataStorage().getTodoById(todo.parentId);
+    if (todoParentObj && todoParentObj.checked) {
+      const selector = `todo-item[data-id="${CSS.escape(todoParentObj.id)}"]`;
+      const todoItem = this.shadowRoot.querySelector(selector);
+      todoItem.toggleCheckedTodoContent();
+      toggleCheckedTodoData(todoParentObj);
+      this.toggleCheckedAllTodoParentNodes(todoParentObj);
     }
+    return;
+  }
+
+  toggleCheckedTodoNode(todo) {
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
+    const todoItem = this.shadowRoot.querySelector(selector);
+    todoItem.toggleCheckedTodoContent();
   }
 
   unhideTodoWithSubtasks(todo) {
@@ -275,6 +305,7 @@ export class TodoList extends HTMLElement {
       todo.subtask.forEach((subId) =>
         this.unhideTodoWithSubtasks(new DataStorage().getTodoById(subId))
       );
+    if (todo.checked) return;
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoNode = this.shadowRoot.querySelector(selector);
     todoNode.unhide();
@@ -323,11 +354,17 @@ customElements.define('todo-list', TodoList);
  *
  * @param {TodoItem} todo
  */
-export function toggleCheckedTodoData(todo) {
+export function toggleCheckedTodoDataWithSubtasks(todo) {
   if (todo.subtask.size > 0)
     todo.subtask.forEach((subId) =>
-      toggleCheckedTodoData(new DataStorage().getTodoById(subId))
+      toggleCheckedTodoDataWithSubtasks(new DataStorage().getTodoById(subId))
     );
+  if (todo.checked) todo.checked = false;
+  else todo.checked = true;
+  saveData();
+}
+
+function toggleCheckedTodoData(todo) {
   if (todo.checked) todo.checked = false;
   else todo.checked = true;
   saveData();
