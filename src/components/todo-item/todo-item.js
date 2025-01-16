@@ -34,6 +34,7 @@ export class TodoItemElement extends HTMLElement {
     this.dispatchDetailView = this.dispatchDetailView.bind(this);
     this.updateRendering = this.updateRendering.bind(this);
     this.addCheckedClass = this.addCheckedClass.bind(this);
+    this.removeCheckedClass = this.removeCheckedClass.bind(this);
   }
 
   connectedCallback() {
@@ -119,6 +120,11 @@ export class TodoItemElement extends HTMLElement {
   addCheckedClass() {
     this.checkBtn.classList.add('checked');
     this.todoBody.classList.add('checked');
+  }
+
+  removeCheckedClass() {
+    this.checkBtn.classList.remove('checked');
+    this.todoBody.classList.remove('checked');
   }
 
   hide() {

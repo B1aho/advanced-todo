@@ -33,7 +33,7 @@ export class TodoList extends HTMLElement {
     this.createAddTodoBtn = this.createAddTodoBtn.bind(this);
     this.createTodoItem = this.createTodoItem.bind(this);
     this.showButton = this.showButton.bind(this);
-    this.toggleCheckedAllTodoNodes = this.toggleCheckedAllTodoNodes.bind(this);
+    this.checkAllTodoNodes = this.checkAllTodoNodes.bind(this);
     this.unhideTodoWithSubtasks = this.unhideTodoWithSubtasks.bind(this);
     this.hideTodoWithSubtasks = this.hideTodoWithSubtasks.bind(this);
     this.removeTodo = this.removeTodo.bind(this);
@@ -42,8 +42,9 @@ export class TodoList extends HTMLElement {
     this.changeColor = this.changeColor.bind(this);
     this.addSubtask = this.addSubtask.bind(this);
     this.undoCheck = this.undoCheck.bind(this);
-    this.toggleCheckedAllTodoParentNodes =
-      this.toggleCheckedAllTodoParentNodes.bind(this);
+    this.uncheckAllTodoParentNodes = this.uncheckAllTodoParentNodes.bind(this);
+    this.unhideAllTodoParentNodes = this.unhideAllTodoParentNodes.bind(this);
+    this.uncheckAllTodoNodes = this.uncheckAllTodoNodes.bind(this);
   }
 
   connectedCallback() {
@@ -221,130 +222,130 @@ export class TodoList extends HTMLElement {
     this.showButton();
   }
 
-  // определится с логикой - на бумаге!!!
+  /**
+   * Ситуация такая, если мы чекиним н-ое кол-во задач, то ставим в очередь асинхронный таймер с коллбэком.- сохраняем ссылку на него
+   * Который зачекинит узлы и данные, а пока просто прячем всё и сохраняем кол-во спрятанного
+   *
+   * Потом при undo, просто показываем назад тоже самое кол-во спрятанных но не зачекиненных задач и отменяем таймер.
+   *
+   * Насчет того что исчезает при нжаати чек, когда задача во списке всех, то нужно продумать этот момент, 
+   */
   handleTodoCheck(e) {
     const todoObj = e.detail.todoObj;
-    const inDetail = e.detail.inDetail;
-    //const data = new DataStorage();
-    // Затоглить все субтаски этой задачи рекурсивно
-    this.toggleCheckedAllTodoNodes(todoObj);
-    this.toggleCheckedAllTodoParentNodes(todoObj);
-    // Затоглить данные в хранилище и сохранить
-    toggleCheckedTodoDataWithSubtasks(todoObj);
-    saveData();
-    if (this.undoPopup) this.undoPopup.removeSelf();
-    if (todoObj.checked) {
-      this.hideTodoWithSubtasks(todoObj);
-      if (!inDetail) {
-        this.undoPopup = new UndoPopup(todoObj.id);
-        this.shadowRoot.append(this.undoPopup);
-      }
+    const data = new DataStorage();
+    // Если задача не зачекинета, значит пользователь её зачекинил!
+    if (!todoObj.checked) {
+      data.lastTimeRef = setTimeout(() => {
+        // Зачекинить данные в хранилище и сохранить - мб не надо тогглить, нам надо зачекать только те, что не были выполнены
+        checkTodoDataWithSubtasks(todoObj);
+        // Зачекинить контент всех субтасков этой задачи рекурсивно и контент самой задачи
+        this.checkAllTodoNodes(todoObj);
+      }, 3000);
+      // Прячем сразу же все чекнутые задачи
+      const checkedNumber = this.hideTodoWithSubtasks(todoObj);
+      // Открываем попап, с возможностью отменить только что выполненное действие
+      if (this.undoPopup) this.undoPopup.removeSelf();
+      this.undoPopup = new UndoPopup(todoObj.id, checkedNumber);
+      this.shadowRoot.append(this.undoPopup);
     } else {
-      if (inDetail) {
-        e.detail.onlyTodo = true;
-        e.detail.id = todoObj.id;
-        e.detail.touchUndo = true;
-        this.undoCheck(e);
-      }
-      else this.unhideTodoWithSubtasks(todoObj);
+      this.uncheckAllTodoParentNodes(todoObj);
+      uncheckTodoDataWithParents(todoObj);
+      this.unhideAllTodoParentNodes(todoObj);
     }
   }
 
+  // Отменить выполнение
   undoCheck(evt) {
-    const todoObj = new DataStorage().getTodoById(evt.detail.id);
-    if (evt.detail.onlyTodo) {
-      // if (evt.detail.touchUndo) {
-      //   //toggleCheckedTodoData(todoObj);
-      //   this.unhideCheckedTodo(todoObj);
-      //   return;
-      // }
-      toggleCheckedTodoData(todoObj);
-      this.unhideCheckedTodo(todoObj);
-      this.toggleCheckedTodoNode(todoObj);
-      return;
-    }
-    this.toggleCheckedAllTodoNodes(todoObj);
-    // Затогглить данные в хранилище и сохранить
-    toggleCheckedTodoDataWithSubtasks(todoObj);
-    //this.uncheckTodoContainers(todoObj);
-    this.unhideTodoWithSubtasks(todoObj);
-    //clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
+    const data = new DataStorage();
+    clearTimeout(data.lastTimeRef);
+    const todoObj = data.getTodoById(evt.detail.id);
+    const number = evt.detail.number;
+    this.unhideTodoWithSubtasks(todoObj, number);
   }
 
-  toggleCheckedAllTodoNodes(todo) {
+  checkAllTodoNodes(todo) {
     if (todo.subtask.size > 0)
       todo.subtask.forEach((subId) =>
-        this.toggleCheckedAllTodoNodes(new DataStorage().getTodoById(subId))
+        this.checkAllTodoNodes(new DataStorage().getTodoById(subId))
       );
 
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoItem = this.shadowRoot.querySelector(selector);
-    todoItem.toggleCheckedTodoContent();
+    todoItem.addCheckedClass();
   }
 
-  toggleCheckedAllTodoParentNodes(todo) {
+  uncheckAllTodoNodes(todo) {
+    if (todo.subtask.size > 0)
+      todo.subtask.forEach((subId) =>
+        this.uncheckAllTodoNodes(new DataStorage().getTodoById(subId))
+      );
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
+    const todoItem = this.shadowRoot.querySelector(selector);
+    todoItem.removeCheckedClass();
+  }
+
+  uncheckAllTodoParentNodes(todo) {
     const todoParentObj = new DataStorage().getTodoById(todo.parentId);
     if (todoParentObj && todoParentObj.checked) {
-      const selector = `todo-item[data-id="${CSS.escape(todoParentObj.id)}"]`;
-      const todoItem = this.shadowRoot.querySelector(selector);
-      todoItem.toggleCheckedTodoContent();
-      toggleCheckedTodoData(todoParentObj);
-      this.toggleCheckedAllTodoParentNodes(todoParentObj);
+      this.uncheckAllTodoParentNodes(todoParentObj);
     }
-    return;
-  }
-
-  toggleCheckedTodoNode(todo) {
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoItem = this.shadowRoot.querySelector(selector);
-    todoItem.toggleCheckedTodoContent();
+    todoItem.removeCheckedClass();
   }
 
-  unhideTodoWithSubtasks(todo) {
+  // Проверить, по идее должна показать все спрятанные задачи, которые при этом не выполнены, но не большое чем переданное число
+  unhideTodoWithSubtasks(todo, number) {
+    if (number <= 0) return;
+    number--;
     if (todo.subtask.size > 0)
-      todo.subtask.forEach((subId) =>
-        this.unhideTodoWithSubtasks(new DataStorage().getTodoById(subId))
+      todo.subtask.forEach(
+        (subId) =>
+          (number -= this.unhideTodoWithSubtasks(
+            new DataStorage().getTodoById(subId),
+            number
+          ))
       );
-    if (todo.checked) return;
+    if (todo.checked) return 0;
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoNode = this.shadowRoot.querySelector(selector);
     todoNode.unhide();
+    return 1;
+  }
+
+  // Объединить эти три функции в одну
+  unhideAllTodoParentNodes(todo) {
+    const todoParentObj = new DataStorage().getTodoById(todo.parentId);
+    if (todoParentObj && todoParentObj.checked) {
+      this.uncheckAllTodoParentNodes(todoParentObj);
+    }
+    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
+    const todoItem = this.shadowRoot.querySelector(selector);
+    todoItem.unhide();
   }
 
   hideTodoWithSubtasks(todo) {
+    let num = 1;
     if (todo.subtask.size > 0)
-      todo.subtask.forEach((subId) =>
-        this.hideTodoWithSubtasks(new DataStorage().getTodoById(subId))
+      todo.subtask.forEach(
+        (subId) =>
+          (num += this.hideTodoWithSubtasks(
+            new DataStorage().getTodoById(subId)
+          ))
       );
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoNode = this.shadowRoot.querySelector(selector);
-    todoNode.hide();
+    if (!todo.checked) {
+      todoNode.hide();
+      return num;
+    }
+    return 0;
   }
 
-  hideCheckedTodo(todo) {
-    if (todo.subtask.size > 0)
-      todo.subtask.forEach((subId) =>
-        this.hideCheckedTodo(new DataStorage().getTodoById(subId))
-      );
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
-    const todoNode = this.shadowRoot.querySelector(selector);
-    todoNode.hide();
-  }
-
-  unhideCheckedTodo(todo) {
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
-    const todoNode = this.shadowRoot.querySelector(selector);
-    todoNode.unhide();
-  }
-
-  uncheckTodoContainers(todo) {
-    if (todo.subtask.size > 0)
-      todo.subtask.forEach((subId) =>
-        this.uncheckTodoContainers(new DataStorage().getTodoById(subId))
-      );
-    const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
-    const todoNode = this.shadowRoot.querySelector(selector);
-    if (todo.checked) todoNode.unhide();
+  // Костыль для фильтра
+  uncheckTodoContainers() {
+    const todoItems = this.shadowRoot.querySelectorAll('todo-item');
+    todoItems.forEach((item) => item.unhide());
   }
 }
 
@@ -354,20 +355,21 @@ customElements.define('todo-list', TodoList);
  *
  * @param {TodoItem} todo
  */
-export function toggleCheckedTodoDataWithSubtasks(todo) {
+export function checkTodoDataWithSubtasks(todo) {
   if (todo.subtask.size > 0)
-    todo.subtask.forEach((subId) =>
-      toggleCheckedTodoDataWithSubtasks(new DataStorage().getTodoById(subId))
-    );
-  if (todo.checked) todo.checked = false;
-  else todo.checked = true;
+    todo.subtask.forEach((subId) => {
+      checkTodoDataWithSubtasks(new DataStorage().getTodoById(subId));
+    });
+  if (!todo.checked) todo.checked = true;
   saveData();
 }
 
-function toggleCheckedTodoData(todo) {
-  if (todo.checked) todo.checked = false;
-  else todo.checked = true;
-  saveData();
+function uncheckTodoDataWithParents(todo) {
+  const todoParentObj = new DataStorage().getTodoById(todo.parentId);
+  if (todoParentObj && todoParentObj.checked) {
+    uncheckTodoDataWithParents(todoParentObj);
+  }
+  todo.checked = false;
 }
 
 /**

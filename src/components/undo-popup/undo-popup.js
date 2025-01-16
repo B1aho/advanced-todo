@@ -1,7 +1,7 @@
 import styles from './undo-popup.css?raw';
 
 export class UndoPopup extends HTMLElement {
-  constructor(todoId) {
+  constructor(todoId, number) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
     const template = document.querySelector('#undo-popup-templ');
@@ -12,7 +12,10 @@ export class UndoPopup extends HTMLElement {
     this.undoBtn = this.shadowRoot.querySelector('#undo-btn');
     this.closeBtn = this.shadowRoot.querySelector('#close-undo-btn');
     this.loader = this.shadowRoot.querySelector('#loader');
+    this.popupContent = this.shadowRoot.querySelector('#content');
+    this.popupContent.textContent = `Выполнено ${number} задач! Отменить?`;
     this.todoId = todoId;
+    this.number = number;
 
     this.removeSelf = this.removeSelf.bind(this);
     this.dispatchUndo = this.dispatchUndo.bind(this);
@@ -49,7 +52,10 @@ export class UndoPopup extends HTMLElement {
     const customEvent = new CustomEvent('undoCheck', {
       bubbles: true,
       composed: true,
-      detail: { id: this.todoId },
+      detail: {
+        id: this.todoId,
+        number: this.number,
+      },
     });
     this.shadowRoot.dispatchEvent(customEvent);
     clearTimeout(this.autoCloseTimeout); // Убираем автозакрытие попапа
