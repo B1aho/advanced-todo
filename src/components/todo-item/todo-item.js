@@ -62,7 +62,6 @@ export class TodoItemElement extends HTMLElement {
 
     this.todo.dataset.id = todoObj.id;
     this.todoBody.dataset.id = todoObj.id;
-    // this.checkBtn.setAttribute("data-id", todoObj.id)
     this.checkBtn.style.backgroundColor = getCheckColor(todoObj.priorLevel);
 
     if (haveUncheckedSubtask(todoObj)) {
@@ -74,10 +73,10 @@ export class TodoItemElement extends HTMLElement {
     if (todoObj.checked) {
       this.checkBtn.classList.add('checked');
       this.todoBody.classList.add('checked');
+      this.self.classList.add('completed');
     }
   }
 
-  // Может вообще сделаем, что dispatchEvent, со ссылкой на узел, и его удаляет уже родиткльский компонент, после подтверждения
   confirmRemove() {
     const customEvent = new CustomEvent('showConfirmDiag', {
       bubbles: true,
@@ -88,7 +87,6 @@ export class TodoItemElement extends HTMLElement {
     this.self.dispatchEvent(customEvent);
   }
 
-  // Может вообще сделаем, что dispatchEvent, со ссылкой на узел, и его удаляет уже родиткльский компонент, после подтверждения
   dispatchDetailView() {
     const customEvent = new CustomEvent('showDetailView', {
       bubbles: true,
@@ -128,11 +126,13 @@ export class TodoItemElement extends HTMLElement {
   }
 
   hide() {
-    this.self.classList.add('checked');
+    this.self.classList.add('completed');
+    if (new DataStorage().filter === 'actual') this.self.style.display = 'none';
   }
 
   unhide() {
-    this.self.classList.remove('checked');
+    this.self.classList.remove('completed');
+    this.self.style.display = 'block';
   }
 
   updateRendering() {

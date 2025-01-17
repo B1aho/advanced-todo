@@ -126,7 +126,7 @@ export function renderProjectContent(projectId) {
   allTodosBtn.addEventListener('click', showActualTodos);
   const completedBtn = clone.querySelector('#comleted-todos-btn');
   completedBtn.addEventListener('click', showCompletedTodos);
-
+  data.filter = 'actual';
   // Creater main content container
   const taskContainer = clone.querySelector('.project-container');
   taskContainer.setAttribute('data-id', projectId);

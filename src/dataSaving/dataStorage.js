@@ -8,6 +8,7 @@ export class DataStorage {
   sections = new Map(); // Keep sections with section-id as key
   todos = new Map(); // Keep todos with todo-id as key
   lastTimeRef = null;
+  filter = null;
   // Singletone implementation
   constructor(lastData = null) {
     if (DataStorage.instance) {

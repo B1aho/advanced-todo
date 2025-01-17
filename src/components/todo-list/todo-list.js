@@ -129,13 +129,17 @@ export class TodoList extends HTMLElement {
       const todoNode = document.createElement('todo-item');
       todoNode.setData(todo);
       this.shadowRoot.append(todoNode);
-      if (todo.subtask.size > 0) {
-        // Сюда перенести utility
-        fillArrayWithSubtaskNodes(subtaskArr, todo);
+      if (todoNode.classList.contains('completed')) {
+        todoNode.style.display = 'none';
+      } else {
+        if (todo.subtask.size > 0) {
+          // Сюда перенести utility
+          fillArrayWithSubtaskNodes(subtaskArr, todo);
+        }
+        subtaskArr.forEach((subtask) => {
+          this.shadowRoot.append(subtask);
+        });
       }
-      subtaskArr.forEach((subtask) => {
-        this.shadowRoot.append(subtask);
-      });
     });
     this.addTodoBtn = this.createAddTodoBtn();
     this.shadowRoot.append(this.addTodoBtn);
@@ -222,29 +226,25 @@ export class TodoList extends HTMLElement {
     this.showButton();
   }
 
-  /**
-   * Ситуация такая, если мы чекиним н-ое кол-во задач, то ставим в очередь асинхронный таймер с коллбэком.- сохраняем ссылку на него
-   * Который зачекинит узлы и данные, а пока просто прячем всё и сохраняем кол-во спрятанного
-   *
-   * Потом при undo, просто показываем назад тоже самое кол-во спрятанных но не зачекиненных задач и отменяем таймер.
-   *
-   * Насчет того что исчезает при нжаати чек, когда задача во списке всех, то нужно продумать этот момент, 
-   */
   handleTodoCheck(e) {
     const todoObj = e.detail.todoObj;
     const data = new DataStorage();
     // Если задача не зачекинета, значит пользователь её зачекинил!
     if (!todoObj.checked) {
+      if (this.undoPopup) {
+        if (data.filter === 'completed') return;
+        this.undoPopup.removeSelf();
+      }
       data.lastTimeRef = setTimeout(() => {
         // Зачекинить данные в хранилище и сохранить - мб не надо тогглить, нам надо зачекать только те, что не были выполнены
         checkTodoDataWithSubtasks(todoObj);
-        // Зачекинить контент всех субтасков этой задачи рекурсивно и контент самой задачи
-        this.checkAllTodoNodes(todoObj);
+        this.undoPopup = null;
       }, 3000);
+      // Зачекинить контент всех субтасков этой задачи рекурсивно и контент самой задачи
+      this.checkAllTodoNodes(todoObj);
       // Прячем сразу же все чекнутые задачи
       const checkedNumber = this.hideTodoWithSubtasks(todoObj);
       // Открываем попап, с возможностью отменить только что выполненное действие
-      if (this.undoPopup) this.undoPopup.removeSelf();
       this.undoPopup = new UndoPopup(todoObj.id, checkedNumber);
       this.shadowRoot.append(this.undoPopup);
     } else {
@@ -261,6 +261,7 @@ export class TodoList extends HTMLElement {
     const todoObj = data.getTodoById(evt.detail.id);
     const number = evt.detail.number;
     this.unhideTodoWithSubtasks(todoObj, number);
+    this.undoPopup = null;
   }
 
   checkAllTodoNodes(todo) {
@@ -310,6 +311,7 @@ export class TodoList extends HTMLElement {
     const selector = `todo-item[data-id="${CSS.escape(todo.id)}"]`;
     const todoNode = this.shadowRoot.querySelector(selector);
     todoNode.unhide();
+    todoNode.removeCheckedClass();
     return 1;
   }
 
@@ -370,6 +372,7 @@ function uncheckTodoDataWithParents(todo) {
     uncheckTodoDataWithParents(todoParentObj);
   }
   todo.checked = false;
+  saveData();
 }
 
 /**

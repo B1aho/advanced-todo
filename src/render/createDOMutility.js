@@ -15,8 +15,6 @@ import {
   updateProjectListAfterDeletion,
   updateSectionContentAfterDeletion,
 } from './todoRender';
-import { toggleCheckedTodoData } from '../components/todo-list/todo-list';
-
 /**
  * Fabric that create button that can render new Section
  * @param {String} parentId - string that represent project's id. This project is parent for future sections
@@ -46,83 +44,12 @@ export function fillArrayWithSubtaskNodes(arr, todo) {
     // add todoNode to the array
     const todoNode = document.createElement('todo-item');
     todoNode.setData(subtask);
+    if (todoNode.classList.contains('completed')) {
+      todoNode.style.display = 'none';
+    }
     arr.push(todoNode);
     if (subtask.subtask.size > 0) fillArrayWithSubtaskNodes(arr, subtask);
   });
-}
-
-// export function showUndoPopup(todo) {
-//   const popup = document.createElement('div');
-//   popup.classList.add('undo-popup');
-
-//   const text = document.createElement('p');
-//   text.textContent = 'Задача выполнена';
-
-//   const loaderContainer = document.createElement('div');
-//   loaderContainer.classList.add('loader-container');
-//   const loader = document.createElement('div');
-//   loader.classList.add('loader');
-//   loaderContainer.append(loader);
-
-//   const buttonContainer = document.createElement('div');
-//   buttonContainer.style.display = 'flex';
-//   buttonContainer.style.justifyContent = 'space-between';
-
-//   const undoButton = document.createElement('button');
-//   undoButton.textContent = 'Отменить';
-//   undoButton.classList.add('undo');
-
-//   const closeButton = document.createElement('button');
-//   closeButton.textContent = '✖';
-//   closeButton.classList.add('close-undo-popup');
-
-//   buttonContainer.append(undoButton, closeButton);
-
-//   // Добавляем элементы в попап
-//   popup.append(text, loaderContainer, buttonContainer);
-
-//   // Добавляем попап в DOM
-//   document.body.append(popup);
-
-//   // Начинаем анимацию лоадера
-//   setTimeout(() => {
-//     loader.style.transform = 'scaleX(0)';
-//   }, 0);
-
-//   // Таймаут для автоматического закрытия попапа через 2 секунды
-//   const autoCloseTimeout = setTimeout(() => {
-//     popup.remove();
-//   }, 3000);
-
-//   // Обработчик кнопки "Отменить"
-//   undoButton.addEventListener('click', () => {
-//     const todoList = document.querySelector('todo-list');
-//     clearTimeout(new DataStorage().lastTimeRef); // Отменяем переданный таймаут
-//     clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-//     popup.remove();
-//     todoList.toggleCheckedAllTodoNodes(todo);
-//     toggleCheckedTodoData(todo);
-//   });
-
-//   // Обработчик кнопки "Закрыть"
-//   closeButton.addEventListener('click', () => {
-//     clearTimeout(autoCloseTimeout); // Убираем автозакрытие попапа
-//     document.body.removeChild(popup); // Удаляем попап
-//   });
-// }
-
-/**
- *
- * @param {TodoItem} todo
- */
-function hideCheckedTodo(todo) {
-  const todoList = document.querySelector('todo-list');
-  todoList.hideCheckedTodo(todo);
-}
-
-function unhideCheckedTodo(todo) {
-  const todoList = document.querySelector('todo-list');
-  todoList.hideCheckedTodo(todo);
 }
 
 function handleFilterClick(e) {
@@ -147,6 +74,7 @@ function uncheckTodoContainers(todo) {
  */
 export function showActualTodos(e) {
   if (handleFilterClick(e)) return;
+  new DataStorage().filter = 'actual';
   renderProjectContent(
     document.querySelector('.project-container').getAttribute('data-id')
   );
@@ -154,6 +82,7 @@ export function showActualTodos(e) {
 
 export function showCompletedTodos(e) {
   if (handleFilterClick(e)) return;
+  new DataStorage().filter = 'completed';
   // Показать спрятанные
   const projId = document
     .querySelector('.project-container')
@@ -236,35 +165,6 @@ function getColorWord(colorVal) {
 }
 
 /**
- * This function updates the rendering of the title and description of the todo in the dialog window
- * @param {String} title - new title
- * @param {String} desc - new description
- */
-function updateDiagText(title, desc) {
-  const diagTodoTitle = document.querySelector('.diag-todo-title');
-  diagTodoTitle.textContent = title;
-
-  const diagTodoDesc = document.querySelector('.diag-todo-desc');
-  diagTodoDesc.textContent = desc;
-}
-
-/**
- * This function updates the rendering of the title and description of the todo in the main project content view
- * @param {String} title - new title
- * @param {String} desc - new description
- * @param {String} id - todo's id
- */
-function updateTodoText(title, desc, id) {
-  const selector = `.todo-item[data-id="${CSS.escape(id)}"]`;
-  const todoItem = document.querySelector(selector);
-  const todoTitle = todoItem.querySelector('.todo-title');
-  todoTitle.textContent = title;
-
-  const todoDesc = todoItem.querySelector('.todo-desc');
-  todoDesc.textContent = desc;
-}
-
-/**
  * This function counts the total number of all subtasks (including their subtasks) of the provided todo
  * and returns the number
  * @param {TodoItem} todoNode
@@ -340,13 +240,13 @@ export function handleProjectExtraOption(e) {
   }
 }
 
-function removeProject(projId) {
-  const data = new DataStorage();
-  data.removeElement(projId);
-  updateProjectListAfterDeletion(projId);
-  updateProjectContentAfterDeletion(projId);
-  saveData();
-}
+// function removeProject(projId) {
+//   const data = new DataStorage();
+//   data.removeElement(projId);
+//   updateProjectListAfterDeletion(projId);
+//   updateProjectContentAfterDeletion(projId);
+//   saveData();
+// }
 
 function changeProject(projId) {
   // Появляется диалог, с формой, в которой можно изменить название проекта и цвет. и подвтердить, отменить
@@ -405,12 +305,12 @@ export function handleSectionExtraOption(target) {
   }
 }
 
-function removeSection(sectId) {
-  const data = new DataStorage();
-  data.removeElement(sectId);
-  updateSectionContentAfterDeletion(sectId);
-  saveData();
-}
+// function removeSection(sectId) {
+//   const data = new DataStorage();
+//   data.removeElement(sectId);
+//   updateSectionContentAfterDeletion(sectId);
+//   saveData();
+// }
 
 function createSectionTextArea(sectId) {
   const selector = `.section-container[data-id="${CSS.escape(sectId)}"]`;
