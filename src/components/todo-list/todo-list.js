@@ -246,7 +246,8 @@ export class TodoList extends HTMLElement {
       const checkedNumber = this.hideTodoWithSubtasks(todoObj);
       // Открываем попап, с возможностью отменить только что выполненное действие
       this.undoPopup = new UndoPopup(todoObj.id, checkedNumber);
-      this.shadowRoot.append(this.undoPopup);
+      if (this.detailTodo.diag.open) this.detailTodo.showPopup(this.undoPopup);
+      else this.shadowRoot.append(this.undoPopup);
     } else {
       this.uncheckAllTodoParentNodes(todoObj);
       uncheckTodoDataWithParents(todoObj);

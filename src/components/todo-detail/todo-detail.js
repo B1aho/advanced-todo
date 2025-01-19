@@ -12,13 +12,11 @@
  * -------------------------------------------------------------------------------------------------------------------
  * Осталось для checktodoBtn - правильное поведение дописать (после того как компонент undoPopup сделаешь)
  */
-import { isThisSecond } from 'date-fns';
 import { DataStorage } from '../../dataSaving/dataStorage';
 import { saveData } from '../../dataSaving/localStore';
 import { ConfirmDiag } from '../confirm-diag';
 import { EditableTodoForm } from '../editable-todo-form';
 import { getCheckColor } from '../todo-detail-options/todo-detail-options';
-import { UndoPopup } from '../undo-popup/undo-popup';
 import styles from './todo-detail.css?raw';
 
 export class TodoDetail extends HTMLElement {
@@ -57,6 +55,8 @@ export class TodoDetail extends HTMLElement {
     this.showTodoItem = this.showTodoItem.bind(this);
     this.blockInteraction = this.blockInteraction.bind(this);
     this.handleTodoCheck = this.handleTodoCheck.bind(this);
+    this.showPopup = this.showPopup.bind(this);
+    this.uncheckTodos = this.uncheckTodos.bind(this);
   }
 
   connectedCallback() {
@@ -80,7 +80,7 @@ export class TodoDetail extends HTMLElement {
       'todoChecked',
       (e) => (e.detail.inDetail = true)
     );
-    this.shadowRoot.addEventListener('undoCheck', this.blockInteraction);
+    this.shadowRoot.addEventListener('undoCheck', this.uncheckTodos);
   }
 
   disconnectedCallback() {
@@ -105,7 +105,7 @@ export class TodoDetail extends HTMLElement {
       'todoChecked',
       (e) => (e.detail.inDetail = true)
     );
-    this.shadowRoot.removeEventListener('undoCheck', this.blockInteraction);
+    this.shadowRoot.removeEventListener('undoCheck', this.uncheckTodos);
     this.checkBtn.removeEventListener('click', this.handleTodoCheck);
   }
 
@@ -124,12 +124,12 @@ export class TodoDetail extends HTMLElement {
       },
     });
     this.blockInteraction();
-    if (!todoObj.checked) {
-      // Создание undo popup, его обработка, а также логика того чтобы тогглить субатаски в subtaskList
-      this.undoPopup = new UndoPopup(this.todoId);
-      this.diag.append(this.undoPopup);
-    }
     this.shadowRoot.dispatchEvent(customEvent);
+  }
+
+  showPopup(popup) {
+    this.undoPopup = popup;
+    this.diag.append(this.undoPopup);
   }
 
   dispatchRemoveEvent() {
@@ -174,15 +174,27 @@ export class TodoDetail extends HTMLElement {
     if (!this.diag.open) this.diag.showModal();
   }
 
-  blockInteraction(evt) {
-    if (evt && evt.detail.fromSubtask) return;
-    if (evt) evt.detail.onlyTodo = true;
+  blockInteraction(number) {
     this.optionWrapper.classList.toggle('block');
     this.subtaskList.classList.toggle('block');
     this.todoTextWrapper.classList.toggle('block');
     this.todoText.classList.toggle('checked');
     this.checkBtn.classList.toggle('checked');
-    this.subtaskList.checkTodos();
+    if (number) this.subtaskList.uncheckTodos();
+    else this.subtaskList.checkTodos();
+  }
+
+  uncheckTodos(evt) {
+    const todoId = evt.detail.id;
+    // Если отмена основной задачи и её подзадач(потенциально)
+    if (todoId === this.todoId) {
+      const number = evt.detail.number;
+      // Разчекинить основную задачу все задачи, и субтаски, пока > number - 1, или пока есть субтаски
+      this.blockInteraction(number);
+    } else {
+      // Если отмена субтаска
+      this.subtaskList.uncheckTodo(todoId);
+    }
   }
 
   addEditableForm() {
